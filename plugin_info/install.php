@@ -71,5 +71,3 @@ function worxLandroidS_remove() {
     passthru('sudo /bin/bash ' . $resource_path . '/remove.sh ' . $resource_path . ' > ' . log::getPathToLog('worxLandroidS_dep') . ' 2>&1 &');
     return true;
 }
-
-?>
