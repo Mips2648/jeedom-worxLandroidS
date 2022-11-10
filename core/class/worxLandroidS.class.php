@@ -189,14 +189,14 @@ class worxLandroidS extends eqLogic {
             $email  = config::byKey('email', __CLASS__);
             $passwd = config::byKey('passwd', __CLASS__);
             // get mqtt config
-            $url    = "https://api.worxlandroid.com:443/api/v2/oauth/token";
+            $url    = "https://id.eu.worx.com/oauth/token";
 
             $token       = "725f542f5d2c4b6a5145722a2a6a5b736e764f6e725b462e4568764d4b58755f6a767b2b76526457";
             $ch          = curl_init();
             $data        = array(
                 "username" => $email,
                 "password" => $passwd,
-                "client_id" => 1,
+                "client_id" => "150da4d2-bb44-433b-9429-3773adc70a2a",
                 "grant_type" => "password",
                 "type" => "app",
                 "client_secret" => "nCH3A0WvMYn66vGorjSrnGZ2YtjQWDiCvjg7jNxK",
@@ -528,6 +528,7 @@ class worxLandroidS extends eqLogic {
         $split_topic = explode('/', $nodeid);
         $mac_address = $split_topic[1];
 
+        /** @var worxLandroidS */
         $elogic = eqlogic::byLogicalId($mac_address, __CLASS__, false);
 
         /*
@@ -855,7 +856,6 @@ class worxLandroidS extends eqLogic {
             $cmdlogic->setName($cmdId);
             $cmdlogic->setIsVisible($visible);
 
-            $cmdlogic->setConfiguration('topic', $value);
             if (!is_null($request)) {
                 $cmdlogic->setConfiguration('request', $request);
             }
@@ -1139,7 +1139,7 @@ class worxLandroidS extends eqLogic {
             }
 
             $initDate = DateTime::createFromFormat('H:i', $replaceDay['#startTime#']);
-            if ($replaceDay['#duration#'] != '') {
+            if ($initDate !== false && $replaceDay['#duration#'] != '') {
                 $initDate->add(new DateInterval("PT" . $replaceDay['#duration#'] . "M"));
                 $replaceDay['#endTime#'] = $initDate->format("H:i");
             } else {
@@ -1172,12 +1172,11 @@ class worxLandroidS extends eqLogic {
                 $replace['#todayDuration#']       = is_object($duration) ? $duration->execCmd() : '';
                 $replace['#today_on_daynum_id#']  = $cmdS->getId();
                 $replace['#today_off_daynum_id#'] = $cmdE->getId();
-                if ($replaceDay['#duration#'] != '') {
+                if ($initDate !== false && $replaceDay['#duration#'] != '') {
                     $replace['#todayEndTime#'] = $initDate->format("H:i");
                 } else {
                     $replace['#todayEndTime#'] = '00:00';
                 }
-
 
                 if ($replace['#cutEdge#'] == '1') {
                     $replace['#cutEdge#'] = 'Bord.';
