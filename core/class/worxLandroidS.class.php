@@ -44,14 +44,17 @@ class worxLandroidS extends eqLogic {
     }
 
     public static function refresh_values($checkMowingTime = "false") {
+        log::add('worxLandroidS', 'debug', 'refresh_values');
         $count      = 0;
         $eqptlist[] = array();
-        foreach (eqLogic::byType(__CLASS__, true) as $eqpt) {
-            if (config::byKey('status', __CLASS__) == '0') { //on se connecte seulement si on est pas déjà connecté
+        foreach (eqLogic::byType('worxLandroidS', true) as $eqpt) {
+            if (config::byKey('status', 'worxLandroidS') == '0') { //on se connecte seulement si on est pas déjà connecté
+                log::add('worxLandroidS', 'debug', 'pre connect');
                 $i         = date('w');
                 if ($start = '') {
                     $start = '08:00';
                 }
+                log::add('worxLandroidS', 'debug', "get Planning_startTime {$i}");
                 $start     = $eqpt->getCmd(null, 'Planning_startTime_' . $i);
                 $startTime = is_object($start) ? $start->execCmd() : '00:00';
                 $dur       = $eqpt->getCmd(null, 'Planning_duration_' . $i);
@@ -59,19 +62,29 @@ class worxLandroidS extends eqLogic {
                 if ($duration == '') {
                     $checkMowingTime = 'manual';
                     $duration = 1;
-                }; //correction pour l'initialisation
-                if ($startTime == '') {
+                };
+
+                if ($startTime == '' || $startTime == '0') {
                     $startTime = '00:00';
-                }; //correction pour l'initialisation
+                };
+
                 $initDate = DateTime::createFromFormat('H:i', $startTime);
-                //log::add(__CLASS__, 'debug', 'mower sleeping '.$duration);
+                if ($initDate === false) {
+                    $initDate = DateTime::createFromFormat('H:i', '00:00');
+                }
+                //log::add('worxLandroidS', 'debug', 'mower sleeping '.$duration);
                 //if(empty($duration){$duration = 0};
                 $initDate->add(new DateInterval("PT" . $duration . "M"));
                 $endTime = $initDate->format("H:i");
                 // refresh value each 30 minutes if mower is sleeping at home :-)
-                if ($checkMowingTime == "manual" or $checkMowingTime == "false" and ($startTime == '00:00' or $startTime > date('H:i') or date('H:i') > $endTime) or $startTime <= date('H:i') and date('H:i') <= $endTime and $checkMowingTime == "true") {
-                    config::save('realTime', '0', __CLASS__);
-                    log::add(__CLASS__, 'debug', 'mower sleeping ');
+                log::add('worxLandroidS', 'debug', "checkMowingTime={$checkMowingTime} - startTime={$startTime} - endTime={$endTime}: " . date('H:i'));
+                if (
+                    $checkMowingTime == "manual" or
+                    ($checkMowingTime == "false" and ($startTime == '00:00' or $startTime > date('H:i') or date('H:i') > $endTime)) or
+                    ($checkMowingTime == "true" and ($endTime == '00:00' or ($startTime <= date('H:i') and date('H:i') <= $endTime)))
+                ) {
+                    config::save('realTime', '0', 'worxLandroidS');
+                    log::add('worxLandroidS', 'debug', 'mower sleeping ');
                     // populate message to be sent
                     $eqptlist[$count] = array(
                         $eqpt->getConfiguration('MowerType'),
@@ -79,19 +92,23 @@ class worxLandroidS extends eqLogic {
                         '{}'
                     );
                     $count++;
-                    if (config::byKey('status', __CLASS__) == '1') {
+                    if (config::byKey('status', 'worxLandroidS') == '1') {
                         // modification à faire ======>
                         self::$_client->disconnect();
                     }
                 }
+            } else {
+                log::add('worxLandroidS', 'debug', 'already connected');
             }
         }
 
         if (!empty($eqptlist[0])) {
 
-            $mosqId = config::byKey('mqtt_client_id', __CLASS__) . substr(md5(rand()), 0, 8);
+            $mosqId = config::byKey('mqtt_client_id', 'worxLandroidS') . substr(md5(rand()), 0, 8);
             $client = new Mosquitto\Client($mosqId, true);
             self::connect_and_publish($eqptlist, $client, '{}');
+        } else {
+            log::add('worxLandroidS', 'debug', 'no eqLogic');
         }
     }
 
@@ -228,7 +245,7 @@ class worxLandroidS extends eqLogic {
                 //$this->checkAndUpdateCmd('communicationStatus',false);
                 //return false;
             } else {
-
+                log::add(__CLASS__, 'info', 'Connexion OK');
                 // get users parameters
                 $url       = "https://api.worxlandroid.com/api/v2/users/me";
                 $api_token = $json['access_token'];
@@ -288,7 +305,7 @@ class worxLandroidS extends eqLogic {
                     ));
 
                     $result = curl_exec($ch);
-                    log::add(__CLASS__, 'info', 'Connexion result :' . $result);
+                    log::add(__CLASS__, 'info', 'get product-items:' . $result);
 
                     $json3 = json_decode($result, true);
                     config::save('api_token', $api_token, __CLASS__); //$json_users['id'],__CLASS__);
@@ -301,7 +318,10 @@ class worxLandroidS extends eqLogic {
                         // get boards => id => code
                         $url = "https://api.worxlandroid.com:443/api/v2/boards";
                         curl_setopt($ch, CURLOPT_URL, $url);
-                        $boards = json_decode(curl_exec($ch), true);
+
+                        $boards_result = curl_exec($ch);
+                        log::add(__CLASS__, 'info', 'get boards:' . $boards_result);
+                        $boards = json_decode($boards_result, true);
 
                         // get products => product_id => board_id
                         $url = "https://api.worxlandroid.com:443/api/v2/products";
@@ -314,9 +334,10 @@ class worxLandroidS extends eqLogic {
                             $mowerDescription = $products[$found_key]['code'];
                             log::add(__CLASS__, 'info', 'board_id: ' . $board_id . ' / product id:' . $product['product_id']);
                             $found_key    = array_search($board_id, array_column($boards, 'id'));
-                            $typetondeuse = $boards[$found_key]['code'];
+                            // $typetondeuse = $boards[$found_key]['code'];
+                            $typetondeuse = reset(explode('/', $product['mqtt_topics']['command_in'], 2));
+                            log::add(__CLASS__, 'info', 'typetondeuse:' . $typetondeuse);
                             $doubleSchedule = $boards[$found_key]['features']['scheduler_two_slots'];
-
 
                             log::add(__CLASS__, 'info', 'mac_address ' . $product['mac_address'] . $typetondeuse);
                             // create Equipement if not already created
@@ -951,7 +972,7 @@ class worxLandroidS extends eqLogic {
             'd' => $schedule
         )) . "}";
         log::add(__CLASS__, 'debug', 'message à publier' . $_message);
-        worxLandroidS::publishMosquitto($_id, config::byKey('MowerType', __CLASS__) . "/" . $_id->getConfiguration('mac_address', __CLASS__) . "/commandIn", $_message, 0);
+        worxLandroidS::publishMosquitto($_id, $_id->getConfiguration('MowerType') . "/" . $_id->getConfiguration('mac_address') . "/commandIn", $_message, 0);
     }
 
 
