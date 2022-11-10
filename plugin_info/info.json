@@ -2,12 +2,28 @@
 	"id": "worxLandroidS",
 	"name": "worxLandroidS",
 	"licence": "AGPL",
-	"author": "SSC",
-	"require": "2.4",
+	"author": "Mips",
+	"require": "4.2",
 	"description": "Plugin Jeedom pour Robots tondeuses Worx Landroid modèles S/M/L version cloud",
 	"category": "devicecommunication",
-	"hasDependency": 1,
-	"hasOwnDeamon": 1,
+	"hasDependency": true,
+	"hasOwnDeamon": true,
 	"changelog": "https://sebsst.github.io/worxLandroidS/#language#/changelog",
-	"documentation": "https://sebsst.github.io/worxLandroidS/#language#/"
+	"documentation": "https://sebsst.github.io/worxLandroidS/#language#/",
+	"changelog_beta": "https://mips2648.github.io/jeedom-plugins-docs/worxLandroidS/#language#/changelog",
+	"documentation_beta": "https://mips2648.github.io/jeedom-plugins-docs/worxLandroidS/#language#/",
+	"link": {
+		"forum": "https://community.jeedom.com/tags/plugin-worxLandroidS",
+		"video": ""
+	},
+	"language": [
+		"fr_FR"
+	],
+	"compatibility": [
+		"smart",
+		"rpi",
+		"diy",
+		"v4",
+		"atlas"
+	]
 }
