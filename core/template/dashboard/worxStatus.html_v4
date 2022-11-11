@@ -4,12 +4,12 @@
     <a class="btn cmd" style="display:inline;font-size:1em;padding:2px;background-color:#008080" data-cmd_id="#on_daynum_id#" title="On" onclick="jeedom.cmd.execute({id: #on_daynum_id#});"><i class="fa fa-play" ></i></a>
     <br/>
     <br/>
-        #day#       
+        #day#
      <br/>
     </center>
 
     <center class="cmd noRefresh" data-type="info" data-subtype="string" data-cmd_id="#startTime#" style="font-size:0.8em;" >#startTime# | #endTime#<br/>
-  
+
     #cutEdge#
     </center>
 </div>
