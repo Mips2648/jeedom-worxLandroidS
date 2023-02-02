@@ -8,13 +8,12 @@
 	"category": "devicecommunication",
 	"hasDependency": true,
 	"hasOwnDeamon": true,
-	"changelog": "https://sebsst.github.io/worxLandroidS/#language#/changelog",
-	"documentation": "https://sebsst.github.io/worxLandroidS/#language#/",
+	"changelog": "https://mips2648.github.io/jeedom-plugins-docs/worxLandroidS/#language#/changelog",
+	"documentation": "https://mips2648.github.io/jeedom-plugins-docs/worxLandroidS/#language#/",
 	"changelog_beta": "https://mips2648.github.io/jeedom-plugins-docs/worxLandroidS/#language#/changelog",
 	"documentation_beta": "https://mips2648.github.io/jeedom-plugins-docs/worxLandroidS/#language#/",
 	"link": {
-		"forum": "https://community.jeedom.com/tags/plugin-worxLandroidS",
-		"video": ""
+		"forum": "https://community.jeedom.com/tags/plugin-worxLandroidS"
 	},
 	"language": [
 		"fr_FR"
