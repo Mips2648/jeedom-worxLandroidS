@@ -5,6 +5,7 @@
   },
   "pip3": {
     "requests": {},
+    "aiohttp": {},
     "urllib3": {},
     "awsiot": {},
     "awsiotsdk": {},
