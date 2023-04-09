@@ -28,6 +28,11 @@ $eqLogics = eqLogic::byType($plugin->getId());
                 <br>
                 <span>Community</span>
             </div>
+            <div class="cursor logoSecondary" id="bt_syncworxLandroidS">
+                <i class="fas fa-sync"></i>
+                <br>
+                <span>{{Synchroniser}}</span>
+            </div>
             <div class="cursor logoSecondary" id="bt_healthworxLandroidS">
                 <i class="fas fa-medkit"></i>
                 <br>
@@ -133,13 +138,19 @@ $eqLogics = eqLogic::byType($plugin->getId());
                             <div class="form-group">
                                 <label class="col-sm-4 control-label"> {{Durée de vie estimée des lames (Hr)}}</label>
                                 <div class="col-sm-3">
-                                    <Input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="maxBladesDuration" />
+                                    <input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="maxBladesDuration" />
                                 </div>
                             </div>
                         </div>
 
                         <div class="col-lg-5">
                             <legend><i class="fas fa-info"></i> {{Informations}}</legend>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label"></label>
+                                <div class="col-sm-3">
+                                    <a id="bt_createCommands" class="btn btn-default"><i class="fas fa-search"></i> {{Créer les commandes manquantes}}</a>
+                                </div>
+                            </div>
                             <div class="form-group">
                                 <label class="col-sm-3 control-label"> {{Type Tondeuse}}</label>
                                 <div class="col-sm-3">
@@ -150,19 +161,31 @@ $eqLogics = eqLogic::byType($plugin->getId());
                             <div class="form-group">
                                 <label class="col-sm-3 control-label"> {{Adresse Mac}}</label>
                                 <div class="col-sm-3">
-                                    <span class="label label-info eqLogicAttr" data-l1key="logicalId"></span>
+                                    <span class="label label-info eqLogicAttr" data-l1key="configuration" data-l2key="mac_address"></span>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-sm-3 control-label"> {{Numéro de série}}</label>
                                 <div class="col-sm-3">
-                                    <span class="label label-info eqLogicAttr" data-l1key="configuration" data-l2key="serialNumber"></span>
+                                    <span class="label label-info eqLogicAttr" data-l1key="configuration" data-l2key="serial_number"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label"> {{Date d'achat}}</label>
+                                <div class="col-sm-3">
+                                    <span class="label label-info eqLogicAttr" data-l1key="configuration" data-l2key="purchased_at"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label"> {{Date d'enregistrement}}</label>
+                                <div class="col-sm-3">
+                                    <span class="label label-info eqLogicAttr" data-l1key="configuration" data-l2key="registered_at"></span>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-sm-3 control-label"> {{Date de fin de garantie}}</label>
                                 <div class="col-sm-3">
-                                    <span class="label label-info eqLogicAttr" data-l1key="configuration" data-l2key="warranty_expiration_date"></span>
+                                    <span class="label label-info eqLogicAttr" data-l1key="configuration" data-l2key="warranty_expires_at"></span>
                                 </div>
                             </div>
                         </div>
@@ -184,7 +207,6 @@ $eqLogics = eqLogic::byType($plugin->getId());
                             <th style="min-width:220px;width:350px;">{{Nom}}</th>
                             <th style="min-width:140px;width:160px;">{{Type}}</th>
                             <th style="min-width:260px;width:280px;">{{Options}}</th>
-                            <th>{{Paramètres}}</th>
                             <th style="width:200px;">{{Etat}}</th>
                             <th style="min-width:80px;width:200px;">{{Actions}}</th>
 

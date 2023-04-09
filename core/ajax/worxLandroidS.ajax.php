@@ -24,6 +24,26 @@ try {
         throw new Exception(__('401 - {{Accès non autorisé}}', __FILE__));
     }
 
+    if (init('action') == 'synchronize') {
+        worxLandroidS::synchronize();
+        ajax::success();
+    } elseif (init('action') == 'createCommands') {
+        /**
+         * @var worxLandroidS
+         */
+        $eqLogic = eqLogic::byId(init('id'));
+        if (!is_object($eqLogic)) {
+            throw new Exception(__('worxLandroidS eqLogic non trouvé : ', __FILE__) . init('id'));
+        }
+
+        try {
+            $eqLogic->createCommands();
+            ajax::success();
+        } catch (\Throwable $th) {
+            throw new Exception(__('Erreur lors de la création des commandes: ', __FILE__) . $th->getMessage());
+        }
+    }
+
     throw new Exception(__('{{Aucune methode correspondante à}} : ', __FILE__) . init('action'));
     /*     * *********Catch exeption*************** */
 } catch (Exception $e) {

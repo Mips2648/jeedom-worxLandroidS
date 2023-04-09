@@ -1,0 +1,13 @@
+{
+  "pre-install": {},
+  "apt": {
+    "python3-requests": {}
+  },
+  "pip3": {
+    "requests": {},
+    "urllib3": {},
+    "awsiot": {},
+    "awsiotsdk": {},
+    "backports.zoneinfo": {}
+  }
+}

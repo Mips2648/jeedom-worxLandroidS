@@ -75,18 +75,6 @@ function addCmdToTable(_cmd) {
     tr += '</div>'
     tr += '</td>'
 
-    if (init(_cmd.type) == 'info') {
-        tr += '<td>';
-        tr += '<input class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="request" style="margin-top: 5px;" placeholder="{{Configuration}}">';
-        tr += '</td>';
-    } else if (init(_cmd.type) == 'action') {
-        tr += '<td>';
-        tr += '<input class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="topic" style="margin-top: 5px;" placeholder="{{Topic}}">';
-        tr += '<input class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="request" style="margin-top: 5px;" placeholder="{{Payload}}">';
-        tr += '<label class="checkbox-inline"><input type="checkbox" class="cmdAttr" data-l1key="configuration" data-l2key="retain" checked/>{{Retain flag}}</label> '
-        tr += '</td>';
-    }
-
     tr += '<td>';
     tr += '<span class="cmdAttr" data-l1key="htmlstate"></span>';
     tr += '</td>';
@@ -132,6 +120,53 @@ $('body').off('worxLandroidS::includeEqpt').on('worxLandroidS::includeEqpt', fun
             }
         }, 2000);
     }
+});
+
+$('#bt_syncworxLandroidS').on('click', function () {
+    $.ajax({
+        type: "POST",
+        url: "plugins/worxLandroidS/core/ajax/worxLandroidS.ajax.php",
+        data: {
+            action: "synchronize",
+        },
+        dataType: 'json',
+        error: function (request, status, error) {
+            handleAjaxError(request, status, error);
+        },
+        success: function (data) {
+            if (data.state != 'ok') {
+                $('#div_alert').showAlert({ message: data.result, level: 'danger' });
+                return;
+            }
+            $('#div_alert').showAlert({ message: '{{Synchronisation réussie.}}', level: 'success' });
+            setTimeout(function () {
+                window.location.replace("index.php?v=d&m=worxLandroidS&p=worxLandroidS");
+            }, 3000);
+        }
+    });
+});
+
+$('#bt_createCommands').on('click', function () {
+    $.ajax({
+        type: "POST",
+        url: "plugins/worxLandroidS/core/ajax/worxLandroidS.ajax.php",
+        data: {
+            action: "createCommands",
+            id: $('.eqLogicAttr[data-l1key=id]').value()
+        },
+        dataType: 'json',
+        error: function (request, status, error) {
+            handleAjaxError(request, status, error);
+        },
+        success: function (data) {
+            if (data.state != 'ok') {
+                $('#div_alert').showAlert({ message: data.result, level: 'danger' });
+                return;
+            }
+            $('#div_alert').showAlert({ message: '{{Opération réalisée avec succès}}', level: 'success' });
+            $('.eqLogicDisplayCard[data-eqLogic_id=' + $('.eqLogicAttr[data-l1key=id]').value() + ']').click();
+        }
+    });
 });
 
 function updatePlanning(cmdId, refreshId) {

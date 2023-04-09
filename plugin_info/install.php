@@ -19,19 +19,6 @@
 require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
 
 function worxLandroidS_install() {
-    $cron = cron::byClassAndFunction('worxLandroidS', 'daemon');
-    config::save('initCloud', 1 ,'worxLandroidS');
-    if (!is_object($cron)) {
-        $cron = new cron();
-        $cron->setClass('worxLandroidS');
-        $cron->setFunction('daemon');
-        $cron->setEnable(1);
-        $cron->setDeamon(1);
-        $cron->setDeamonSleepTime(120);
-        $cron->setSchedule('* * * * *');
-        $cron->setTimeout('1440');
-        $cron->save();
-    }
 }
 
 function worxLandroidS_update() {
@@ -39,25 +26,8 @@ function worxLandroidS_update() {
     if (is_object($cron)) {
         $cron->stop();
         $cron->remove();
-        unset($cron);
     }
-    $cron = cron::byClassAndFunction('worxLandroidS', 'daemon');
-    config::save('initCloud', 1 ,'worxLandroidS');
-    if (!is_object($cron)) {
-        $cron = new cron();
-        $cron->setClass('worxLandroidS');
-        $cron->setFunction('daemon');
-        $cron->setEnable(1);
-        $cron->setDeamon(1);
-        $cron->setDeamonSleepTime(120);
-        $cron->setSchedule('* * * * *');
-        $cron->setTimeout('1440');
-        $cron->save();
-    } else {
-        $cron->setDeamonSleepTime(120);
-        $cron->halt;
-        $cron->run;
-    }
+    config::remove('initCloud', 'worxLandroidS');
 }
 
 function worxLandroidS_remove() {
@@ -66,7 +36,7 @@ function worxLandroidS_remove() {
         $cron->stop();
         $cron->remove();
     }
-    log::add('worxLandroidS','info','Suppression extension');
+    log::add('worxLandroidS', 'info', 'Suppression extension');
     $resource_path = realpath(dirname(__FILE__) . '/../resources');
     passthru('sudo /bin/bash ' . $resource_path . '/remove.sh ' . $resource_path . ' > ' . log::getPathToLog('worxLandroidS_dep') . ' 2>&1 &');
     return true;

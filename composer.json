@@ -1,0 +1,13 @@
+{
+    "name": "mips/jeedom-worxlandroids",
+    "description": "worxLandroidS plugin for jeedom",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Mips"
+        }
+    ],
+    "require": {
+        "mips/jeedom-tools": ">=0.18"
+    }
+}

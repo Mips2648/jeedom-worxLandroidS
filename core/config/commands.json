@@ -1,0 +1,405 @@
+{
+    "info": [
+        {
+            "logicalId": "online",
+            "name": "En ligne",
+            "type": "info",
+            "subtype": "binary",
+            "isVisible": 1,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            }
+        },
+        {
+            "logicalId": "locked",
+            "name": "Verrouilée",
+            "type": "info",
+            "subtype": "binary",
+            "isVisible": 0,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            }
+        },
+        {
+            "logicalId": "pin_code",
+            "name": "Code PIN",
+            "type": "info",
+            "subtype": "string",
+            "isVisible": 0,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            }
+        },
+        {
+            "logicalId": "partymode_enabled",
+            "name": "Mode festif",
+            "type": "info",
+            "subtype": "binary",
+            "isVisible": 0,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            }
+        },
+        {
+            "logicalId": "mower_work_time",
+            "name": "Temps de travail tondeuse",
+            "type": "info",
+            "subtype": "numeric",
+            "isVisible": 1,
+            "isHistorized": 0,
+            "unite": "min",
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            }
+        },
+        {
+            "logicalId": "battery_temperature",
+            "name": "Température batterie",
+            "type": "info",
+            "subtype": "numeric",
+            "isVisible": 1,
+            "isHistorized": 0,
+            "unite": "°C",
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            }
+        },
+        {
+            "logicalId": "battery_voltage",
+            "name": "Tension batterie",
+            "type": "info",
+            "subtype": "numeric",
+            "isVisible": 1,
+            "isHistorized": 0,
+            "unite": "V",
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            }
+        },
+        {
+            "logicalId": "battery_percent",
+            "name": "Batterie",
+            "type": "info",
+            "subtype": "numeric",
+            "isVisible": 1,
+            "isHistorized": 0,
+            "unite": "%",
+            "configuration": {
+                "minValue": 0,
+                "maxValue": 100
+            },
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            }
+        },
+        {
+            "logicalId": "battery_charging",
+            "name": "En charge",
+            "type": "info",
+            "subtype": "binary",
+            "isVisible": 1,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            }
+        },
+        {
+            "logicalId": "battery_cycles_total",
+            "name": "Cycles de charge",
+            "type": "info",
+            "subtype": "numeric",
+            "isVisible": 0,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            }
+        },
+        {
+            "logicalId": "blades_total_on",
+            "name": "Temps de travail des lames totales",
+            "type": "info",
+            "subtype": "numeric",
+            "unite": "min",
+            "isVisible": 0,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            }
+        },
+        {
+            "logicalId": "blades_current_on",
+            "name": "Temps de travail des lames actuelles",
+            "type": "info",
+            "subtype": "numeric",
+            "unite": "min",
+            "isVisible": 0,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            }
+        },
+        {
+            "logicalId": "error_id",
+            "name": "Code erreur",
+            "type": "info",
+            "subtype": "numeric",
+            "isVisible": 0,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            }
+        },
+        {
+            "logicalId": "error_description",
+            "name": "Description erreur",
+            "type": "info",
+            "subtype": "string",
+            "isVisible": 0,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            }
+        },
+        {
+            "logicalId": "orientation_pitch",
+            "name": "Tangage",
+            "type": "info",
+            "subtype": "numeric",
+            "isVisible": 0,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            }
+        },
+        {
+            "logicalId": "orientation_roll",
+            "name": "Roulis",
+            "type": "info",
+            "subtype": "numeric",
+            "isVisible": 0,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            }
+        },
+        {
+            "logicalId": "orientation_yaw",
+            "name": "Direction",
+            "type": "info",
+            "subtype": "numeric",
+            "isVisible": 0,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            }
+        },
+        {
+            "logicalId": "rainsensor_delay",
+            "name": "Délai pluie",
+            "type": "info",
+            "subtype": "numeric",
+            "unite": "min",
+            "isVisible": 0,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            }
+        },
+        {
+            "logicalId": "rainsensor_triggered",
+            "name": "Délai pluie activé",
+            "type": "info",
+            "subtype": "binary",
+            "isVisible": 0,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            }
+        },
+        {
+            "logicalId": "rainsensor_remaining",
+            "name": "Délai pluie restant",
+            "type": "info",
+            "subtype": "numeric",
+            "unite": "min",
+            "isVisible": 0,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            }
+        },
+        {
+            "logicalId": "statistics_distance",
+            "name": "Distance",
+            "type": "info",
+            "subtype": "numeric",
+            "unite": "m",
+            "isVisible": 0,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            }
+        }
+    ],
+    "common": [
+        {
+            "logicalId": "refresh",
+            "name": "Rafraichir",
+            "type": "action",
+            "subtype": "other",
+            "isVisible": 1
+        },
+        {
+            "logicalId": "update",
+            "name": "update",
+            "type": "action",
+            "subtype": "other",
+            "isVisible": 1
+        },
+        {
+            "logicalId": "home",
+            "name": "Retour à la base",
+            "type": "action",
+            "subtype": "other",
+            "isVisible": 1
+        },
+        {
+            "logicalId": "safehome",
+            "name": "Arrêter les lames et retour à la base",
+            "type": "action",
+            "subtype": "other",
+            "isVisible": 1
+        },
+        {
+            "logicalId": "pause",
+            "name": "Pause",
+            "type": "action",
+            "subtype": "other",
+            "isVisible": 1
+        },
+        {
+            "logicalId": "zonetraining",
+            "name": "Zone training",
+            "type": "action",
+            "subtype": "other",
+            "isVisible": 1
+        },
+        {
+            "logicalId": "setraindelay",
+            "name": "Définir le retard pluie",
+            "type": "action",
+            "subtype": "slider",
+            "isVisible": 1,
+            "unite": "min",
+            "configuration": {
+                "action": "raindelay",
+                "value": "#slider#",
+                "minValue": 0,
+                "maxValue": 750
+            },
+            "template": {
+                "dashboard": "button",
+                "mobile": "button"
+            },
+            "display": {
+                "parameters": {
+                    "step": "30"
+                }
+            },
+            "value": "rainsensor_delay"
+        },
+        {
+            "logicalId": "lock",
+            "name": "Verrouiller",
+            "type": "action",
+            "subtype": "other",
+            "isVisible": 1,
+            "configuration": {
+                "action": "set_lock"
+            },
+            "value": "locked"
+        },
+        {
+            "logicalId": "unlock",
+            "name": "Déverrouiller",
+            "type": "action",
+            "subtype": "other",
+            "isVisible": 1,
+            "configuration": {
+                "action": "set_lock"
+            },
+            "value": "locked"
+        },
+        {
+            "logicalId": "setpartymode",
+            "name": "Activer mode festif",
+            "type": "action",
+            "subtype": "other",
+            "isVisible": 1,
+            "configuration": {
+                "action": "set_partymode"
+            },
+            "value": "partymode_enabled"
+        },
+        {
+            "logicalId": "unsetpartymode",
+            "name": "Désactiver mode festif",
+            "type": "action",
+            "subtype": "other",
+            "isVisible": 1,
+            "configuration": {
+                "action": "set_partymode"
+            },
+            "value": "partymode_enabled"
+        },
+        {
+            "logicalId": "cutedge",
+            "name": "Routine de bord",
+            "type": "action",
+            "subtype": "other",
+            "isVisible": 1,
+            "configuration": {
+                "action": "ots"
+            }
+        },
+        {
+            "logicalId": "onetimeschedule",
+            "name": "Horaire unique",
+            "type": "action",
+            "subtype": "message",
+            "isVisible": 1,
+            "configuration": {
+                "action": "ots"
+            },
+            "display": {
+                "title_disable": 1,
+                "message_placeholder": "Durée (minute)"
+            }
+        }
+    ]
+}
