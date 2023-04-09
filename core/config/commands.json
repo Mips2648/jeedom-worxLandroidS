@@ -282,6 +282,13 @@
             "isVisible": 1
         },
         {
+            "logicalId": "start",
+            "name": "Démarrer",
+            "type": "action",
+            "subtype": "other",
+            "isVisible": 1
+        },
+        {
             "logicalId": "home",
             "name": "Retour à la base",
             "type": "action",
