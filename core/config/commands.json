@@ -155,6 +155,30 @@
             }
         },
         {
+            "logicalId": "status_id",
+            "name": "Code statut",
+            "type": "info",
+            "subtype": "numeric",
+            "isVisible": 0,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            }
+        },
+        {
+            "logicalId": "status_description",
+            "name": "Statut",
+            "type": "info",
+            "subtype": "string",
+            "isVisible": 1,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            }
+        },
+        {
             "logicalId": "error_id",
             "name": "Code erreur",
             "type": "info",
@@ -171,7 +195,7 @@
             "name": "Description erreur",
             "type": "info",
             "subtype": "string",
-            "isVisible": 0,
+            "isVisible": 1,
             "isHistorized": 0,
             "template": {
                 "dashboard": "line",
