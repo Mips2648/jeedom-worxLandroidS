@@ -14,7 +14,7 @@
         },
         {
             "logicalId": "locked",
-            "name": "Verrouilée",
+            "name": "Verrouillée",
             "type": "info",
             "subtype": "binary",
             "isVisible": 0,
