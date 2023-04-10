@@ -411,7 +411,7 @@
         },
         {
             "logicalId": "setraindelay",
-            "name": "Définir le retard pluie",
+            "name": "Définir le délai pluie",
             "type": "action",
             "subtype": "slider",
             "isVisible": 1,

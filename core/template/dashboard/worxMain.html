@@ -2,10 +2,10 @@
   style="width: #width#;height : #height#;border:#border#;border-radius:#border-radius#;background-color: #background-color#;color: #color#;#style#;text-align:center;"
   data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="#version#">
   <center class="widget-name display:inline"><a href="#eqLink#"
-      style="font-weight:bold;font-size : 1.1em;#hideEqLogicName#;">#name_display# #object_name#</a>
-    <span class="cmd refresh cursor pull-right" data-cmd_id="#refreshValue_id#">
+      style="font-weight:bold;font-size : 1.1em;">#name_display# #object_name#</a>
+    <span class="cmd refresh cursor pull-right" data-cmd_id="#refresh_id#">
       <i class='fas fa-sync' style="font-size : 0.9em;float:right;"
-        onclick="jeedom.cmd.execute({id: #refreshValue_id#});"></i>
+        onclick="jeedom.cmd.execute({id: #refresh_id#});"></i>
     </span>
   </center>
 
@@ -46,15 +46,13 @@
                 class="fas fa-home pull-right"></i></a>
             <a style="position : relative; top: -50px; left: 220px;width : 5px" title="#error_description#"><i
                 style="font-size: 3em; padding-top: 2px; margin-right: 2px" class="#errorIcon#"></i></a>
-            <a class="btn cmd" data-cmd_id="#newBlades_id#"
-              style="cursor: pointer;position : absolute; left:-35px; top:27px;"
-              title="Durée de vie des lames actuelle #blades_current_on# h => cliquer pour réinitialiser compteur durée"
-              onclick="jeedom.cmd.execute({id: #newBlades_id#});">
+            <a class="btn cmd" style="cursor: pointer;position : absolute; left:-35px; top:27px;"
+              title="Durée de vie des lames actuelle #blades_current_on# h">
               <i style=" font-size: 2.2em;z-index:4;;color:#bladesDurationColor#"
                 class="fas jeedom-ventilo pull-right"></i></a>
-            <a data-cmd_id="#cutEdge_id#"
+            <a data-cmd_id="#cutedge_id#"
               style="display:none;cursor: pointer;position : absolute; top: 189px; left: 270px;width : 5px;z-index:6"
-              title="Couper bordure" onclick="jeedom.cmd.execute({id: #cutEdge_id#});">
+              title="Couper bordure" onclick="jeedom.cmd.execute({id: #cutedge_id#});">
               <i style="font-size: 3.5em; padding-top: 2px; margin-right: 2px; z-index:4"
                 class="fas nature-grass pull-right"></i></a>
           </span>
@@ -92,28 +90,14 @@
       <div style="display: inline-block; margin: 3px 0">
 
 
-        <span style="font-weight:bold; #rainsensor_delay_visible#;margin: 3px 0;"> Délai pluie: #rainsensor_delay# min
-          #setRainDelay#</span>
-        <span style="padding-left: 8px ;#rainsensor_delay_visible#;margin: 3px 0;">
-          <a class="btn cmd" style="font-size: 0.8em; #rain_delay_0_visible#; padding:9px;" data-cmd_id="#rain_delay_0"
-            title="raind_delay_0" onclick="jeedom.cmd.execute({id: #rain_delay_0_id#});">&nbsp;0&nbsp;</a>
-          <a class="btn cmd" style="font-size: 0.8em;#rain_delay_30_visible# ; padding:9px;"
-            data-cmd_id="#rain_delay_30" title="raind_delay_30"
-            onclick="jeedom.cmd.execute({id: #rain_delay_30_id#});">&nbsp;30&nbsp;</a>
-          <a class="btn cmd" style="font-size: 0.8em;#rain_delay_60_visible# ; padding:9px;"
-            data-cmd_id="#rain_delay_60" title="raind_delay_60"
-            onclick="jeedom.cmd.execute({id: #rain_delay_60_id#});">&nbsp;60&nbsp;</a>
-          <a class="btn cmd" style="font-size: 0.8em;#rain_delay_120_visible# ; padding:9px;"
-            data-cmd_id="#rain_delay_120" title="raind_delay_120"
-            onclick="jeedom.cmd.execute({id: #rain_delay_120_id#});">120</a>
-          <a class="btn cmd" style="font-size: 0.8em;#rain_delay_240_visible# ; padding:9px;"
-            data-cmd_id="#rain_delay_240" title="raind_delay_240"
-            onclick="jeedom.cmd.execute({id: #rain_delay_240_id#});">240</a>
-
+        <span id="rain" style="font-weight:bold; margin: 3px 0;">
+          #raindelay#
         </span>
       </div>
-      <div style="#set_schedule_visible#; margin-bottom: 2px"> #cmdaction# </div>
-      <span style="#virtualInfo_visible#"> #cmd# </span>
+      <!--
+        <div style="#set_schedule_visible#; margin-bottom: 2px"> #cmdaction# </div>
+        <span style="#virtualInfo_visible#"> #cmd# </span>
+    -->
     </div>
     <div style="display: flex; flex-wrap:wrap; width: auto; margin: 0 10px">#daySetup#</div>
   </div>
@@ -145,7 +129,7 @@
         minutes = 0;
         retour = numjour + ';' + debut + ';' + minutes + ';' + bordure;
       }
-      jeedom.cmd.execute({ id: #set_schedule_id#, value: { message: retour } })
+      // jeedom.cmd.execute({ id: #set_schedule_id#, value: { message: retour } })
     }
   }
 

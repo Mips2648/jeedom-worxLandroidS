@@ -425,13 +425,6 @@ class worxLandroidS extends eqLogic {
         $elogic->setIsEnable(1);
 
         $commandIn = $MowerType . '/' . $product['mac_address'] . '/commandIn'; //config::byKey('MowerType', __CLASS__).'/'. $json2_data->dat->mac .'/commandIn';
-        //$elogic->newAction('setRainDelay', $commandIn, '{"rd":"#message#"}', 'message');
-        $elogic->newAction('setRainDelay', $commandIn, '{"rd":#slider#}', 'slider', array("minValue" => 0, "maxValue" => 300, "showNameOndashboard" => false, "showNameOnmobile" => false));
-        $elogic->newAction('start', $commandIn, array('cmd' => 1), 'other');
-        $elogic->newAction('pause', $commandIn, array('cmd' => 2), 'other');
-        $elogic->newAction('stop', $commandIn, array('cmd' => 3), 'other');
-        $elogic->newAction('cutEdge', $commandIn, array('cmd' => 4), 'other');
-        $elogic->newAction('zoneTraining', $commandIn, array('cmd' => 4), 'other');
 
         $elogic->newAction('refreshValue', $commandIn, "", 'other');
         $elogic->newAction('off_today', $commandIn, "off_today", 'other');
@@ -1038,38 +1031,9 @@ class worxLandroidS extends eqLogic {
             $_message = self::setDaySchedule($eqlogicid, substr($_message, 3, 1), $sched); //  $this->saveConfiguration('savedValue',
         }
 
-        if ($cmd->getName() == 'refreshValue') {
-            $_message = '{}';
-        }
-
         // send start command
         if ($cmd->getName() == 'user_message') {
             $_message = trim($_message, '|');
-        }
-
-        // send start command
-        if ($cmd->getName() == 'start') {
-            $_message = '{"cmd":1}';
-        }
-        // send pause command
-        if ($cmd->getName() == 'pause') {
-            $_message = '{"cmd":2}';
-        }
-
-        // send stop
-        if ($cmd->getName() == 'stop') {
-            $_message = '{"cmd":3}';
-        }
-
-        // send cutedge
-        if ($cmd->getName() == 'cutEdge') {
-            //  $_message = '{"cmd":4}';
-            $_message = '{"sc":{"ots":{"bc":1,"wtm":0}}}';
-        }
-
-        // send zoneTraining
-        if ($cmd->getName() == 'zoneTraining') {
-            $_message = '{"cmd":4}';
         }
 
         // send free command
@@ -1227,12 +1191,11 @@ class worxLandroidS extends eqLogic {
 
         if (strstr($theme['current_desktop_theme'], 'Light')) {
             $replace['#theme#']  = "light";
-        } elseif (strstr($theme['current_desktop_theme'], 'Dark')) {
-            $replace['#theme#']  = "dark";
+            $replace['#backgroundColor#']  = "";
         } else {
             $replace['#theme#']  = "dark";
             $replace['#backgroundColor#']  = "background-color:black;opacity:0.8";
-        } // legacy?or strstr($theme['current_desktop_theme'],'Legacy')
+        }
 
         $cmd_html = '';
         foreach ($this->getCmd('info') as $cmd) {
@@ -1256,7 +1219,7 @@ class worxLandroidS extends eqLogic {
                     $cmd->setTemplate('dashboard', 'badge');
                 }
                 if (substr_compare($cmd->getName(), 'Planning', 0, 8) != 0) {
-                    $cmd_html .= $cmd->toHtml($_version, '', $replace['#cmd-background-color#']);
+                    $cmd_html .= $cmd->toHtml($_version, '');
                 }
             }
             if ($cmd->getIsHistorized() == 1) {
@@ -1275,23 +1238,18 @@ class worxLandroidS extends eqLogic {
             $replace['#cmdaction#'] = '';
             if ($cmd->getIsVisible() and ($cmd->getLogicalId() == 'set_schedule')) {
 
-                $cmdaction_html .= $cmd->toHtml($_version, '', $replace['#cmd-background-color#']);
+                $cmdaction_html .= $cmd->toHtml($_version, '');
                 $replace['#cmdaction#'] = $cmdaction_html;
             }
         }
 
-        $batteryLevelcmd = $this->getCmd(null, 'battery_percent');
-        $batteryLevel = is_object($batteryLevelcmd) ? $batteryLevelcmd->execCmd() : '';
-        // BATTERIE
+        $batteryLevel = $this->getCmdInfoValue('battery_percent', 0);
         if ($batteryLevel > 90)  $replace['#batteryIMG#']  = "batterie_full.png";
-        else if ($batteryLevel > 75) $replace['#batteryIMG#']  = "batterie_high.png";
-        else if ($batteryLevel > 50) $replace['#batteryIMG#']  = 'batterie_medium.png';
-        else if ($batteryLevel > 25) $replace['#batteryIMG#']  = 'batterie_low.png';
-        else if ($batteryLevel > 5) $replace['#batteryIMG#']  = 'batterie_highlow.png';
-        //else  $('.cmd[data-cmd_uid=#uid#] .IMGbatterie#uid#').hide();
-        //$('.cmd[data-cmd_uid=#uid#] .IMGbatterie#uid#').attr('title','Charge : '+batterie+' %');
+        elseif ($batteryLevel > 75) $replace['#batteryIMG#']  = "batterie_high.png";
+        elseif ($batteryLevel > 50) $replace['#batteryIMG#']  = 'batterie_medium.png';
+        elseif ($batteryLevel > 25) $replace['#batteryIMG#']  = 'batterie_low.png';
+        else $replace['#batteryIMG#']  = 'batterie_highlow.png';
 
-        // WIFI
         $wifiQuality = $this->getCmdInfoValue('rssi', 0);
         if ($wifiQuality <= -90) $replace['#wifiIconClass#']  = 'jeedom2-fdp1-signal0';
         elseif ($wifiQuality <= -80) $replace['#wifiIconClass#']  = 'jeedom2-fdp1-signal1';
@@ -1299,11 +1257,17 @@ class worxLandroidS extends eqLogic {
         elseif ($wifiQuality <= -67) $replace['#wifiIconClass#']  = 'jeedom2-fdp1-signal3';
         elseif ($wifiQuality <= -50) $replace['#wifiIconClass#']  = 'jeedom2-fdp1-signal4';
         else $replace['#wifiIconClass#']  = 'jeedom2-fdp1-signal5';
-        //else  $('.cmd[data-cmd_uid=#uid#] .IMGwifi#uid#').hide();
-        //$('.cmd[data-cmd_uid=#uid#] .IMGwifi#uid#').attr('title','Signal : '+wifi+' db');
 
-        $cmdRainDelay = $this->getCmd(null, 'setRainDelay');
-        $replace['#setRainDelay#'] =  $cmdRainDelay->toHtml($_version, '', $replace['#cmd-background-color#']);
+        $rainCmdHtml = '';
+        $rainCmdId = ['rainsensor_delay', 'setraindelay'];
+        foreach ($rainCmdId as $c) {
+            /** @var cmd */
+            $rainCmd = $this->getCmd(null, $c);
+            if (is_object($rainCmd) && $rainCmd->getIsVisible()) {
+                $rainCmdHtml .= $rainCmd->toHtml($_version, '');
+            }
+        }
+        $replace['#raindelay#'] =  $rainCmdHtml;
 
         // calcul durée depuis dernier changement de lame
         // $cmdLast = $this->getCmd(null, 'lastBladesChangeTime');
