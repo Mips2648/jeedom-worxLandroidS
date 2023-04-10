@@ -1293,7 +1293,6 @@ class worxLandroidS extends eqLogic {
 
         // WIFI
         $wifiQuality = $this->getCmdInfoValue('rssi', 0);
-        log::add(__CLASS__, 'debug', "wifiQuality: {$wifiQuality}");
         if ($wifiQuality <= -90) $replace['#wifiIconClass#']  = 'jeedom2-fdp1-signal0';
         elseif ($wifiQuality <= -80) $replace['#wifiIconClass#']  = 'jeedom2-fdp1-signal1';
         elseif ($wifiQuality <= -70) $replace['#wifiIconClass#']  = 'jeedom2-fdp1-signal2';
