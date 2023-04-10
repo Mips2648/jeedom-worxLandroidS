@@ -212,7 +212,8 @@
             "template": {
                 "dashboard": "line",
                 "mobile": "line"
-            }
+            },
+            "initialValue": 0
         },
         {
             "logicalId": "orientation_roll",
@@ -224,7 +225,8 @@
             "template": {
                 "dashboard": "line",
                 "mobile": "line"
-            }
+            },
+            "initialValue": 0
         },
         {
             "logicalId": "orientation_yaw",
@@ -236,7 +238,8 @@
             "template": {
                 "dashboard": "line",
                 "mobile": "line"
-            }
+            },
+            "initialValue": 0
         },
         {
             "logicalId": "rainsensor_delay",
@@ -249,7 +252,8 @@
             "template": {
                 "dashboard": "line",
                 "mobile": "line"
-            }
+            },
+            "initialValue": 0
         },
         {
             "logicalId": "rainsensor_triggered",
@@ -261,7 +265,8 @@
             "template": {
                 "dashboard": "line",
                 "mobile": "line"
-            }
+            },
+            "initialValue": 0
         },
         {
             "logicalId": "rainsensor_remaining",
@@ -274,7 +279,8 @@
             "template": {
                 "dashboard": "line",
                 "mobile": "line"
-            }
+            },
+            "initialValue": 0
         },
         {
             "logicalId": "statistics_distance",
@@ -283,6 +289,69 @@
             "subtype": "numeric",
             "unite": "m",
             "isVisible": 0,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            },
+            "initialValue": 0
+        },
+        {
+            "logicalId": "updated",
+            "name": "Dernière mise à jour",
+            "type": "info",
+            "subtype": "string",
+            "isVisible": 1,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            }
+        },
+        {
+            "logicalId": "rssi",
+            "name": "rssi",
+            "type": "info",
+            "subtype": "numeric",
+            "isVisible": 1,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            },
+            "initialValue": -90
+        },
+        {
+            "logicalId": "zone_current",
+            "name": "Zone actuelle",
+            "type": "info",
+            "subtype": "numeric",
+            "isVisible": 1,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            },
+            "initialValue": 0
+        },
+        {
+            "logicalId": "gps_latitude",
+            "name": "Latitude",
+            "type": "info",
+            "subtype": "string",
+            "isVisible": 1,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            }
+        },
+        {
+            "logicalId": "gps_longitude",
+            "name": "Longitude",
+            "type": "info",
+            "subtype": "string",
+            "isVisible": 1,
             "isHistorized": 0,
             "template": {
                 "dashboard": "line",

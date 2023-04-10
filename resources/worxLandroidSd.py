@@ -22,7 +22,6 @@ class worxLandroidS:
     def __init__(self, config: Config) -> None:
         self._config = config
         self._listen_task = None
-        self._auto_update_task = None
         self._auto_reconnect_task = None
         self._jeedom_session = None
         self._loop = None
@@ -52,19 +51,18 @@ class worxLandroidS:
         self._cloud.connect()
         self._cloud.set_callback(LandroidEvent.DATA_RECEIVED, self._on_message)
         await self._send_devices()
+        await self._update_all()
 
         self._loop = asyncio.get_event_loop()
 
         self._listen_task = asyncio.create_task(self._listen())
-        self._auto_update_task = asyncio.create_task(self._auto_update())
         self._auto_reconnect_task = asyncio.create_task(self._auto_reconnect())
-        await asyncio.gather(self._auto_reconnect_task, self._auto_update_task, self._listen_task)
+        await asyncio.gather(self._auto_reconnect_task, self._listen_task)
 
         await self._jeedom_session.close()
 
     def close(self):
         self._auto_reconnect_task.cancel()
-        self._auto_update_task.cancel()
         self._listen_task.cancel()
         self._cloud.disconnect()
 
@@ -96,22 +94,6 @@ class worxLandroidS:
             except Exception as e:
                 _LOGGER.error('Send command to daemon error: %s', e)
 
-    async def _auto_update(self):
-        try:
-            await asyncio.sleep(10)
-            for device in self._cloud.devices.values():
-                _LOGGER.debug("update device %s", vars(device))
-                self._cloud.update(device.serial_number)
-            # _LOGGER.info("Start auto update")
-            # while True:
-                # for device in self._cloud.devices.values():
-                # _LOGGER.debug("update device %s", vars(device))
-                # self._cloud.update(device.serial_number)
-                # _LOGGER.info("Next update in %ss", self._auto_update_frequency)
-                # await asyncio.sleep(600)
-        except asyncio.CancelledError:
-            _LOGGER.info("stop auto update")
-
     async def _auto_reconnect(self):
         try:
             while True:
@@ -124,6 +106,8 @@ class worxLandroidS:
                     success = self._cloud.renew_connection()
                 if not success:
                     raise Exception("Impossible to renew token, issue with cloud server")
+                else:
+                    await self._update_all()
         except asyncio.CancelledError:
             _LOGGER.info("stop auto refresh token")
 
@@ -131,6 +115,11 @@ class worxLandroidS:
         tmp = {}
         tmp["devices"] = self._cloud._mowers
         await self.__send_async(tmp)
+
+    async def _update_all(self):
+        for device in self._cloud.devices.values():
+            # _LOGGER.debug("update device %s", vars(device))
+            self._cloud.update(device.serial_number)
 
     async def _executeAction(self, message):
         action: str = message['action']

@@ -38,12 +38,6 @@ if (!isConnect()) {
 				<input class="configKey form-control" data-l1key="passwd" type="password" placeholder="{{saisir le mot de passe}}">
 			</div>
 		</div>
-		<div class="form-group">
-			<label class="col-sm-4 control-label">{{Utiliser le widget préconfiguré : }}</label>
-			<div class="col-sm-2">
-				<input id="automaticWidget" type="checkbox" class="configKey autoCheck" data-l1key="automaticWidget" />
-			</div>
-		</div>
 	</fieldset>
 </form>
 <legend>

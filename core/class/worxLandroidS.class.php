@@ -559,6 +559,11 @@ class worxLandroidS extends eqLogic {
 
         $this->checkAndUpdateCmd('error_id', $data['error']['id']);
         $this->checkAndUpdateCmd('error_description', $data['error']['description']);
+
+        if (array_key_exists('gps', $data)) {
+            $this->checkAndUpdateCmd('gps_latitude', $data['gps']['latitude']);
+            $this->checkAndUpdateCmd('gps_longitude', $data['gps']['longitude']);
+        }
     }
 
     public static function message($message) {
@@ -650,16 +655,7 @@ class worxLandroidS extends eqLogic {
         $elogic->newInfo('batteryLevel', $json2_data->dat->bt->p, 'numeric', 1, '');
         $elogic->newInfo('langue', $json2_data->cfg->lg, 'string', 0, '');
 
-        $elogic->newInfo('lastDate', $json2_data->cfg->dt, 'string', 1, '');
-        $elogic->newInfo('lastTime', $json2_data->cfg->tm, 'string', 1, '');
-
         $elogic->newInfo('firmware', $json2_data->dat->fw, 'string', 0, '');
-        $elogic->newInfo('wifiQuality', $json2_data->dat->rsi, 'numeric', 0, '');
-        $elogic->newInfo('rainDelay', $json2_data->cfg->rd, 'numeric', 1, '');
-
-        $elogic->newInfo('pitch', $json2_data->dat->dmp[0], 'numeric', 1, '');
-        $elogic->newInfo('roll', $json2_data->dat->dmp[1], 'numeric', 1, '');
-        $elogic->newInfo('direction', $json2_data->dat->dmp[2], 'numeric', 1, '');
 
         $elogic->newInfo('totalTime', $json2_data->dat->st->wt, 'numeric', 1, '');
         $elogic->newInfo('totalDistance', $json2_data->dat->st->d, 'numeric', 1, '');
@@ -1133,253 +1129,255 @@ class worxLandroidS extends eqLogic {
         }
     }
 
-    //     public function toHtml($_version = 'dashboard') {
+    public function toHtml($_version = 'dashboard') {
+        if (!$this->getConfiguration('automaticWidget', 0)) {
+            return parent::toHtml($_version);
+        }
 
-    //         $automaticWidget = config::byKey('automaticWidget', __CLASS__);
-    //         $jour            = array(
-    //             "Dimanche",
-    //             "Lundi",
-    //             "Mardi",
-    //             "Mercredi",
-    //             "Jeudi",
-    //             "Vendredi",
-    //             "Samedi"
-    //         );
-    //         $replace         = $this->preToHtml($_version);
-    //         if (!is_array($replace)) {
-    //             return $replace;
-    //         }
-    //         $version                 = jeedom::versionAlias($_version);
-    //         $replace['#worxStatus#'] = '';
-    //         $today                   = date('w');
-    //         //if ($version != 'mobile' || $this->getConfiguration('fullMobileDisplay', 0) == 1) {
-    //         $worxStatus_template     = getTemplate('core', $version, 'worxStatus', __CLASS__);
-    //         for ($i = 0; $i <= 6; $i++) {
-    //             $replaceDay                    = array();
-    //             $replaceDay['#day#']           = $jour[$i];
-    //             $replaceDay['#daynum#']           = $i;
-    //             $startTime                     = $this->getCmd(null, 'Planning_startTime_' . $i);
-    //             $cutEdge                       = $this->getCmd(null, 'Planning_cutEdge_' . $i);
-    //             $duration                      = $this->getCmd(null, 'Planning_duration_' . $i);
-    //             $replaceDay['#startTime#']     = is_object($startTime) ? $startTime->execCmd() : '';
-    //             $replaceDay['#duration#']      = is_object($duration) ? $duration->execCmd() : '';
-    //             $cmdS                          = $this->getCmd('action', 'on_' . $i);
-    //             $replaceDay['#on_daynum_id#']  = $cmdS->getId();
-    //             $cmdE                          = $this->getCmd('action', 'off_' . $i);
-    //             $replaceDay['#off_daynum_id#'] = $cmdE->getId();
+        $jour            = array(
+            "Dimanche",
+            "Lundi",
+            "Mardi",
+            "Mercredi",
+            "Jeudi",
+            "Vendredi",
+            "Samedi"
+        );
+        $replace         = $this->preToHtml($_version);
+        if (!is_array($replace)) {
+            return $replace;
+        }
+        $version                 = jeedom::versionAlias($_version);
+        $today                   = date('w');
+        //if ($version != 'mobile' || $this->getConfiguration('fullMobileDisplay', 0) == 1) {
+        $worxStatus_template     = getTemplate('core', $version, 'worxStatus', __CLASS__);
+        $replace['#daySetup#'] = '';
+        // for ($i = 0; $i <= 6; $i++) {
+        //     $replaceDay                    = array();
+        //     $replaceDay['#day#']           = $jour[$i];
+        //     $replaceDay['#daynum#']           = $i;
+        //     $startTime                     = $this->getCmd(null, 'Planning_startTime_' . $i);
+        //     $cutEdge                       = $this->getCmd(null, 'Planning_cutEdge_' . $i);
+        //     $duration                      = $this->getCmd(null, 'Planning_duration_' . $i);
+        //     $replaceDay['#startTime#']     = is_object($startTime) ? $startTime->execCmd() : '';
+        //     $replaceDay['#duration#']      = is_object($duration) ? $duration->execCmd() : '';
+        //     $cmdS                          = $this->getCmd('action', 'on_' . $i);
+        //     $replaceDay['#on_daynum_id#']  = $cmdS->getId();
+        //     $cmdE                          = $this->getCmd('action', 'off_' . $i);
+        //     $replaceDay['#off_daynum_id#'] = $cmdE->getId();
 
-    //             //$replaceDay['#on_id#'] = $this->getCmd('action', 'on_1');
-    //             //$replaceDay['#off_id#'] = $this->getCmd('action', 'off_1');
-    //             // transforme au format objet DateTime
-    //             if ($replaceDay['#duration#'] == 0) {
-    //                 $replaceDay['#checkedDaynum#'] = '';
-    //             } else {
-    //                 $replaceDay['#checkedDaynum#'] = 'checked';
-    //             }
+        //     //$replaceDay['#on_id#'] = $this->getCmd('action', 'on_1');
+        //     //$replaceDay['#off_id#'] = $this->getCmd('action', 'off_1');
+        //     // transforme au format objet DateTime
+        //     if ($replaceDay['#duration#'] == 0) {
+        //         $replaceDay['#checkedDaynum#'] = '';
+        //     } else {
+        //         $replaceDay['#checkedDaynum#'] = 'checked';
+        //     }
 
-    //             $initDate = DateTime::createFromFormat('H:i', $replaceDay['#startTime#']);
-    //             if ($initDate !== false && $replaceDay['#duration#'] != '') {
-    //                 $initDate->add(new DateInterval("PT" . $replaceDay['#duration#'] . "M"));
-    //                 $replaceDay['#endTime#'] = $initDate->format("H:i");
-    //             } else {
-    //                 $replaceDay['#endTime#'] = '00:00';
-    //             }
+        //     $initDate = DateTime::createFromFormat('H:i', $replaceDay['#startTime#']);
+        //     if ($initDate !== false && $replaceDay['#duration#'] != '') {
+        //         $initDate->add(new DateInterval("PT" . $replaceDay['#duration#'] . "M"));
+        //         $replaceDay['#endTime#'] = $initDate->format("H:i");
+        //     } else {
+        //         $replaceDay['#endTime#'] = '00:00';
+        //     }
 
-    //             $replaceDay['#cutEdge#'] = is_object($cutEdge) ? $cutEdge->execCmd() : '';
-    //             $replaceDay['#cutEdgeInfo#'] = $replaceDay['#cutEdge#'];
-    //             if ($replaceDay['#cutEdge#'] == '1') {
-    //                 $replaceDay['#cutEdgeIcon#'] = 'fa nature-grass';
-    //                 $replaceDay['#cutEdge#'] = 'Bord.';
-    //             } else {
-    //                 $replaceDay['#cutEdgeIcon#'] = 'fa fa-ban';
-    //                 $replaceDay['#cutEdge#'] = '.';
-    //             }
-
-
-    //             if ($startTime->getIsVisible()) {
-    //                 $replaceDay['#day_status_visible#'] = '';
-    //             } else {
-    //                 $replaceDay['#day_status_visible#'] = 'display:none';
-    //             }
-
-    //             //$replaceDay['#icone#'] = is_object($condition) ? self::getIconFromCondition($condition->execCmd()) : '';
-    //             //$replaceDay['#conditionid#'] = is_object($condition) ? $condition->getId() : '';
-    //             $replace['#daySetup#'] .= template_replace($replaceDay, $worxStatus_template);
-
-    //             if ($today == $i) {
-    //                 $replace['#todayStartTime#']      = is_object($startTime) ? $startTime->execCmd() : '';
-    //                 $replace['#todayDuration#']       = is_object($duration) ? $duration->execCmd() : '';
-    //                 $replace['#today_on_daynum_id#']  = $cmdS->getId();
-    //                 $replace['#today_off_daynum_id#'] = $cmdE->getId();
-    //                 if ($initDate !== false && $replaceDay['#duration#'] != '') {
-    //                     $replace['#todayEndTime#'] = $initDate->format("H:i");
-    //                 } else {
-    //                     $replace['#todayEndTime#'] = '00:00';
-    //                 }
-
-    //                 if ($replace['#cutEdge#'] == '1') {
-    //                     $replace['#cutEdge#'] = 'Bord.';
-    //                 }
-    //                 $replace['#today#'] = $jour[$i];
-    //             }
-    //         }
-    //         //}
-
-    //         $theme = jeedom::getThemeConfig();
-
-    //         if (strstr($theme['current_desktop_theme'], 'Light')) {
-    //             $replace['#theme#']  = "light";
-    //         } elseif (strstr($theme['current_desktop_theme'], 'Dark')) {
-    //             $replace['#theme#']  = "dark";
-    //         } else {
-    //             $replace['#theme#']  = "dark";
-    //             $replace['#backgroundColor#']  = "background-color:black;opacity:0.8";
-    //         } // legacy?or strstr($theme['current_desktop_theme'],'Legacy')
+        //     $replaceDay['#cutEdge#'] = is_object($cutEdge) ? $cutEdge->execCmd() : '';
+        //     $replaceDay['#cutEdgeInfo#'] = $replaceDay['#cutEdge#'];
+        //     if ($replaceDay['#cutEdge#'] == '1') {
+        //         $replaceDay['#cutEdgeIcon#'] = 'fa nature-grass';
+        //         $replaceDay['#cutEdge#'] = 'Bord.';
+        //     } else {
+        //         $replaceDay['#cutEdgeIcon#'] = 'fa fa-ban';
+        //         $replaceDay['#cutEdge#'] = '.';
+        //     }
 
 
-    //         $batteryLevelcmd = $this->getCmd(null, 'batteryLevel');
-    //         $batteryLevel = is_object($batteryLevelcmd) ? $batteryLevelcmd->execCmd() : '';
-    //         // BATTERIE
-    //         if ($batteryLevel > 90)  $replace['#batteryIMG#']  = "batterie_full.png";
-    //         else if ($batteryLevel > 75) $replace['#batteryIMG#']  = "batterie_high.png";
-    //         else if ($batteryLevel > 50) $replace['#batteryIMG#']  = 'batterie_medium.png';
-    //         else if ($batteryLevel > 25) $replace['#batteryIMG#']  = 'batterie_low.png';
-    //         else if ($batteryLevel > 5) $replace['#batteryIMG#']  = 'batterie_highlow.png';
-    //         //else  $('.cmd[data-cmd_uid=#uid#] .IMGbatterie#uid#').hide();
-    //         //$('.cmd[data-cmd_uid=#uid#] .IMGbatterie#uid#').attr('title','Charge : '+batterie+' %');
+        //     if ($startTime->getIsVisible()) {
+        //         $replaceDay['#day_status_visible#'] = '';
+        //     } else {
+        //         $replaceDay['#day_status_visible#'] = 'display:none';
+        //     }
 
-    //         // WIFI
-    //         $wifiQualitycmd = $this->getCmd(null, 'wifiQuality');
-    //         $wifiQuality = is_object($wifiQualitycmd) ? $wifiQualitycmd->execCmd() : '';
-    //         if ($wifiQuality < 30) $replace['#wifiIMG#']  = 'wifi_high.png';
-    //         else if ($wifiQuality <= 80) $replace['#wifiIMG#']  = 'wifi_medium.png';
-    //         else if ($wifiQuality > 80) $replace['#wifiIMG#']  = 'wifi_low.png';
-    //         //else  $('.cmd[data-cmd_uid=#uid#] .IMGwifi#uid#').hide();
-    //         //$('.cmd[data-cmd_uid=#uid#] .IMGwifi#uid#').attr('title','Signal : '+wifi+' db');
+        //     //$replaceDay['#icone#'] = is_object($condition) ? self::getIconFromCondition($condition->execCmd()) : '';
+        //     //$replaceDay['#conditionid#'] = is_object($condition) ? $condition->getId() : '';
+        //     $replace['#daySetup#'] .= template_replace($replaceDay, $worxStatus_template);
 
-    //         $cmdRainDelay = $this->getCmd(null, 'setRainDelay');
-    //         $replace['#setRainDelay#'] =  $cmdRainDelay->toHtml($_version, '', $replace['#cmd-background-color#']);
+        //     if ($today == $i) {
+        //         $replace['#todayStartTime#']      = is_object($startTime) ? $startTime->execCmd() : '';
+        //         $replace['#todayDuration#']       = is_object($duration) ? $duration->execCmd() : '';
+        //         $replace['#today_on_daynum_id#']  = $cmdS->getId();
+        //         $replace['#today_off_daynum_id#'] = $cmdE->getId();
+        //         if ($initDate !== false && $replaceDay['#duration#'] != '') {
+        //             $replace['#todayEndTime#'] = $initDate->format("H:i");
+        //         } else {
+        //             $replace['#todayEndTime#'] = '00:00';
+        //         }
 
-    //         // calcul durée depuis dernier changement de lame
-    //         $cmdLast = $this->getCmd(null, 'lastBladesChangeTime');
-    //         $cmdTotal = $this->getCmd(null, 'totalBladeTime');
-    //         $replace['#bladesDuration#'] = round(((is_object($cmdTotal) ? $cmdTotal->execCmd() : 0)
-    //             - (is_object($cmdLast) ? $cmdLast->execCmd() : 0)) / 60);
+        //         if ($replace['#cutEdge#'] == '1') {
+        //             $replace['#cutEdge#'] = 'Bord.';
+        //         }
+        //         $replace['#today#'] = $jour[$i];
+        //     }
+        // }
+        //}
 
-    //         $replace['#bladesDurationColor#'] = 'green';
-    //         if ($replace['#bladesDuration#'] > $this->getConfiguration('maxBladesDuration')) {
-    //             $replace['#bladesDurationColor#'] = 'orange';
-    //         }
+        $theme = jeedom::getThemeConfig();
 
+        if (strstr($theme['current_desktop_theme'], 'Light')) {
+            $replace['#theme#']  = "light";
+        } elseif (strstr($theme['current_desktop_theme'], 'Dark')) {
+            $replace['#theme#']  = "dark";
+        } else {
+            $replace['#theme#']  = "dark";
+            $replace['#backgroundColor#']  = "background-color:black;opacity:0.8";
+        } // legacy?or strstr($theme['current_desktop_theme'],'Legacy')
 
-    //         $errorCode               = $this->getCmd(null, 'errorCode');
-    //         $replace['#errorCode#']  = is_object($errorCode) ? $errorCode->execCmd() : '';
-    //         $replace['#errorColor#'] = 'darkgreen';
-    //         if ($replace['#errorCode#'] != 0) {
-    //             $replace['#errorColor#'] = 'orange';
-    //         }
-    //         switch ($replace['#errorCode#']) {
-    //                 // affichage icone pluie
-    //             case '0':
-    //                 $replace['#errorIcon#'] = 'jeedomapp-sun';
-    //                 break;
-    //             case '1':
-    //                 $replace['#errorIcon#'] = 'fas fa-exclamation-circle icon_red';
-    //                 break;
-    //             case '2':
-    //                 $replace['#errorIcon#'] = 'fas fa-arrow-up';
-    //                 break;
-    //             case '4':
-    //                 $replace['#errorIcon#'] = 'fas nature-wood6';
-    //                 break;
-    //             case '5':
-    //                 $replace['#errorIcon#'] = 'meteo-pluie';
-    //                 break;
-    //             case '8':
-    //                 $replace['#errorIcon#'] = 'jeedom-ventilo';
-    //                 break;
-    //             case '9':
-    //                 $replace['#errorIcon#'] = 'fas fa-ban';
-    //                 break;
-    //             case '12':
-    //                 $replace['#errorIcon#'] = 'jeedom-batterie0';
-    //                 break;
+        $cmd_html = '';
+        foreach ($this->getCmd('info') as $cmd) {
+            $replace['#' . $cmd->getLogicalId() . '_history#'] = '';
+            $replace['#' . $cmd->getLogicalId() . '_id#']      = $cmd->getId();
+            $replace['#' . $cmd->getLogicalId() . '#']         = $cmd->execCmd();
+            $replace['#' . $cmd->getLogicalId() . '_collect#'] = $cmd->getCollectDate();
+            if ($cmd->getLogicalId() == 'encours') {
+                $replace['#batteryLevel#'] = $cmd->getDisplay('icon');
+            }
 
-    //             default:
-    //                 $replace['#errorIcon#'] = 'fas fa-exclamation-circle icon_red';
-    //                 break;
-    //         }
-    //         $replace['#errorID#']          = is_object($errorCode) ? $errorCode->getId() : '';
-    //         $errorDescription              = $this->getCmd(null, 'errorDescription');
-    //         $replace['#errorDescription#'] = is_object($errorDescription) ? $errorDescription->execCmd() : '';
-
-    //         $cmd_html = '';
-    //         foreach ($this->getCmd('info') as $cmd) {
-    //             $replace['#' . $cmd->getLogicalId() . '_history#'] = '';
-    //             $replace['#' . $cmd->getLogicalId() . '_id#']      = $cmd->getId();
-    //             $replace['#' . $cmd->getLogicalId() . '#']         = $cmd->execCmd();
-    //             $replace['#' . $cmd->getLogicalId() . '_collect#'] = $cmd->getCollectDate();
-    //             if ($cmd->getLogicalId() == 'encours') {
-    //                 $replace['#batteryLevel#'] = $cmd->getDisplay('icon');
-    //             }
-
-    //             if ($cmd->getIsVisible()) {
-    //                 $replace['#' . $cmd->getLogicalId() . '_visible#'] = '';
-    //             } else {
-    //                 $replace['#' . $cmd->getLogicalId() . '_visible#'] = 'display:none';
-    //             }
+            if ($cmd->getIsVisible()) {
+                $replace['#' . $cmd->getLogicalId() . '_visible#'] = '';
+            } else {
+                $replace['#' . $cmd->getLogicalId() . '_visible#'] = 'display:none';
+            }
 
 
-    //             if ($automaticWidget != true or $cmd->getLogicalId() == 'virtualInfo') {
-    //                 if ($cmd->getTemplate('dashboard', '') == '') {
-    //                     $cmd->setTemplate('dashboard', 'badge');
-    //                 }
-    //                 if (substr_compare($cmd->getName(), 'Planning', 0, 8) != 0) {
-    //                     $cmd_html .= $cmd->toHtml($_version, '', $replace['#cmd-background-color#']);
-    //                 }
-    //             }
-    //             if ($cmd->getIsHistorized() == 1) {
-    //                 $replace['#' . $cmd->getLogicalId() . '_history#'] = 'history cursor';
-    //             }
-    //         }
-    //         $cmdaction_html = '';
-    //         foreach ($this->getCmd('action') as $cmd) {
-    //             if ($cmd->getIsVisible()) {
-    //                 $replace['#' . $cmd->getLogicalId() . '_visible#'] = '';
-    //             } else {
-    //                 $replace['#' . $cmd->getLogicalId() . '_visible#'] = 'display:none';
-    //             }
+            if ($cmd->getLogicalId() == 'virtualInfo') {
+                if ($cmd->getTemplate('dashboard', '') == '') {
+                    $cmd->setTemplate('dashboard', 'badge');
+                }
+                if (substr_compare($cmd->getName(), 'Planning', 0, 8) != 0) {
+                    $cmd_html .= $cmd->toHtml($_version, '', $replace['#cmd-background-color#']);
+                }
+            }
+            if ($cmd->getIsHistorized() == 1) {
+                $replace['#' . $cmd->getLogicalId() . '_history#'] = 'history cursor';
+            }
+        }
+        $cmdaction_html = '';
+        foreach ($this->getCmd('action') as $cmd) {
+            if ($cmd->getIsVisible()) {
+                $replace['#' . $cmd->getLogicalId() . '_visible#'] = '';
+            } else {
+                $replace['#' . $cmd->getLogicalId() . '_visible#'] = 'display:none';
+            }
 
-    //             $replace['#' . $cmd->getLogicalId() . '_id#'] = $cmd->getId();
-    //             $replace['#cmdaction#'] = '';
-    //             if ($cmd->getIsVisible() and ($cmd->getLogicalId() == 'set_schedule')) {
+            $replace['#' . $cmd->getLogicalId() . '_id#'] = $cmd->getId();
+            $replace['#cmdaction#'] = '';
+            if ($cmd->getIsVisible() and ($cmd->getLogicalId() == 'set_schedule')) {
 
-    //                 $cmdaction_html .= $cmd->toHtml($_version, '', $replace['#cmd-background-color#']);
-    //                 $replace['#cmdaction#'] = $cmdaction_html;
-    //             }
-    //         }
-    //         $code = $replace['#statusCode#'];
-    //         if ($code <  5 or $code ==  10 or $code == 9 or $code == 34) {
-    //             $replace['#moving#'] = 'display:none';
-    //         }
+                $cmdaction_html .= $cmd->toHtml($_version, '', $replace['#cmd-background-color#']);
+                $replace['#cmdaction#'] = $cmdaction_html;
+            }
+        }
 
-    //         // nouveau template
-    //         $replaceImg['#worxImg#'] = '';
-    //         $replaceImg['#theme#'] = $replace['#theme#'];
-    //         $worxImg_template     = getTemplate('core', $version, strval($code), __CLASS__);
-    //         $replace['#worxImg#'] .= template_replace($replaceImg, $worxImg_template);
-    //         // fin nouveau template
-    //         if ($cmd->getLogicalId() == 'virtualInfo') {
-    //             $replace['#widget#'] = $cmd_html; // FIXME $cmd_html assigned to #widget# & #cmd# ?
-    //         }
-    //         $replace['#cmd#'] = $cmd_html; // FIXME $cmd_html assigned to #widget# & #cmd# ?
+        $batteryLevelcmd = $this->getCmd(null, 'battery_percent');
+        $batteryLevel = is_object($batteryLevelcmd) ? $batteryLevelcmd->execCmd() : '';
+        // BATTERIE
+        if ($batteryLevel > 90)  $replace['#batteryIMG#']  = "batterie_full.png";
+        else if ($batteryLevel > 75) $replace['#batteryIMG#']  = "batterie_high.png";
+        else if ($batteryLevel > 50) $replace['#batteryIMG#']  = 'batterie_medium.png';
+        else if ($batteryLevel > 25) $replace['#batteryIMG#']  = 'batterie_low.png';
+        else if ($batteryLevel > 5) $replace['#batteryIMG#']  = 'batterie_highlow.png';
+        //else  $('.cmd[data-cmd_uid=#uid#] .IMGbatterie#uid#').hide();
+        //$('.cmd[data-cmd_uid=#uid#] .IMGbatterie#uid#').attr('title','Charge : '+batterie+' %');
 
-    //         if ($automaticWidget == true) {
-    //             return $this->postToHtml($_version, template_replace($replace, getTemplate('core', $version, 'worxMain', __CLASS__)));
-    //         } else {
-    //             return $this->postToHtml($_version, template_replace($replace, getTemplate('core', $version, 'worxMainOwn', __CLASS__)));
-    //         }
-    //     }
+        // WIFI
+        $wifiQuality = $this->getCmdInfoValue('rssi', 0);
+        log::add(__CLASS__, 'debug', "wifiQuality: {$wifiQuality}");
+        if ($wifiQuality <= -90) $replace['#wifiIconClass#']  = 'jeedom2-fdp1-signal0';
+        elseif ($wifiQuality <= -80) $replace['#wifiIconClass#']  = 'jeedom2-fdp1-signal1';
+        elseif ($wifiQuality <= -70) $replace['#wifiIconClass#']  = 'jeedom2-fdp1-signal2';
+        elseif ($wifiQuality <= -67) $replace['#wifiIconClass#']  = 'jeedom2-fdp1-signal3';
+        elseif ($wifiQuality <= -50) $replace['#wifiIconClass#']  = 'jeedom2-fdp1-signal4';
+        else $replace['#wifiIconClass#']  = 'jeedom2-fdp1-signal5';
+        //else  $('.cmd[data-cmd_uid=#uid#] .IMGwifi#uid#').hide();
+        //$('.cmd[data-cmd_uid=#uid#] .IMGwifi#uid#').attr('title','Signal : '+wifi+' db');
+
+        $cmdRainDelay = $this->getCmd(null, 'setRainDelay');
+        $replace['#setRainDelay#'] =  $cmdRainDelay->toHtml($_version, '', $replace['#cmd-background-color#']);
+
+        // calcul durée depuis dernier changement de lame
+        // $cmdLast = $this->getCmd(null, 'lastBladesChangeTime');
+        $replace['#blades_current_on#'] = round($this->getCmdInfoValue('blades_current_on', 0) / 60);
+
+        $replace['#bladesDurationColor#'] = 'green';
+        if ($replace['#blades_current_on#'] > $this->getConfiguration('maxBladesDuration')) {
+            $replace['#bladesDurationColor#'] = 'orange';
+        }
+
+        $errorCode = $this->getCmd(null, 'error_id');
+        $replace['#error_id#']  = is_object($errorCode) ? $errorCode->execCmd() : '';
+        $replace['#errorColor#'] = 'darkgreen';
+        if ($replace['#error_id#'] != 0) {
+            $replace['#errorColor#'] = 'orange';
+        }
+        switch ($replace['#error_id#']) {
+                // affichage icone pluie
+            case '0':
+                $replace['#errorIcon#'] = 'jeedomapp-sun';
+                break;
+            case '1':
+                $replace['#errorIcon#'] = 'fas fa-exclamation-circle icon_red';
+                break;
+            case '2':
+                $replace['#errorIcon#'] = 'fas fa-arrow-up';
+                break;
+            case '4':
+                $replace['#errorIcon#'] = 'fas nature-wood6';
+                break;
+            case '5':
+                $replace['#errorIcon#'] = 'meteo-pluie';
+                break;
+            case '8':
+                $replace['#errorIcon#'] = 'jeedom-ventilo';
+                break;
+            case '9':
+                $replace['#errorIcon#'] = 'fas fa-ban';
+                break;
+            case '12':
+                $replace['#errorIcon#'] = 'jeedom-batterie0';
+                break;
+
+            default:
+                $replace['#errorIcon#'] = 'fas fa-exclamation-circle icon_red';
+                break;
+        }
+        $replace['#errorID#']          = is_object($errorCode) ? $errorCode->getId() : '';
+        $errorDescription              = $this->getCmd(null, 'errorDescription');
+        $replace['#errorDescription#'] = is_object($errorDescription) ? $errorDescription->execCmd() : '';
+
+        $code = $replace['#status_id#'];
+        if ($code <  5 or $code ==  10 or $code == 9 or $code == 34) {
+            $replace['#moving#'] = 'display:none';
+        }
+
+        // nouveau template
+        $replaceImg['#worxImg#'] = '';
+        $replaceImg['#theme#'] = $replace['#theme#'];
+        $worxImg_template     = getTemplate('core', $version, strval($code), __CLASS__);
+        $replace['#worxImg#'] .= template_replace($replaceImg, $worxImg_template);
+        // fin nouveau template
+        if ($cmd->getLogicalId() == 'virtualInfo') {
+            $replace['#widget#'] = $cmd_html; // FIXME $cmd_html assigned to #widget# & #cmd# ?
+        }
+        $replace['#cmd#'] = $cmd_html; // FIXME $cmd_html assigned to #widget# & #cmd# ?
+
+        // if ($automaticWidget == true) {
+        return $this->postToHtml($_version, template_replace($replace, getTemplate('core', $version, 'worxMain', __CLASS__)));
+        // } else {
+        //     return $this->postToHtml($_version, template_replace($replace, getTemplate('core', $version, 'worxMainOwn', __CLASS__)));
+        // }
+    }
 }
 
 class worxLandroidSCmd extends cmd {

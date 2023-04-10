@@ -136,6 +136,12 @@ $eqLogics = eqLogic::byType($plugin->getId());
 
                             <legend><i class="fas fa-cogs"></i> {{Paramètres spécifiques}}</legend>
                             <div class="form-group">
+                                <label class="col-sm-4 control-label">{{Utiliser le widget préconfiguré}}</label>
+                                <div class="col-sm-2">
+                                    <input type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="automaticWidget" />
+                                </div>
+                            </div>
+                            <div class="form-group">
                                 <label class="col-sm-4 control-label"> {{Durée de vie estimée des lames (Hr)}}</label>
                                 <div class="col-sm-3">
                                     <input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="maxBladesDuration" />
