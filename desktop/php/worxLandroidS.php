@@ -229,14 +229,14 @@ $eqLogics = eqLogic::byType($plugin->getId());
                     <fieldset>
                         <div class="form-actions">
                             <?php
-                            $userMessage = $eqLogic->getCmd('action', 'userMessage');
-                            $refrCmd = $eqLogic->getCmd('action', 'refreshValue');
-                            if (is_object($userMessage) && is_object($refrCmd)) {
-                                $userMessageId = $userMessage->getId();
-                                $refrCmdId = $refrCmd->getId();
-                                echo '<a class="btn btn-success eqLogicAction cmdAction pull-left" data-action="save" onclick="updatePlanning(' . $userMessageId . ',' . $refrCmdId . ');">';
-                                echo '<i class="fa fa-check-circle"></i> {{Enregistrer horaires}}</a><div>{{la tondeuse doit être connectée}}</div>';
-                            }
+                            // $userMessage = $eqLogic->getCmd('action', 'userMessage');
+                            // $refrCmd = $eqLogic->getCmd('action', 'refreshValue');
+                            // if (is_object($userMessage) && is_object($refrCmd)) {
+                            //     $userMessageId = $userMessage->getId();
+                            //     $refrCmdId = $refrCmd->getId();
+                            //     echo '<a class="btn btn-success eqLogicAction cmdAction pull-left" data-action="save" onclick="updatePlanning(' . $userMessageId . ',' . $refrCmdId . ');">';
+                            //     echo '<i class="fa fa-check-circle"></i> {{Enregistrer horaires}}</a><div>{{la tondeuse doit être connectée}}</div>';
+                            // }
                             ?>
                         </div>
                     </fieldset>
@@ -254,42 +254,42 @@ $eqLogics = eqLogic::byType($plugin->getId());
                     </thead>
                     <tbody>
                         <?php
-                        $planningCmd         = $eqLogic->getCmd(null, 'completePlanning');
-                        if (is_object($planningCmd)) {
-                            $planningCurrent     = $planningCmd->execCmd();
+                        // $planningCmd         = $eqLogic->getCmd(null, 'completePlanning');
+                        // if (is_object($planningCmd)) {
+                        //     $planningCurrent     = $planningCmd->execCmd();
 
-                            $planning = explode('|', $planningCurrent);
-                            $jour            = array(
-                                "Dimanche",
-                                "Lundi",
-                                "Mardi",
-                                "Mercredi",
-                                "Jeudi",
-                                "Vendredi",
-                                "Samedi"
-                            );
-                            echo '<fieldset>';
-                            $count = 0;
+                        //     $planning = explode('|', $planningCurrent);
+                        //     $jour            = array(
+                        //         "Dimanche",
+                        //         "Lundi",
+                        //         "Mardi",
+                        //         "Mercredi",
+                        //         "Jeudi",
+                        //         "Vendredi",
+                        //         "Samedi"
+                        //     );
+                        //     echo '<fieldset>';
+                        //     $count = 0;
 
-                            foreach ($planning as $value) {
-                                if ($count == 7) break;
-                                echo '<tr><td>' . $jour[$count] . '</td>';
-                                $detail = explode(',', $value);
-                                $countDist = 0;
-                                $checked = $detail[2] == 1 ? 'checked' : '';
-                                echo '<td><input id="startTime' . $count . '" class="form-control" type="time" value="' . $detail[0] . '"></td>';
-                                echo '<td><input id="duration' . $count . '" class="form-control" type="number" value="' . $detail[1] . '"></td>';
-                                echo '<td><input id="edge' . $count . '" class="form-control" type="checkbox" ' . $checked . '></td>';
+                        //     foreach ($planning as $value) {
+                        //         if ($count == 7) break;
+                        //         echo '<tr><td>' . $jour[$count] . '</td>';
+                        //         $detail = explode(',', $value);
+                        //         $countDist = 0;
+                        //         $checked = $detail[2] == 1 ? 'checked' : '';
+                        //         echo '<td><input id="startTime' . $count . '" class="form-control" type="time" value="' . $detail[0] . '"></td>';
+                        //         echo '<td><input id="duration' . $count . '" class="form-control" type="number" value="' . $detail[1] . '"></td>';
+                        //         echo '<td><input id="edge' . $count . '" class="form-control" type="checkbox" ' . $checked . '></td>';
 
-                                //echo '<td>'.$detail[1].'</td><td>'.$detail[2].'</td>';
-                                //echo '<tr><td><input id="area'.$count.'" class="form-control" type="number" name="distance" min="0" max="999" STYLE="margin:1px;" value="'.$area.'" required></td>';
+                        //         //echo '<td>'.$detail[1].'</td><td>'.$detail[2].'</td>';
+                        //         //echo '<tr><td><input id="area'.$count.'" class="form-control" type="number" name="distance" min="0" max="999" STYLE="margin:1px;" value="'.$area.'" required></td>';
 
-                                echo '</tr>';
+                        //         echo '</tr>';
 
-                                $count += 1;
-                            }
-                            echo '</fieldset>';
-                        }
+                        //         $count += 1;
+                        //     }
+                        //     echo '</fieldset>';
+                        // }
                         ?>
                     </tbody>
                 </table>
@@ -301,14 +301,14 @@ $eqLogics = eqLogic::byType($plugin->getId());
                     <fieldset>
                         <div class="form-actions">
                             <?php
-                            $userMessage = $eqLogic->getCmd('action', 'userMessage');
-                            $refrCmd = $eqLogic->getCmd('action', 'refreshValue');
-                            if (is_object($userMessage) && is_object($refrCmd)) {
-                                $userMessageId = $userMessage->getId();
-                                $refrCmdId = $refrCmd->getId();
-                                echo '<a class="btn btn-success eqLogicAction cmdAction pull-left" data-action="save" onclick="updateAreas(' . $userMessageId . ',' . $refrCmdId . ');">';
-                                echo '<i class="fa fa-check-circle"></i> {{Enregistrer zones}}</a><div>{{la tondeuse doit être connectée}}</div>';
-                            }
+                            // $userMessage = $eqLogic->getCmd('action', 'userMessage');
+                            // $refrCmd = $eqLogic->getCmd('action', 'refreshValue');
+                            // if (is_object($userMessage) && is_object($refrCmd)) {
+                            //     $userMessageId = $userMessage->getId();
+                            //     $refrCmdId = $refrCmd->getId();
+                            //     echo '<a class="btn btn-success eqLogicAction cmdAction pull-left" data-action="save" onclick="updateAreas(' . $userMessageId . ',' . $refrCmdId . ');">';
+                            //     echo '<i class="fa fa-check-circle"></i> {{Enregistrer zones}}</a><div>{{la tondeuse doit être connectée}}</div>';
+                            // }
                             ?>
                         </div>
                     </fieldset>
@@ -333,32 +333,32 @@ $eqLogics = eqLogic::byType($plugin->getId());
                     </thead>
                     <tbody>
                         <?php
-                        $areaListCmd         = $eqLogic->getCmd(null, 'areaList');
-                        $areaListDistCmd     = $eqLogic->getCmd(null, 'areaListDist');
-                        if (is_object($areaListCmd) && is_object($areaListDistCmd)) {
-                            $areaListCurrent     = $areaListCmd->execCmd();
-                            $areaListDistCurrent = $areaListDistCmd->execCmd();
-                            $areaList = explode('|', $areaListCurrent);
-                            $areaListDist = explode('|', $areaListDistCurrent);
-                            echo '<fieldset>';
-                            $count = 0;
-                            foreach ($areaList as $area) {
+                        // $areaListCmd         = $eqLogic->getCmd(null, 'areaList');
+                        // $areaListDistCmd     = $eqLogic->getCmd(null, 'areaListDist');
+                        // if (is_object($areaListCmd) && is_object($areaListDistCmd)) {
+                        //     $areaListCurrent     = $areaListCmd->execCmd();
+                        //     $areaListDistCurrent = $areaListDistCmd->execCmd();
+                        //     $areaList = explode('|', $areaListCurrent);
+                        //     $areaListDist = explode('|', $areaListDistCurrent);
+                        //     echo '<fieldset>';
+                        //     $count = 0;
+                        //     foreach ($areaList as $area) {
 
-                                echo '<tr><td><input id="area' . $count . '" class="form-control" type="number" name="distance" min="0" max="999" STYLE="margin:1px;" value="' . $area . '" required></td>';
+                        //         echo '<tr><td><input id="area' . $count . '" class="form-control" type="number" name="distance" min="0" max="999" STYLE="margin:1px;" value="' . $area . '" required></td>';
 
-                                $countDist = 0;
-                                foreach ($areaListDist as $dist) {
-                                    $checked = $dist == $count ? 'checked' : '';
-                                    echo '<td><input id="dist' . $count . $countDist . '" type="radio"  name="areaDist' . $countDist . '" STYLE="margin:1px;"' .
-                                        ' value="distVal' . $count . $countDist . '" ' . $checked . ' >'
-                                        . '</td>';
-                                    $countDist += 1;
-                                }
-                                echo '</tr>';
-                                echo '</fieldset>';
-                                $count += 1;
-                            }
-                        }
+                        //         $countDist = 0;
+                        //         foreach ($areaListDist as $dist) {
+                        //             $checked = $dist == $count ? 'checked' : '';
+                        //             echo '<td><input id="dist' . $count . $countDist . '" type="radio"  name="areaDist' . $countDist . '" STYLE="margin:1px;"' .
+                        //                 ' value="distVal' . $count . $countDist . '" ' . $checked . ' >'
+                        //                 . '</td>';
+                        //             $countDist += 1;
+                        //         }
+                        //         echo '</tr>';
+                        //         echo '</fieldset>';
+                        //         $count += 1;
+                        //     }
+                        // }
                         ?>
                     </tbody>
                 </table>
