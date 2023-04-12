@@ -1,23 +1,11 @@
 {
-    "info": [
+    "common": [
         {
             "logicalId": "online",
             "name": "En ligne",
             "type": "info",
             "subtype": "binary",
             "isVisible": 1,
-            "isHistorized": 0,
-            "template": {
-                "dashboard": "line",
-                "mobile": "line"
-            }
-        },
-        {
-            "logicalId": "locked",
-            "name": "Verrouillée",
-            "type": "info",
-            "subtype": "binary",
-            "isVisible": 0,
             "isHistorized": 0,
             "template": {
                 "dashboard": "line",
@@ -37,11 +25,23 @@
             }
         },
         {
-            "logicalId": "partymode_enabled",
-            "name": "Mode festif",
+            "logicalId": "gps_latitude",
+            "name": "Latitude",
             "type": "info",
-            "subtype": "binary",
-            "isVisible": 0,
+            "subtype": "string",
+            "isVisible": 1,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            }
+        },
+        {
+            "logicalId": "gps_longitude",
+            "name": "Longitude",
+            "type": "info",
+            "subtype": "string",
+            "isVisible": 1,
             "isHistorized": 0,
             "template": {
                 "dashboard": "line",
@@ -322,45 +322,6 @@
             "initialValue": -90
         },
         {
-            "logicalId": "zone_current",
-            "name": "Zone actuelle",
-            "type": "info",
-            "subtype": "numeric",
-            "isVisible": 1,
-            "isHistorized": 0,
-            "template": {
-                "dashboard": "line",
-                "mobile": "line"
-            },
-            "initialValue": 0
-        },
-        {
-            "logicalId": "gps_latitude",
-            "name": "Latitude",
-            "type": "info",
-            "subtype": "string",
-            "isVisible": 1,
-            "isHistorized": 0,
-            "template": {
-                "dashboard": "line",
-                "mobile": "line"
-            }
-        },
-        {
-            "logicalId": "gps_longitude",
-            "name": "Longitude",
-            "type": "info",
-            "subtype": "string",
-            "isVisible": 1,
-            "isHistorized": 0,
-            "template": {
-                "dashboard": "line",
-                "mobile": "line"
-            }
-        }
-    ],
-    "common": [
-        {
             "logicalId": "refresh",
             "name": "Rafraichir",
             "type": "action",
@@ -434,6 +395,18 @@
             "value": "rainsensor_delay"
         },
         {
+            "logicalId": "locked",
+            "name": "Verrouillée",
+            "type": "info",
+            "subtype": "binary",
+            "isVisible": 1,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            }
+        },
+        {
             "logicalId": "lock",
             "name": "Verrouiller",
             "type": "action",
@@ -454,29 +427,9 @@
                 "action": "set_lock"
             },
             "value": "locked"
-        },
-        {
-            "logicalId": "setpartymode",
-            "name": "Activer mode festif",
-            "type": "action",
-            "subtype": "other",
-            "isVisible": 1,
-            "configuration": {
-                "action": "set_partymode"
-            },
-            "value": "partymode_enabled"
-        },
-        {
-            "logicalId": "unsetpartymode",
-            "name": "Désactiver mode festif",
-            "type": "action",
-            "subtype": "other",
-            "isVisible": 1,
-            "configuration": {
-                "action": "set_partymode"
-            },
-            "value": "partymode_enabled"
-        },
+        }
+    ],
+    "ots": [
         {
             "logicalId": "cutedge",
             "name": "Routine de bord",
@@ -500,6 +453,123 @@
                 "title_disable": 1,
                 "message_placeholder": "Durée (minute)"
             }
+        }
+    ],
+    "partymode": [
+        {
+            "logicalId": "partymode_enabled",
+            "name": "Mode festif",
+            "type": "info",
+            "subtype": "binary",
+            "isVisible": 0,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            }
+        },
+        {
+            "logicalId": "setpartymode",
+            "name": "Activer mode festif",
+            "type": "action",
+            "subtype": "other",
+            "isVisible": 1,
+            "configuration": {
+                "action": "set_partymode"
+            },
+            "template": {
+                "dashboard": "core::binarySwitch",
+                "mobile": "core::binarySwitch"
+            },
+            "value": "partymode_enabled"
+        },
+        {
+            "logicalId": "unsetpartymode",
+            "name": "Désactiver mode festif",
+            "type": "action",
+            "subtype": "other",
+            "isVisible": 1,
+            "configuration": {
+                "action": "set_partymode"
+            },
+            "template": {
+                "dashboard": "core::binarySwitch",
+                "mobile": "core::binarySwitch"
+            },
+            "value": "partymode_enabled"
+        }
+    ],
+    "schedules": [
+        {
+            "logicalId": "schedules_daily_progress",
+            "name": "Programme journalier",
+            "type": "info",
+            "subtype": "numeric",
+            "unite": "%",
+            "isVisible": 1,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            }
+        },
+        {
+            "logicalId": "schedules_active",
+            "name": "Planification active",
+            "type": "info",
+            "subtype": "binary",
+            "isVisible": 0,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            },
+            "initialValue": 0
+        },
+        {
+            "logicalId": "activateschedules",
+            "name": "Activer la planification",
+            "type": "action",
+            "subtype": "other",
+            "isVisible": 1,
+            "configuration": {
+                "action": "toggle_schedule"
+            },
+            "template": {
+                "dashboard": "core::binarySwitch",
+                "mobile": "core::binarySwitch"
+            },
+            "value": "schedules_active"
+        },
+        {
+            "logicalId": "deactivateschedules",
+            "name": "Désactiver la planification",
+            "type": "action",
+            "subtype": "other",
+            "isVisible": 1,
+            "configuration": {
+                "action": "toggle_schedule"
+            },
+            "template": {
+                "dashboard": "core::binarySwitch",
+                "mobile": "core::binarySwitch"
+            },
+            "value": "schedules_active"
+        }
+    ],
+    "zone": [
+        {
+            "logicalId": "zone_current",
+            "name": "Zone actuelle",
+            "type": "info",
+            "subtype": "numeric",
+            "isVisible": 1,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            },
+            "initialValue": 0
         }
     ]
 }

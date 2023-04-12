@@ -102,15 +102,6 @@ class worxLandroidS extends eqLogic {
                 log::add('worxLandroidS', 'debug', 'already connected');
             }
         }
-
-        if (!empty($eqptlist[0])) {
-
-            $mosqId = config::byKey('mqtt_client_id', 'worxLandroidS') . substr(md5(rand()), 0, 8);
-            $client = new Mosquitto\Client($mosqId, true);
-            self::connect_and_publish($eqptlist, $client, '{}');
-        } else {
-            log::add('worxLandroidS', 'debug', 'no eqLogic');
-        }
     }
 
     // public static function daemon() {
@@ -391,7 +382,10 @@ class worxLandroidS extends eqLogic {
 
     public function createCommands() {
         $this->createCommandsFromConfigFile(__DIR__ . '/../config/commands.json', 'common');
-        $this->createCommandsFromConfigFile(__DIR__ . '/../config/commands.json', 'info');
+        $this->createCommandsFromConfigFile(__DIR__ . '/../config/commands.json', 'ots');
+        $this->createCommandsFromConfigFile(__DIR__ . '/../config/commands.json', 'partymode');
+        $this->createCommandsFromConfigFile(__DIR__ . '/../config/commands.json', 'schedules');
+        $this->createCommandsFromConfigFile(__DIR__ . '/../config/commands.json', 'zone');
     }
 
     public function postInsert() {
@@ -464,27 +458,7 @@ class worxLandroidS extends eqLogic {
 
     public static function connect_and_publish($eqptlist, $client, $msg) {
 
-        $RESOURCE_PATH = realpath(dirname(__FILE__) . '/../../resources/');
-        $CERTFILE      = $RESOURCE_PATH . '/cert.pem';
-        $PKEYFILE      = $RESOURCE_PATH . '/pkey.pem';
-        $ROOT_CA       = $RESOURCE_PATH . '/vs-ca.pem';
-
-        self::$_client = $client;
-        self::$_client->clearWill();
-        self::$_client->onConnect('worxLandroidS::connect');
-        self::$_client->onDisconnect('worxLandroidS::disconnect');
-        self::$_client->onSubscribe('worxLandroidS::subscribe');
-        self::$_client->onMessage('worxLandroidS::message');
-        self::$_client->onLog('worxLandroidS::logmq');
-        self::$_client->setTlsCertificates($ROOT_CA, $CERTFILE, $PKEYFILE, null);
-        self::$_client->setTlsOptions(Mosquitto\Client::SSL_VERIFY_NONE, "tlsv1.2", null);
         try {
-            foreach ($eqptlist as $key => $value) {
-                $topic = $value[0] . '/' . $value[1] . '/commandOut';
-                //'/'.$eqpt->getLogicalId().'/commandOut';
-                self::$_client->setWill($value[0] . "/" . $value[1] . "/commandIn", $msg, 0, 0); // !auto: Subscribe to root topic
-            }
-
             self::$_client->connect(config::byKey('mqtt_endpoint', __CLASS__), 8883, 5);
 
             foreach ($eqptlist as $key => $value) {
@@ -544,6 +518,9 @@ class worxLandroidS extends eqLogic {
         $this->checkAndUpdateCmd('rainsensor_delay', $data['rainsensor']['delay']);
         $this->checkAndUpdateCmd('rainsensor_triggered', $data['rainsensor']['triggered']);
         $this->checkAndUpdateCmd('rainsensor_remaining', $data['rainsensor']['remaining']);
+
+        $this->checkAndUpdateCmd('schedules_active', $data['schedules']['active']);
+        $this->checkAndUpdateCmd('schedules_daily_progress', $data['schedules']['daily_progress']);
 
         $this->checkAndUpdateCmd('statistics_distance', $data['statistics']['distance']);
 
@@ -978,14 +955,6 @@ class worxLandroidS extends eqLogic {
         return $schedule;
     }
 
-    public static function setSchedule($_id, $schedule) {
-        $_message = '{"sc":' . json_encode(array(
-            'd' => $schedule
-        )) . "}";
-        log::add(__CLASS__, 'debug', 'message à publier' . $_message);
-        worxLandroidS::publishMosquitto($_id, $_id->getConfiguration('MowerType') . "/" . $_id->getConfiguration('mac_address') . "/commandIn", $_message, 0);
-    }
-
     public static function setDaySchedule($_id, $daynumber, $daySchedule) {
         $schedule                     = array();
         // $elogic = self::byLogicalId($nodeid, __CLASS__);
@@ -1050,46 +1019,6 @@ class worxLandroidS extends eqLogic {
         if (substr_compare($cmd->getName(), 'rain_delay', 0, 10) == 0) {
             $_message = '{"rd":' . $_message . '}';
             log::add(__CLASS__, 'debug', 'Envoi du message rain delay: ' . $_message);
-        }
-
-        $mosqId      = config::byKey('mqtt_client_id', __CLASS__) . substr(md5(rand()), 0, 8);
-        // if ( config::byKey('mowingTime', __CLASS__) == '0' ){
-        $client      = new Mosquitto\Client($mosqId, true);
-        $eqptlist[]  = array();
-        $eqptlist[0] = array(
-            $eqlogic->getConfiguration('MowerType'),
-            $eqlogic->getLogicalId(),
-            $_message
-        );
-        self::connect_and_publish($eqptlist, $client, $_message);
-        //self::connect_and_publish($eqlogic, $client, $_message);
-
-        // send cutedger
-        if ($cmd->getName() == 'cutEdge') {
-            sleep(7);
-            $_message = '{"cmd":2}';
-            $mosqId      = config::byKey('mqtt_client_id', __CLASS__) . substr(md5(rand()), 0, 8);
-            // if ( config::byKey('mowingTime', __CLASS__) == '0' ){
-            $client2      = new Mosquitto\Client($mosqId, true);
-            $eqptlist[]  = array();
-            $eqptlist[0] = array(
-                $eqlogic->getConfiguration('MowerType'),
-                $eqlogic->getLogicalId(),
-                $_message
-            );
-            self::connect_and_publish($eqptlist, $client, $_message);
-            sleep(5);
-            $_message = '{"cmd":3}';
-            $mosqId      = config::byKey('mqtt_client_id', __CLASS__) . substr(md5(rand()), 0, 8);
-            // if ( config::byKey('mowingTime', __CLASS__) == '0' ){
-            $client3      = new Mosquitto\Client($mosqId, true);
-            $eqptlist[]  = array();
-            $eqptlist[0] = array(
-                $eqlogic->getConfiguration('MowerType'),
-                $eqlogic->getLogicalId(),
-                $_message
-            );
-            self::connect_and_publish($eqptlist, $client, $_message);
         }
     }
 
