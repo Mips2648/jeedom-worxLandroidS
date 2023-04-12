@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import logging
 from typing import Any
 
 from ..const import UNWANTED_ATTRIBS
@@ -20,8 +21,11 @@ from .state import States, StateType
 from .warranty import Warranty
 from .zone import Zone
 
+_LOGGER = logging.getLogger(__name__)
 
 # class DeviceHandler(LDict, Actions):
+
+
 class DeviceHandler(LDict):
     """DeviceHandler for Landroid Cloud devices."""
 
@@ -89,6 +93,8 @@ class DeviceHandler(LDict):
         if not "time_zone" in data:
             data["time_zone"] = "UTC"
 
+        _LOGGER.debug("mapinfo data: %s", data)
+
         self.battery = Battery(data)
         self.blades = Blades(data)
         self.chassis = ProductInfo(InfoType.MOWER, api, data["product_id"])
@@ -100,16 +106,12 @@ class DeviceHandler(LDict):
         self.zone = Zone()
         self.warranty = Warranty(data)
         self.firmware = Firmware(data)
-        self.schedules = Schedule()
+        self.schedules = Schedule(data)
         self.in_topic = data["mqtt_topics"]["command_in"]
         self.out_topic = data["mqtt_topics"]["command_out"]
 
         if data in ["lawn_perimeter", "lawn_size"]:
             self.lawn = Lawn(data["lawn_perimeter"], data["lawn_size"])
-
-        if data in ["auto_schedule_settings", "auto_schedule"]:
-            self.schedules["auto_schedule"]["settings"] = data["auto_schedule_settings"]
-            self.schedules["auto_schedule"]["enabled"] = data["auto_schedule"]
 
         self.name = data["name"]
         self.model = "Model info not available in API"  # f"{self.chassis.default_name}{self.chassis.meters}"

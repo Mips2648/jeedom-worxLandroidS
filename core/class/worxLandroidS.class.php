@@ -1288,10 +1288,12 @@ class worxLandroidSCmd extends cmd {
                 break;
             case 'lock':
             case 'setpartymode':
+            case 'activateschedules':
                 $params['args'] = [true];
                 break;
             case 'unlock':
             case 'unsetpartymode':
+            case 'deactivateschedules':
                 $params['args'] = [false];
                 break;
             case 'cutedge':

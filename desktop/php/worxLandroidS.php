@@ -61,6 +61,9 @@ $eqLogics = eqLogic::byType($plugin->getId());
                 echo '<br>';
                 echo '<span class="name">' . $eqLogic->getHumanName(true, true) . '</span>';
                 echo '<span class="hiddenAsCard displayTableRight hidden">';
+                echo '<span class="label label-info" title="{{Numéro de série}}">' . $eqLogic->getConfiguration('serial_number') . '</span>';
+                echo '<span class="label label-info" title="{{Adresse MAC}}">' . $eqLogic->getConfiguration('mac_address') . '</span>';
+                echo '<span class="label label-info" title="{{Version firmware}}">' . $eqLogic->getConfiguration('firmware_version') . '</span>';
                 echo ($eqLogic->getIsVisible() == 1) ? '<i class="fas fa-eye" title="{{Equipement visible}}"></i>' : '<i class="fas fa-eye-slash" title="{{Equipement non visible}}"></i>';
                 echo '</span>';
                 echo '</div>';
@@ -165,7 +168,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-3 control-label"> {{Adresse Mac}}</label>
+                                <label class="col-sm-3 control-label"> {{Adresse MAC}}</label>
                                 <div class="col-sm-3">
                                     <span class="label label-info eqLogicAttr" data-l1key="configuration" data-l2key="mac_address"></span>
                                 </div>
@@ -192,6 +195,12 @@ $eqLogics = eqLogic::byType($plugin->getId());
                                 <label class="col-sm-3 control-label"> {{Date de fin de garantie}}</label>
                                 <div class="col-sm-3">
                                     <span class="label label-info eqLogicAttr" data-l1key="configuration" data-l2key="warranty_expires_at"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label"> {{Version firmware}}</label>
+                                <div class="col-sm-3">
+                                    <span class="label label-info eqLogicAttr" data-l1key="configuration" data-l2key="firmware_version"></span>
                                 </div>
                             </div>
                         </div>
