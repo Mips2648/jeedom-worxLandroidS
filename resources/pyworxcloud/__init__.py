@@ -194,9 +194,9 @@ class WorxCloud(dict):
     def get_token_expires_in(self) -> int:
         return int(self._api.expires_in)
 
-    def update_attribute(self, device: str, attr: str, key: str, value: Any) -> None:
+    def update_attribute(self, device_name: str, attr: str, key: str, value: Any) -> None:
         """Used as callback to update value."""
-        chattr = self.devices[device]
+        chattr = self.devices[device_name]
         if not isinstance(attr, type(None)):
             for level in attr.split(";;"):
                 if hasattr(chattr, level):
@@ -292,18 +292,15 @@ class WorxCloud(dict):
         logger = self._log.getChild("MQTT_data_in")
         logger.debug("MQTT data received '%s' on topic '%s'", payload, topic)
 
-        for mower in self._mowers:
-            if mower["serial_number"] == data["cfg"]["sn"]:
-                break
+        mower = self.get_mower(data["cfg"]["sn"])
+        device = self.get_device(mower["name"])
 
-        device: DeviceHandler = self.devices[mower["name"]]
+        if device.raw_data == payload:
+            self._log.debug("Data was already present and not changed.")
+            return  # Dataset was not changed, no update needed
 
         while not device.is_decoded:
             pass  # Wait for last dataset to be handled
-
-        if device.raw_data == data:
-            self._log.debug("Data was already present and not changed.")
-            return  # Dataset was not changed, no update needed
 
         device.raw_data = payload
         self._decode_data(device)
@@ -507,7 +504,7 @@ class WorxCloud(dict):
         # )
 
         device.is_decoded = True
-        logger.debug("Data for %s was decoded", device.name)
+        logger.debug("Data for %s has been decoded", device.name)
 
     def _fetch(self) -> None:
         """Fetch base API information."""
@@ -529,6 +526,10 @@ class WorxCloud(dict):
         raise MowerNotFoundError(
             f"Mower with serialnumber {serial_number} was not found."
         )
+
+    def get_device(self, name: str) -> DeviceHandler:
+        """Get a specific device by mower name."""
+        return self.devices[name]
 
     def update(self, serial_number: str) -> None:
         """Request a state refresh."""
@@ -662,7 +663,7 @@ class WorxCloud(dict):
         """
         mower = self.get_mower(serial_number)
         if mower["online"]:
-            device = DeviceHandler(self._api, mower)
+            device = self.get_device(mower["name"])
             if device.capabilities.check(DeviceCapability.PARTY_MODE):
                 self.mqtt.publish(
                     serial_number,
@@ -687,7 +688,7 @@ class WorxCloud(dict):
         """
         mower = self.get_mower(serial_number)
         if mower["online"]:
-            device = DeviceHandler(self._api, mower)
+            device = self.get_device(mower["name"])
             if not isinstance(zone, int):
                 zone = int(zone)
 
@@ -776,7 +777,7 @@ class WorxCloud(dict):
         """
         mower = self.get_mower(serial_number)
         if mower["online"]:
-            device = DeviceHandler(self._api, mower)
+            device = self.get_device(mower["name"])
             if device.capabilities.check(DeviceCapability.ONE_TIME_SCHEDULE):
                 if not isinstance(runtime, int):
                     runtime = int(runtime)

@@ -46,6 +46,8 @@ class DeviceHandler(LDict):
         self._mower = mower
         self._tz = tz
 
+        self.__json_data = mower["last_status"]["payload"]
+
         if not isinstance(mower, type(None)) and not isinstance(api, type(None)):
             self.__mapinfo(api, mower)
 
@@ -103,7 +105,7 @@ class DeviceHandler(LDict):
         self.capabilities = Capability(data)
         self.rainsensor = Rainsensor()
         self.status = States()
-        self.zone = Zone()
+        self.zone = Zone(data)
         self.warranty = Warranty(data)
         self.firmware = Firmware(data)
         self.schedules = Schedule(data)

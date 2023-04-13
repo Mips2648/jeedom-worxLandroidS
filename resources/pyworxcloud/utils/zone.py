@@ -7,7 +7,7 @@ from .landroid_class import LDict
 class Zone(LDict):
     """Class for handling zone data."""
 
-    def __init__(self) -> dict:
+    def __init__(self, data) -> dict:
         """Initialize zone object."""
         super().__init__()
 
