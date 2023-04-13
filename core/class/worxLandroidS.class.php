@@ -1302,6 +1302,9 @@ class worxLandroidSCmd extends cmd {
             case 'onetimeschedule':
                 $params['args'] = [false, $_options['message']];
                 break;
+            case 'setzone':
+                $params['args'] = [$_options['select']];
+                break;
             default:
                 # code...
                 break;

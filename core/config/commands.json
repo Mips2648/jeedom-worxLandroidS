@@ -563,13 +563,24 @@
             "name": "Zone actuelle",
             "type": "info",
             "subtype": "numeric",
-            "isVisible": 1,
+            "isVisible": 0,
             "isHistorized": 0,
             "template": {
                 "dashboard": "line",
                 "mobile": "line"
             },
             "initialValue": 0
+        },
+        {
+            "logicalId": "setzone",
+            "name": "Zone de travail",
+            "type": "action",
+            "subtype": "select",
+            "configuration": {
+                "listValue": "0|Zone 1;1|Zone 2;2|Zone 3;3|Zone 4"
+            },
+            "isVisible": 1,
+            "value": "zone_current"
         }
     ]
 }

@@ -680,7 +680,7 @@ class WorxCloud(dict):
         """Set zone to be mowed when next mowing task is started.
 
         Args:
-            zone (str | int): Zone to mow, valid possibilities are a number from 1 to 4.
+            zone (str | int): Zone to mow, valid possibilities are a number from 0 to 3.
 
         Raises:
             OfflineError: Raised if the device is offline.
@@ -694,15 +694,17 @@ class WorxCloud(dict):
             if device.zone["starting_point"][zone] == 0:
                 raise RequestException("Cannot request this zone as it is not defined.")
 
-            current = device.zone["indicies"]
-            new_zones = current
+            # current = device.zone["indicies"]
+            # new_zones = current
 
-            while not new_zones[device.zone["index"]] == zone:
-                tmp = []
-                for i in range(1, 10):
-                    tmp.append(new_zones[i])
-                tmp.append(new_zones[0])
-                new_zones = tmp
+            # while not new_zones[device.zone["index"]] == zone:
+            #     tmp = []
+            #     for i in range(1, 10):
+            #         tmp.append(new_zones[i])
+            #     tmp.append(new_zones[0])
+            #     new_zones = tmp
+
+            new_zones = [zone] * 10
 
             self.mqtt.publish(
                 serial_number,
