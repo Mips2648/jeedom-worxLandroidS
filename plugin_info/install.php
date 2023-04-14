@@ -22,21 +22,36 @@ function worxLandroidS_install() {
 }
 
 function worxLandroidS_update() {
-    $cron = cron::byClassAndFunction('worxLandroidS', 'daemon');
+    $pluginId = 'worxLandroidS';
+    $cron = cron::byClassAndFunction($pluginId, 'daemon');
     if (is_object($cron)) {
         $cron->stop();
         $cron->remove();
     }
-    config::remove('initCloud', 'worxLandroidS');
+    config::remove('initCloud', $pluginId);
+
+    /** @var worxLandroidS */
+    foreach (eqLogic::byType($pluginId) as $eqLogic) {
+        /** @var cmd */
+        $cmd = $eqLogic->getCmd('info', 'zone_current');
+        if (is_object($cmd)) {
+            $cmd->remove();
+        }
+        $cmd = $eqLogic->getCmd('action', 'setzone');
+        if (is_object($cmd)) {
+            $cmd->remove();
+        }
+    }
 }
 
 function worxLandroidS_remove() {
-    $cron = cron::byClassAndFunction('worxLandroidS', 'daemon');
+    $pluginId = 'worxLandroidS';
+    $cron = cron::byClassAndFunction($pluginId, 'daemon');
     if (is_object($cron)) {
         $cron->stop();
         $cron->remove();
     }
-    log::add('worxLandroidS', 'info', 'Suppression extension');
+    log::add($pluginId, 'info', 'Suppression extension');
     $resource_path = realpath(dirname(__FILE__) . '/../resources');
     passthru('sudo /bin/bash ' . $resource_path . '/remove.sh ' . $resource_path . ' > ' . log::getPathToLog('worxLandroidS_dep') . ' 2>&1 &');
     return true;

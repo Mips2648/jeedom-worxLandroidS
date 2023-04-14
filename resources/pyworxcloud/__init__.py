@@ -677,7 +677,7 @@ class WorxCloud(dict):
         elif not mower["online"]:
             raise OfflineError("The device is currently offline, no action was sent.")
 
-    def setzone(self, serial_number: str, zone: str) -> None:
+    def set_mowing_zone(self, serial_number: str, zone: str) -> None:
         """Set zone to be mowed when next mowing task is started.
 
         Args:
@@ -695,8 +695,7 @@ class WorxCloud(dict):
             if device.zone["starting_point"][zone] == 0:
                 raise RequestException("Cannot request this zone as it is not defined.")
 
-            # current = device.zone["indicies"]
-            # new_zones = current
+            # new_zones = device.zone["indicies"]
 
             # while not new_zones[device.zone["index"]] == zone:
             #     tmp = []
@@ -711,6 +710,18 @@ class WorxCloud(dict):
                 serial_number,
                 mower["mqtt_topics"]["command_in"],
                 {"mzv": new_zones},
+            )
+        else:
+            raise OfflineError("The device is currently offline, no action was sent.")
+
+    def set_zones_starting_point(self, serial_number: str, starting_point) -> None:
+        mower = self.get_mower(serial_number)
+        if mower["online"]:
+            _LOGGER.debug("starting_point:%s", starting_point)
+            self.mqtt.publish(
+                serial_number,
+                mower["mqtt_topics"]["command_in"],
+                {"mz": starting_point},
             )
         else:
             raise OfflineError("The device is currently offline, no action was sent.")

@@ -559,8 +559,8 @@
     ],
     "zone": [
         {
-            "logicalId": "zone_current",
-            "name": "Zone actuelle",
+            "logicalId": "zone_next_start",
+            "name": "Zone prochain départ",
             "type": "info",
             "subtype": "numeric",
             "isVisible": 0,
@@ -572,7 +572,63 @@
             "initialValue": 0
         },
         {
-            "logicalId": "setzone",
+            "logicalId": "zone_starting_point_0",
+            "name": "Départ zone 1",
+            "type": "info",
+            "subtype": "numeric",
+            "unite": "m",
+            "isVisible": 0,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            },
+            "initialValue": 0
+        },
+        {
+            "logicalId": "zone_starting_point_1",
+            "name": "Départ zone 2",
+            "type": "info",
+            "subtype": "numeric",
+            "unite": "m",
+            "isVisible": 0,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            },
+            "initialValue": 0
+        },
+        {
+            "logicalId": "zone_starting_point_2",
+            "name": "Départ zone 3",
+            "type": "info",
+            "subtype": "numeric",
+            "unite": "m",
+            "isVisible": 0,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            },
+            "initialValue": 0
+        },
+        {
+            "logicalId": "zone_starting_point_3",
+            "name": "Départ zone 4",
+            "type": "info",
+            "subtype": "numeric",
+            "unite": "m",
+            "isVisible": 0,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            },
+            "initialValue": 0
+        },
+        {
+            "logicalId": "set_mowing_zone",
             "name": "Zone de travail",
             "type": "action",
             "subtype": "select",
@@ -580,7 +636,18 @@
                 "listValue": "0|Zone 1;1|Zone 2;2|Zone 3;3|Zone 4"
             },
             "isVisible": 1,
-            "value": "zone_current"
+            "value": "zone_next_start"
+        },
+        {
+            "logicalId": "set_zones_starting_point",
+            "name": "Définir point de départ zones",
+            "type": "action",
+            "subtype": "message",
+            "isVisible": 1,
+            "display": {
+                "title_disable": 1,
+                "message_placeholder": "ex: 1,12,50,90"
+            }
         }
     ]
 }

@@ -371,11 +371,11 @@ class worxLandroidS extends eqLogic {
                 $eqLogic->setName($device['name']);
                 $eqLogic->setConfiguration('serial_number', $device['serial_number']);
                 $eqLogic->setConfiguration('purchased_at', $device['purchased_at']);
-                $eqLogic->setConfiguration('warranty_expires_at', $device['warranty_expires_at']);
+                $eqLogic->setConfiguration('warranty_expires_at', $device['warranty']['expires_at']);
                 $eqLogic->setConfiguration('registered_at', $device['registered_at']);
                 $eqLogic->setConfiguration('mac_address', implode(":", str_split($device['mac_address'], 2)));
             }
-            $eqLogic->setConfiguration('firmware_version', $device['firmware_version']);
+            $eqLogic->setConfiguration('firmware_version', $device['firmware']['version']);
             $eqLogic->save();
         }
     }
@@ -408,16 +408,6 @@ class worxLandroidS extends eqLogic {
         $elogic->setConfiguration('mowerDescription', $mowerDescription);
         $elogic->setConfiguration('doubleSchedule', $doubleSchedule);
 
-        // ajout des actions par défaut
-        log::add(__CLASS__, 'info', 'Saving device with mac address' . $product['mac_address']);
-        message::add(__CLASS__, 'Tondeuse ajoutée (en cas d erreur faire un refresh_value dans la liste des commandes pour la premiere utilisation): ' . $elogic->getName(), null, null);
-
-        $elogic->save();
-        $elogic->setDisplay("width", "450px");
-        $elogic->setDisplay("height", "260px");
-        $elogic->setIsVisible(1);
-        $elogic->setIsEnable(1);
-
         $commandIn = $MowerType . '/' . $product['mac_address'] . '/commandIn'; //config::byKey('MowerType', __CLASS__).'/'. $json2_data->dat->mac .'/commandIn';
 
         $elogic->newAction('refreshValue', $commandIn, "", 'other');
@@ -449,11 +439,6 @@ class worxLandroidS extends eqLogic {
             $elogic->newAction('on_' . $i, $commandIn, 'on_' . $i, 'other');
             $elogic->newAction('off_' . $i, $commandIn, 'off_' . $i, 'other');
         }
-
-        event::add('worxLandroidS::includeEqpt', $elogic->getId());
-
-        $elogic->setStatus('lastCommunication', date('Y-m-d H:i:s'));
-        $elogic->save();
     }
 
     public static function connect_and_publish($eqptlist, $client, $msg) {
@@ -518,6 +503,12 @@ class worxLandroidS extends eqLogic {
         $this->checkAndUpdateCmd('rainsensor_delay', $data['rainsensor']['delay']);
         $this->checkAndUpdateCmd('rainsensor_triggered', $data['rainsensor']['triggered']);
         $this->checkAndUpdateCmd('rainsensor_remaining', $data['rainsensor']['remaining']);
+
+        $this->checkAndUpdateCmd('zone_starting_point_0', $data['zone']['starting_point'][0]);
+        $this->checkAndUpdateCmd('zone_starting_point_1', $data['zone']['starting_point'][1]);
+        $this->checkAndUpdateCmd('zone_starting_point_2', $data['zone']['starting_point'][2]);
+        $this->checkAndUpdateCmd('zone_starting_point_3', $data['zone']['starting_point'][3]);
+        $this->checkAndUpdateCmd('zone_next_start', $data['zone']['indicies'][0]);
 
         $this->checkAndUpdateCmd('schedules_active', $data['schedules']['active']);
         $this->checkAndUpdateCmd('schedules_daily_progress', $data['schedules']['daily_progress']);
@@ -1302,9 +1293,20 @@ class worxLandroidSCmd extends cmd {
             case 'onetimeschedule':
                 $params['args'] = [false, $_options['message']];
                 break;
-            case 'setzone':
+            case 'set_mowing_zone':
                 $params['args'] = [$_options['select']];
                 break;
+            case 'set_zones_starting_point':
+                $zones = explode(',', $_options['message']);
+                $points = [0, 0, 0, 0];
+                $i = 0;
+                foreach ($zones as $zone) {
+                    if (!is_numeric($zone) || $zone < 0) throw new Exception("Zone must be numeric");
+                    if ($zone == 0) break;
+                    $points[$i++] = intval($zone);
+                    if ($i > 3) break;
+                }
+                $params['args'] = [$points];
             default:
                 # code...
                 break;

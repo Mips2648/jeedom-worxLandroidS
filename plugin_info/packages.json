@@ -8,7 +8,9 @@
     "aiohttp": {},
     "urllib3": {},
     "awsiot": {},
-    "awsiotsdk": {},
+    "awsiotsdk": {
+      "reinstall": true
+    },
     "backports.zoneinfo": {}
   }
 }

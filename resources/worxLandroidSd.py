@@ -66,10 +66,14 @@ class worxLandroidS:
         self._listen_task.cancel()
         self._cloud.disconnect()
 
-    def _on_message(self, name, device: DeviceHandler):
-        tmpDevice = (vars(device)).copy()
+    def _get_device_to_send(self, device: DeviceHandler):
+        device_to_send = (vars(device)).copy()
         for key in ['_api', '_mower', '_tz', '_DeviceHandler__is_decoded', '_DeviceHandler__raw_data', '_DeviceHandler__json_data']:
-            tmpDevice.pop(key, '')
+            device_to_send.pop(key, '')
+        return device_to_send
+
+    def _on_message(self, name, device: DeviceHandler):
+        tmpDevice = self._get_device_to_send(device)
         _LOGGER.debug("on message %s, %s", name, str(tmpDevice))
         tmp = {}
         tmp["uuid"] = device.uuid
@@ -113,7 +117,7 @@ class worxLandroidS:
 
     async def _send_devices(self):
         tmp = {}
-        tmp["devices"] = self._cloud._mowers
+        tmp["devices"] = [self._get_device_to_send(d) for d in self._cloud.devices.values()]
         await self.__send_async(tmp)
 
     async def _update_all(self):
