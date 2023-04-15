@@ -643,7 +643,7 @@
             "name": "Définir point de départ zones",
             "type": "action",
             "subtype": "message",
-            "isVisible": 1,
+            "isVisible": 0,
             "display": {
                 "title_disable": 1,
                 "message_placeholder": "ex: 1,12,50,90"

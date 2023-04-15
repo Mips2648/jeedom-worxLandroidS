@@ -902,7 +902,6 @@ class worxLandroidS extends eqLogic {
 
         $cmd_html = '';
         foreach ($this->getCmd('info') as $cmd) {
-            $replace['#' . $cmd->getLogicalId() . '_history#'] = '';
             $replace['#' . $cmd->getLogicalId() . '_id#']      = $cmd->getId();
             $replace['#' . $cmd->getLogicalId() . '#']         = $cmd->execCmd();
             $replace['#' . $cmd->getLogicalId() . '_collect#'] = $cmd->getCollectDate();
@@ -915,36 +914,38 @@ class worxLandroidS extends eqLogic {
             } else {
                 $replace['#' . $cmd->getLogicalId() . '_visible#'] = 'display:none';
             }
-
-
-            if ($cmd->getLogicalId() == 'virtualInfo') {
-                if ($cmd->getTemplate('dashboard', '') == '') {
-                    $cmd->setTemplate('dashboard', 'badge');
-                }
-                if (substr_compare($cmd->getName(), 'Planning', 0, 8) != 0) {
-                    $cmd_html .= $cmd->toHtml($_version, '');
-                }
-            }
             if ($cmd->getIsHistorized() == 1) {
                 $replace['#' . $cmd->getLogicalId() . '_history#'] = 'history cursor';
+            } else {
+                $replace['#' . $cmd->getLogicalId() . '_history#'] = '';
             }
+
+            // if ($cmd->getLogicalId() == 'virtualInfo') {
+            //     if ($cmd->getTemplate('dashboard', '') == '') {
+            //         $cmd->setTemplate('dashboard', 'badge');
+            //     }
+            //     if (substr_compare($cmd->getName(), 'Planning', 0, 8) != 0) {
+            //         $cmd_html .= $cmd->toHtml($_version, '');
+            //     }
+            // }
+
         }
         $cmdaction_html = '';
         foreach ($this->getCmd('action') as $cmd) {
+            $replace['#' . $cmd->getLogicalId() . '_id#'] = $cmd->getId();
             if ($cmd->getIsVisible()) {
                 $replace['#' . $cmd->getLogicalId() . '_visible#'] = '';
             } else {
                 $replace['#' . $cmd->getLogicalId() . '_visible#'] = 'display:none';
             }
 
-            $replace['#' . $cmd->getLogicalId() . '_id#'] = $cmd->getId();
-            $replace['#cmdaction#'] = '';
-            if ($cmd->getIsVisible() and ($cmd->getLogicalId() == 'set_schedule')) {
+            $addCmds = ['set_schedule', 'set_mowing_zone', 'setpartymode', 'unsetpartymode'];
 
+            if ($cmd->getIsVisible() and (in_array($cmd->getLogicalId(), $addCmds))) {
                 $cmdaction_html .= $cmd->toHtml($_version, '');
-                $replace['#cmdaction#'] = $cmdaction_html;
             }
         }
+        $replace['#cmdaction#'] = $cmdaction_html;
 
         $batteryLevel = $this->getCmdInfoValue('battery_percent', 0);
         if ($batteryLevel > 90)  $replace['#batteryIMG#']  = "batterie_full.png";
@@ -972,8 +973,6 @@ class worxLandroidS extends eqLogic {
         }
         $replace['#raindelay#'] =  $rainCmdHtml;
 
-        // calcul durée depuis dernier changement de lame
-        // $cmdLast = $this->getCmd(null, 'lastBladesChangeTime');
         $replace['#blades_current_on#'] = round($this->getCmdInfoValue('blades_current_on', 0) / 60);
 
         $replace['#bladesDurationColor#'] = 'green';
@@ -981,8 +980,8 @@ class worxLandroidS extends eqLogic {
             $replace['#bladesDurationColor#'] = 'orange';
         }
 
-        $errorCode = $this->getCmd(null, 'error_id');
-        $replace['#error_id#']  = is_object($errorCode) ? $errorCode->execCmd() : '';
+        $replace['#status_description#'] = $this->getStatusDescription($replace['#status_id#']);
+
         $replace['#errorColor#'] = 'darkgreen';
         if ($replace['#error_id#'] != 0) {
             $replace['#errorColor#'] = 'orange';
@@ -1018,9 +1017,7 @@ class worxLandroidS extends eqLogic {
                 $replace['#errorIcon#'] = 'fas fa-exclamation-circle icon_red';
                 break;
         }
-        $replace['#errorID#']          = is_object($errorCode) ? $errorCode->getId() : '';
-        $errorDescription              = $this->getCmd(null, 'errorDescription');
-        $replace['#errorDescription#'] = is_object($errorDescription) ? $errorDescription->execCmd() : '';
+        $replace['#error_description#'] = $this->getErrorDescription($replace['#error_id#']);
 
         $code = $replace['#status_id#'];
         if ($code <  5 or $code ==  10 or $code == 9 or $code == 34) {
