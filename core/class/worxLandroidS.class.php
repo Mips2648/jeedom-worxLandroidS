@@ -33,75 +33,8 @@ class worxLandroidS extends eqLogic {
         'background-opacity' => true
     ));
 
-    public static $_client;
-    public static $_client_pub;
-    // Dependancy installation log file
-    private static $_depLogFile;
-    // Dependancy installation progress value log file
-    private static $_depProgressFile;
-
     protected static function getSocketPort() {
         return config::byKey('socketport', __CLASS__, 55073);
-    }
-
-    public static function refresh_values($checkMowingTime = "false") {
-        log::add('worxLandroidS', 'debug', 'refresh_values');
-        $count      = 0;
-        $eqptlist[] = array();
-        foreach (eqLogic::byType('worxLandroidS', true) as $eqpt) {
-            if (config::byKey('status', 'worxLandroidS') == '0') { //on se connecte seulement si on est pas déjà connecté
-                log::add('worxLandroidS', 'debug', 'pre connect');
-                $i         = date('w');
-                if ($start = '') {
-                    $start = '08:00';
-                }
-                log::add('worxLandroidS', 'debug', "get Planning_startTime {$i}");
-                $start     = $eqpt->getCmd(null, 'Planning_startTime_' . $i);
-                $startTime = is_object($start) ? $start->execCmd() : '00:00';
-                $dur       = $eqpt->getCmd(null, 'Planning_duration_' . $i);
-                $duration  = is_object($dur) ? $dur->execCmd() : 0;
-                if ($duration == '') {
-                    $checkMowingTime = 'manual';
-                    $duration = 1;
-                };
-
-                if ($startTime == '' || $startTime == '0') {
-                    $startTime = '00:00';
-                };
-
-                $initDate = DateTime::createFromFormat('H:i', $startTime);
-                if ($initDate === false) {
-                    $initDate = DateTime::createFromFormat('H:i', '00:00');
-                }
-                //log::add('worxLandroidS', 'debug', 'mower sleeping '.$duration);
-                //if(empty($duration){$duration = 0};
-                $initDate->add(new DateInterval("PT" . $duration . "M"));
-                $endTime = $initDate->format("H:i");
-                // refresh value each 30 minutes if mower is sleeping at home :-)
-                log::add('worxLandroidS', 'debug', "checkMowingTime={$checkMowingTime} - startTime={$startTime} - endTime={$endTime}: " . date('H:i'));
-                if (
-                    $checkMowingTime == "manual" or
-                    ($checkMowingTime == "false" and ($startTime == '00:00' or $startTime > date('H:i') or date('H:i') > $endTime)) or
-                    ($checkMowingTime == "true" and ($endTime == '00:00' or ($startTime <= date('H:i') and date('H:i') <= $endTime)))
-                ) {
-                    config::save('realTime', '0', 'worxLandroidS');
-                    log::add('worxLandroidS', 'debug', 'mower sleeping ');
-                    // populate message to be sent
-                    $eqptlist[$count] = array(
-                        $eqpt->getConfiguration('MowerType'),
-                        $eqpt->getLogicalId(),
-                        '{}'
-                    );
-                    $count++;
-                    if (config::byKey('status', 'worxLandroidS') == '1') {
-                        // modification à faire ======>
-                        self::$_client->disconnect();
-                    }
-                }
-            } else {
-                log::add('worxLandroidS', 'debug', 'already connected');
-            }
-        }
     }
 
     // public static function daemon() {
@@ -282,8 +215,6 @@ class worxLandroidS extends eqLogic {
     //             }
     //         }
     //     }
-
-    //     worxLandroidS::refresh_values("true");
     // }
 
     public static function deamon_info() {
@@ -410,22 +341,21 @@ class worxLandroidS extends eqLogic {
 
         $commandIn = $MowerType . '/' . $product['mac_address'] . '/commandIn'; //config::byKey('MowerType', __CLASS__).'/'. $json2_data->dat->mac .'/commandIn';
 
-        $elogic->newAction('refreshValue', $commandIn, "", 'other');
-        $elogic->newAction('off_today', $commandIn, "off_today", 'other');
-        $elogic->newAction('on_today', $commandIn, "on_today", 'other');
-        $elogic->newAction('rain_delay_0', $commandIn, "0", 'other');
-        $elogic->newAction('rain_delay_30', $commandIn, "30", 'other');
-        $elogic->newAction('rain_delay_60', $commandIn, "60", 'other');
-        $elogic->newAction('rain_delay_120', $commandIn, "120", 'other');
-        $elogic->newAction('rain_delay_240', $commandIn, "240", 'other');
-        $elogic->newAction('userMessage', $commandIn, "#message#", 'message');
+        // $elogic->newAction('off_today', $commandIn, "off_today", 'other');
+        // $elogic->newAction('on_today', $commandIn, "on_today", 'other');
+        // $elogic->newAction('rain_delay_0', $commandIn, "0", 'other');
+        // $elogic->newAction('rain_delay_30', $commandIn, "30", 'other');
+        // $elogic->newAction('rain_delay_60', $commandIn, "60", 'other');
+        // $elogic->newAction('rain_delay_120', $commandIn, "120", 'other');
+        // $elogic->newAction('rain_delay_240', $commandIn, "240", 'other');
+        // $elogic->newAction('userMessage', $commandIn, "#message#", 'message');
 
         $display = array(
             'isvisible' => 1,
             'name' => __('Lames remplacees', __FILE__)
         );
-        $elogic->newAction('newBlades', $commandIn, "", 'other', $display);
-        $elogic->newInfo('virtualInfo', '', 'string', 0, 'statusCode,statusDescription,batteryLevel,wifiQuality,currentZone');
+        // $elogic->newAction('newBlades', $commandIn, "", 'other', $display);
+        // $elogic->newInfo('virtualInfo', '', 'string', 0, 'statusCode,statusDescription,batteryLevel,wifiQuality,currentZone');
 
         $display = array(
             'message_placeholder' => __('num jour;hh:mm;durée mn;bord(0 ou 1)', __FILE__),
@@ -433,51 +363,12 @@ class worxLandroidS extends eqLogic {
             'title_disable' => true
         );
 
-        $elogic->newAction('set_schedule', $commandIn, "", 'message', $display);
+        // $elogic->newAction('set_schedule', $commandIn, "", 'message', $display);
 
-        for ($i = 0; $i < 7; $i++) {
-            $elogic->newAction('on_' . $i, $commandIn, 'on_' . $i, 'other');
-            $elogic->newAction('off_' . $i, $commandIn, 'off_' . $i, 'other');
-        }
-    }
-
-    public static function connect_and_publish($eqptlist, $client, $msg) {
-
-        try {
-            self::$_client->connect(config::byKey('mqtt_endpoint', __CLASS__), 8883, 5);
-
-            foreach ($eqptlist as $key => $value) {
-                $topic = $value[0] . '/' . $value[1] . '/commandOut';
-                //'/'.$eqpt->getLogicalId().'/commandOut';
-                self::$_client->subscribe($topic, 0); // !auto: Subscribe to root topic
-            }
-
-            log::add(__CLASS__, 'debug', 'Subscribe to mqtt ' . config::byKey('mqtt_endpoint', __CLASS__) . ' msg ' . $msg);
-            //self::$_client->loop();
-            foreach ($eqptlist as $key => $value) {
-                self::$_client->publish($value[0] . '/' . $value[1] . "/commandIn", $value[2], 0, 0);
-            }
-
-            //self::$_client->loopForever();
-            $start_time = time();
-            while (true) {
-                self::$_client->loop(1);
-                if ((time() - $start_time) > 45) {
-                    log::add(__CLASS__, 'debug', 'Timeout reached');
-                    foreach (eqLogic::byType(__CLASS__, false) as $eqpt) {
-                        $eqpt->newInfo('statusDescription', __("Communication timeout", __FILE__), 'string', 1, '');
-                        self::$_client->disconnect();
-                        config::save('status', '0', __CLASS__);
-                    }
-                    return false;
-                }
-            }
-        } catch (Exception $e) {
-            // log::add(__CLASS__, 'debug', $e->getMessage());
-        }
-        if (config::byKey('status', __CLASS__) == '1') {
-            self::$_client->disconnect();
-        }
+        // for ($i = 0; $i < 7; $i++) {
+        //     $elogic->newAction('on_' . $i, $commandIn, 'on_' . $i, 'other');
+        //     $elogic->newAction('off_' . $i, $commandIn, 'off_' . $i, 'other');
+        // }
     }
 
     public function on_message($data) {
@@ -602,80 +493,57 @@ class worxLandroidS extends eqLogic {
 
         */
 
+        // $elogic->newInfo('langue', $json2_data->cfg->lg, 'string', 0, '');
 
-        if (config::byKey('status', __CLASS__) == '1' && $split_topic[2] != 'dummy') { //&& config::byKey('mowingTime',__CLASS__) == '0'){
-            self::$_client->disconnect();
-        }
+        // $elogic->newInfo('zonesList', $json2_data->dat->mz, 'string', 0, '');
+        // //area
+        // $elogic->newInfo('areaList', $json2_data->cfg->mz[0] . '|' . $json2_data->cfg->mz[1] . '|' . $json2_data->cfg->mz[2] . '|' . $json2_data->cfg->mz[3], 'string', 1, '');
+        // $elogic->newInfo(
+        //     'areaListDist',
+        //     $json2_data->cfg->mzv[0] . '|' . $json2_data->cfg->mzv[1] . '|' . $json2_data->cfg->mzv[2] . '|' . $json2_data->cfg->mzv[3] . '|' .
+        //         $json2_data->cfg->mzv[4] . '|' . $json2_data->cfg->mzv[5] . '|' . $json2_data->cfg->mzv[6] . '|' . $json2_data->cfg->mzv[7] . '|' .
+        //         $json2_data->cfg->mzv[8] . '|' . $json2_data->cfg->mzv[9],
+        //     'string',
+        //     1,
+        //     ''
+        // );
 
-        $elogic->setConfiguration('retryNr', 0);
-        $elogic->newInfo('errorCode', $json2_data->dat->le, 'numeric', 1, '');
-        $elogic->newInfo('errorDescription', self::getErrorDescription($json2_data->dat->le), 'string', 1, '');
+        // if (array_key_exists('conn', $json2_data->dat)) { // for mower with 4G modules
+        //     $elogic->newInfo('connexion', $json2_data->dat->conn, 'string', 1, '');
+        //     $elogic->newInfo('GPSLatitude', $json2_data->dat->modules->{'4G'}->gps->coo[0], 'string', 1, '');
+        //     $elogic->newInfo('GPSLongitude', $json2_data->dat->modules->{'4G'}->gps->coo[1], 'string', 1, '');
+        // } else {
+        //     $elogic->newInfo('connexion', ' ', 'string', 0, '');
+        //     $elogic->newInfo('GPSLatitude', ' ', 'string', 0, '');
+        //     $elogic->newInfo('GPSLongitude', ' ', 'string', 0, '');
+        // }
 
-        $elogic->newInfo('statusCode', $json2_data->dat->ls, 'numeric', 1, '');
-        $elogic->newInfo('statusDescription', self::getStatusDescription($json2_data->dat->ls), 'string', 1, '');
-        $elogic->newInfo('batteryLevel', $json2_data->dat->bt->p, 'numeric', 1, '');
-        $elogic->newInfo('langue', $json2_data->cfg->lg, 'string', 0, '');
-
-        $elogic->newInfo('firmware', $json2_data->dat->fw, 'string', 0, '');
-
-        $elogic->newInfo('totalTime', $json2_data->dat->st->wt, 'numeric', 1, '');
-        $elogic->newInfo('totalDistance', $json2_data->dat->st->d, 'numeric', 1, '');
-        $elogic->newInfo('totalBladeTime', $json2_data->dat->st->b, 'numeric', 0, '');
-        $elogic->newInfo('batteryChargeCycle', $json2_data->dat->bt->nr, 'numeric', 1, '');
-        $elogic->newInfo('batteryCharging', $json2_data->dat->bt->c, 'binary', 1, '');
-        $elogic->newInfo('batteryVoltage', $json2_data->dat->bt->v, 'numeric', 0, '');
-        $elogic->newInfo('batteryTemperature', $json2_data->dat->bt->t, 'numeric', 0, '');
-        $elogic->newInfo('zonesList', $json2_data->dat->mz, 'string', 0, '');
-        //area
-        $elogic->newInfo('areaList', $json2_data->cfg->mz[0] . '|' . $json2_data->cfg->mz[1] . '|' . $json2_data->cfg->mz[2] . '|' . $json2_data->cfg->mz[3], 'string', 1, '');
-        $elogic->newInfo(
-            'areaListDist',
-            $json2_data->cfg->mzv[0] . '|' . $json2_data->cfg->mzv[1] . '|' . $json2_data->cfg->mzv[2] . '|' . $json2_data->cfg->mzv[3] . '|' .
-                $json2_data->cfg->mzv[4] . '|' . $json2_data->cfg->mzv[5] . '|' . $json2_data->cfg->mzv[6] . '|' . $json2_data->cfg->mzv[7] . '|' .
-                $json2_data->cfg->mzv[8] . '|' . $json2_data->cfg->mzv[9],
-            'string',
-            1,
-            ''
-        );
-
-        if (array_key_exists('conn', $json2_data->dat)) { // for mower with 4G modules
-            $elogic->newInfo('connexion', $json2_data->dat->conn, 'string', 1, '');
-            $elogic->newInfo('GPSLatitude', $json2_data->dat->modules->{'4G'}->gps->coo[0], 'string', 1, '');
-            $elogic->newInfo('GPSLongitude', $json2_data->dat->modules->{'4G'}->gps->coo[1], 'string', 1, '');
-        } else {
-            $elogic->newInfo('connexion', ' ', 'string', 0, '');
-            $elogic->newInfo('GPSLatitude', ' ', 'string', 0, '');
-            $elogic->newInfo('GPSLongitude', ' ', 'string', 0, '');
-        }
-
-        $elogic->newInfo('currentZone', $json2_data->cfg->mzv[$json2_data->dat->lz] + 1, 'numeric', 0, '');
         //  date début + durée + bordure
-        $completePlanning = '';
-        for ($i = 0; $i < 7; $i++) {
-            $completePlanning .= '';
-            $elogic->newInfo('Planning_startTime_' . $i, $json2_data->cfg->sc->d[$i][0], 'string', 1, '');
-            $elogic->newInfo('Planning_duration_' . $i, $json2_data->cfg->sc->d[$i][1], 'string', 1, '');
-            $elogic->newInfo('Planning_cutEdge_' . $i, $json2_data->cfg->sc->d[$i][2], 'string', 1, '');
-            $completePlanning .= $json2_data->cfg->sc->d[$i][0] . ',' . $json2_data->cfg->sc->d[$i][1] . ',' . $json2_data->cfg->sc->d[$i][2] . '|';
-            $elogic->newInfo('completePlanning', $completePlanning, 'string', 1, '');
-        }
-        // scheduler double
-        if ($elogic->getConfiguration('doubleSchedule', '') != '') {
-            for ($i = 0; $i < 7; $i++) {
-                $completePlanning .= '';
-                $elogic->newInfo('Planning_startTime2_' . $i, $json2_data->cfg->sc->dd[$i][0], 'string', 1, '');
-                $elogic->newInfo('Planning_duration2_' . $i, $json2_data->cfg->sc->dd[$i][1], 'string', 1, '');
-                $elogic->newInfo('Planning_cutEdge2_' . $i, $json2_data->cfg->sc->dd[$i][2], 'string', 1, '');
-                $completePlanning .= $json2_data->cfg->sc->dd[$i][0] . ',' . $json2_data->cfg->sc->dd[$i][1] . ',' . $json2_data->cfg->sc->dd[$i][2] . '|';
-                $elogic->newInfo('completePlanning', $completePlanning, 'string', 1, '');
-            }
-        }
+        // $completePlanning = '';
+        // for ($i = 0; $i < 7; $i++) {
+        //     $completePlanning .= '';
+        //     $elogic->newInfo('Planning_startTime_' . $i, $json2_data->cfg->sc->d[$i][0], 'string', 1, '');
+        //     $elogic->newInfo('Planning_duration_' . $i, $json2_data->cfg->sc->d[$i][1], 'string', 1, '');
+        //     $elogic->newInfo('Planning_cutEdge_' . $i, $json2_data->cfg->sc->d[$i][2], 'string', 1, '');
+        //     $completePlanning .= $json2_data->cfg->sc->d[$i][0] . ',' . $json2_data->cfg->sc->d[$i][1] . ',' . $json2_data->cfg->sc->d[$i][2] . '|';
+        //     $elogic->newInfo('completePlanning', $completePlanning, 'string', 1, '');
+        // }
+        // // scheduler double
+        // if ($elogic->getConfiguration('doubleSchedule', '') != '') {
+        //     for ($i = 0; $i < 7; $i++) {
+        //         $completePlanning .= '';
+        //         $elogic->newInfo('Planning_startTime2_' . $i, $json2_data->cfg->sc->dd[$i][0], 'string', 1, '');
+        //         $elogic->newInfo('Planning_duration2_' . $i, $json2_data->cfg->sc->dd[$i][1], 'string', 1, '');
+        //         $elogic->newInfo('Planning_cutEdge2_' . $i, $json2_data->cfg->sc->dd[$i][2], 'string', 1, '');
+        //         $completePlanning .= $json2_data->cfg->sc->dd[$i][0] . ',' . $json2_data->cfg->sc->dd[$i][1] . ',' . $json2_data->cfg->sc->dd[$i][2] . '|';
+        //         $elogic->newInfo('completePlanning', $completePlanning, 'string', 1, '');
+        //     }
+        // }
 
 
         // mise a jour des infos virtuelles séparées par des virgules
         $cmd = worxLandroidSCmd::byEqLogicIdCmdName($elogic->getId(), 'virtualInfo');
         $name = $cmd->getConfiguration('request', '');
-        //log::add(__CLASS__, 'info', 'liste commande' . $name);
         $cmdlist = explode(',', $name);
         $value = '';
         foreach ($cmdlist as $cmdname) {
@@ -688,10 +556,8 @@ class worxLandroidS extends eqLogic {
                 } else {
                     $value .= ',' . $cmdlogic->getConfiguration('topic', '');
                 }
-                //log::add(__CLASS__, 'info', 'liste commande/value:' . $cmdname . '/' . $value);
             }
         }
-        //log::add(__CLASS__, 'info', 'liste commande' . $value);
 
         $cmd->setConfiguration('topic', $value);
         $cmd->save();
@@ -722,7 +588,6 @@ class worxLandroidS extends eqLogic {
           case '14': return  'Charge error';         break;
           case '15': return  'Timeout finding home';        break;
           default: return 'Unknown';
-
           */
             case '0':
                 return __('Aucune erreur', __FILE__);
@@ -842,81 +707,6 @@ class worxLandroidS extends eqLogic {
         }
     }
 
-    public function newInfo($cmdId, $value, $subtype, $visible, $request = null) {
-        $cmdlogic = $this->getCmd(null, $cmdId);
-
-        if (!is_object($cmdlogic)) {
-            log::add(__CLASS__, 'info', 'Cmdlogic n existe pas, creation:' . $cmdId);
-            $cmdlogic = new worxLandroidSCmd();
-            $cmdlogic->setEqLogic_id($this->getId());
-            $cmdlogic->setEqType(__CLASS__);
-            $cmdlogic->setSubType($subtype);
-            $cmdlogic->setLogicalId($cmdId);
-            $cmdlogic->setType('info');
-            $cmdlogic->setName($cmdId);
-            $cmdlogic->setIsVisible($visible);
-
-            if (!is_null($request)) {
-                $cmdlogic->setConfiguration('request', $request);
-            }
-            $cmdlogic->setConfiguration('topic', $value);
-            //$cmdlogic->setValue($value);
-            $cmdlogic->save();
-        }
-
-        //   log::add(__CLASS__, 'debug', 'Cmdlogic update'.$cmdId.$value);
-
-        if (strstr($cmdId, "Planning_startTime") && $value != '00:00') {
-            // log::add(__CLASS__, 'debug', 'savedValue time'. $value);
-            $cmdlogic->setConfiguration('savedValue', $value);
-            $cmdlogic->save();
-        }
-        if (strstr($cmdId, "Planning_duration") && $value != 0) {
-            //log::add(__CLASS__, 'debug', 'savedValue duration'. $value);
-            $cmdlogic->setConfiguration('savedValue', $value);
-            $cmdlogic->save();
-        }
-        $cmdlogic->setConfiguration('topic', $value);
-        //$cmdlogic->setValue($value);
-        //$cmdlogic->save();
-
-        $this->checkAndUpdateCmd($cmdId, $value);
-    }
-
-    public function newAction($cmdId, $topic, $payload, $subtype, $params = array()) {
-        $cmdlogic = $this->getCmd(null, $cmdId);
-
-        if (!is_object($cmdlogic)) {
-            log::add(__CLASS__, 'info', 'nouvelle action par défaut' . $payload);
-            $cmdlogic = new worxLandroidSCmd();
-        }
-        $cmdlogic->setEqLogic_id($this->getId());
-        $cmdlogic->setEqType(__CLASS__);
-        $cmdlogic->setSubType($subtype);
-        $cmdlogic->setLogicalId($cmdId);
-        $cmdlogic->setType('action');
-        //$cmdlogic->setName(json_encode($params['name']) ?: $cmdId);
-        $cmdlogic->setName($cmdId);
-        $cmdlogic->setConfiguration('listValue', json_encode($params['listValue']) ?: null);
-        $cmdlogic->setConfiguration('minValue', json_encode($params['minValue']) ?: null);
-        $cmdlogic->setConfiguration('maxValue', json_encode($params['maxValue']) ?: null);
-
-        $cmdlogic->setDisplay('showNameOndashboard', isset($params['showNameOndashboard']) ? $params['showNameOndashboard'] : true);
-        $cmdlogic->setDisplay('showNameOnmobile', isset($params['showNameOnmobile']) ? $params['showNameOndashboard'] : true);
-        $cmdlogic->setDisplay('forceReturnLineBefore', $params['forceReturnLineBefore'] ?: false);
-        $cmdlogic->setDisplay('message_disable', $params['message_disable'] ?: false);
-        $cmdlogic->setDisplay('title_disable', $params['title_disable'] ?: false);
-        $cmdlogic->setDisplay('title_placeholder', $params['title_placeholder'] ?: false);
-        $cmdlogic->setDisplay('icon', $params['icon'] ?: false);
-        $cmdlogic->setDisplay('message_placeholder', $params['message_placeholder'] ?: false);
-        $cmdlogic->setDisplay('title_possibility_list', json_encode($params['title_possibility_list'] ?: null));
-        $cmdlogic->setDisplay('icon', $params['icon'] ?: null);
-        $cmdlogic->setIsVisible($params['isvisible'] ?: 0);
-        $cmdlogic->setConfiguration('topic', $topic);
-        $cmdlogic->setConfiguration('request', $payload);
-        $cmdlogic->save();
-    }
-
     public static function getSavedDaySchedule($_id, $i) {
         $cmdlogic = worxLandroidSCmd::byEqLogicIdCmdName($_id, 'Planning_startTime_' . $i);
         $day[0]   = $cmdlogic->getConfiguration('savedValue', '10:00');
@@ -991,12 +781,10 @@ class worxLandroidS extends eqLogic {
             $_message = self::setDaySchedule($eqlogicid, substr($_message, 3, 1), $sched); //  $this->saveConfiguration('savedValue',
         }
 
-        // send start command
         if ($cmd->getName() == 'user_message') {
             $_message = trim($_message, '|');
         }
 
-        // send free command
         if ($cmd->getName() == 'set_schedule') {
             $req = explode(";", $_message); // format = numéro jour;heure:minute;durée en minutes;0 ou 1 pour la bordure
             $sched = array(
@@ -1005,11 +793,6 @@ class worxLandroidS extends eqLogic {
                 intval($req[3])
             );
             $_message = self::setDaySchedule($eqlogicid, intval($req[0]), $sched);
-        }
-        // rain delay
-        if (substr_compare($cmd->getName(), 'rain_delay', 0, 10) == 0) {
-            $_message = '{"rd":' . $_message . '}';
-            log::add(__CLASS__, 'debug', 'Envoi du message rain delay: ' . $_message);
         }
     }
 

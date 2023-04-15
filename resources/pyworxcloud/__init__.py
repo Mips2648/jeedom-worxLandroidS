@@ -668,9 +668,7 @@ class WorxCloud(dict):
                 self.mqtt.publish(
                     serial_number,
                     mower["mqtt_topics"]["command_in"],
-                    {"sc": {"m": 2, "distm": 0}}
-                    if state
-                    else {"sc": {"m": 1, "distm": 0}},
+                    {"sc": {"m": 2, "distm": 0}} if state else {"sc": {"m": 1, "distm": 0}},
                 )
             elif not device.capabilities.check(DeviceCapability.PARTY_MODE):
                 raise NoPartymodeError("This device does not support Partymode")
