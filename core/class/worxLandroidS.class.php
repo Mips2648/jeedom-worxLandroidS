@@ -416,6 +416,8 @@ class worxLandroidS extends eqLogic {
             $this->checkAndUpdateCmd('gps_latitude', $data['gps']['latitude']);
             $this->checkAndUpdateCmd('gps_longitude', $data['gps']['longitude']);
         }
+
+        $this->refreshWidget();
     }
 
     public static function message($message) {
@@ -983,7 +985,9 @@ class worxLandroidS extends eqLogic {
         $replace['#status_description#'] = $this->getStatusDescription($replace['#status_id#']);
 
         $replace['#errorColor#'] = 'darkgreen';
-        if ($replace['#error_id#'] != 0) {
+        if ($replace['#error_id#'] == 5) {
+            $replace['#errorColor#'] = 'lightblue';
+        } elseif ($replace['#error_id#'] != 0) {
             $replace['#errorColor#'] = 'orange';
         }
         switch ($replace['#error_id#']) {
