@@ -41,6 +41,8 @@ function worxLandroidS_update() {
         if (is_object($cmd)) {
             $cmd->remove();
         }
+
+        $eqLogic->createCommands();
     }
 }
 
