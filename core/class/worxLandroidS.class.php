@@ -417,7 +417,9 @@ class worxLandroidS extends eqLogic {
             $this->checkAndUpdateCmd('gps_longitude', $data['gps']['longitude']);
         }
 
-        $this->refreshWidget();
+        if ($this->getConfiguration('automaticWidget', 0) == 1) {
+            $this->refreshWidget();
+        }
     }
 
     public static function message($message) {
@@ -799,7 +801,7 @@ class worxLandroidS extends eqLogic {
     }
 
     public function toHtml($_version = 'dashboard') {
-        if (!$this->getConfiguration('automaticWidget', 0)) {
+        if ($this->getConfiguration('automaticWidget', 0) == 0) {
             return parent::toHtml($_version);
         }
 
