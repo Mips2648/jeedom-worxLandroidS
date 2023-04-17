@@ -41,6 +41,10 @@ function worxLandroidS_update() {
         if (is_object($cmd)) {
             $cmd->remove();
         }
+        $cmd = $eqLogic->getCmd('info', 'mower_work_time');
+        if (is_object($cmd)) {
+            $cmd->remove();
+        }
 
         $eqLogic->createCommands();
     }

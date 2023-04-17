@@ -405,6 +405,7 @@ class worxLandroidS extends eqLogic {
         $this->checkAndUpdateCmd('schedules_daily_progress', $data['schedules']['daily_progress']);
 
         $this->checkAndUpdateCmd('statistics_distance', $data['statistics']['distance']);
+        $this->checkAndUpdateCmd('statistics_worktime_total', $data['statistics']['worktime_total']);
 
         $this->checkAndUpdateCmd('status_id', $data['status']['id']);
         $this->checkAndUpdateCmd('status_description', $data['status']['description']);

@@ -49,19 +49,6 @@
             }
         },
         {
-            "logicalId": "mower_work_time",
-            "name": "Temps de travail tondeuse",
-            "type": "info",
-            "subtype": "numeric",
-            "isVisible": 1,
-            "isHistorized": 0,
-            "unite": "min",
-            "template": {
-                "dashboard": "line",
-                "mobile": "line"
-            }
-        },
-        {
             "logicalId": "battery_temperature",
             "name": "Température batterie",
             "type": "info",
@@ -295,6 +282,19 @@
                 "mobile": "line"
             },
             "initialValue": 0
+        },
+        {
+            "logicalId": "statistics_worktime_total",
+            "name": "Temps de travail tondeuse",
+            "type": "info",
+            "subtype": "numeric",
+            "isVisible": 1,
+            "isHistorized": 0,
+            "unite": "min",
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            }
         },
         {
             "logicalId": "updated",
