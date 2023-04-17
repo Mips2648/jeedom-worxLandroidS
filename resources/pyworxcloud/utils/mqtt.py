@@ -2,20 +2,23 @@
 from __future__ import annotations
 
 import json
-import logging
 import random
-import time
+import ssl
 import urllib.parse
 from datetime import datetime
+from logging import Logger
 from typing import Any
 from uuid import uuid4
 
-from awsiot import mqtt, mqtt_connection_builder
+import paho.mqtt.client as mqtt
+from paho.mqtt.client import connack_string, error_string
 
-from ..events import EventHandler
+from ..exceptions import MQTTException
+
+from ..events import EventHandler, LandroidEvent
 from .landroid_class import LDict
 
-_LOGGER = logging.getLogger(__name__)
+QOS_FLAG = 1
 
 
 class MQTTMsgType(LDict):
@@ -88,68 +91,133 @@ class MQTT(LDict):
         brandprefix: str,
         endpoint: str,
         user_id: int,
+        logger: Logger,
         callback: Any,
     ) -> dict:
         """Initialize AWSIoT MQTT handler."""
         super().__init__()
-        self.client = None
+        # self.client = None
         self._events = EventHandler()
         self._on_update = callback
+        self._endpoint = endpoint
+        self._log = logger.getChild("MQTT")
+        self._disconnected = False
+        self._topic: list = []
 
         accesstokenparts = token.replace("_", "/").replace("-", "+").split(".")
 
         self._uuid = uuid4()
 
-        self._configuration = mqtt_connection_builder.direct_with_custom_authorizer(
-            endpoint=endpoint,
-            auth_username=f"bot?jwt={urllib.parse.quote(accesstokenparts[0])}.{urllib.parse.quote(accesstokenparts[1])}",
-            auth_authorizer_name="",
-            auth_authorizer_signature=urllib.parse.quote(accesstokenparts[2]),
-            auth_password=None,
-            port=443,
+        self.client = mqtt.Client(
             client_id=f"{brandprefix}/USER/{user_id}/bot/{self._uuid}",
             clean_session=False,
+            userdata=None,
+            reconnect_on_failure=True,
         )
+        self.client.username_pw_set(
+            username=f"bot?jwt={urllib.parse.quote(accesstokenparts[0])}.{urllib.parse.quote(accesstokenparts[1])}&x-amz-customauthorizer-name=''&x-amz-customauthorizer-signature={urllib.parse.quote(accesstokenparts[2])}",
+            password=None,
+        )
+
+        ssl_context = ssl.create_default_context()
+        ssl_context.set_alpn_protocols(["mqtt"])
+        self.client.tls_set_context(context=ssl_context)
+
+        self.client.on_connect = self._on_connect
+        self.client.on_message = self._forward_on_message
+        self.client.on_disconnect = self._on_disconnect
+
+    @property
+    def connected(self) -> bool:
+        """Returns the MQTT connection state."""
+        return self.client.is_connected()
+
+    def _forward_on_message(
+        self,
+        client: mqtt.Client | None,
+        userdata: Any | None,
+        message: Any | None,
+        properties: Any | None = None,  # pylint: disable=unused-argument
+    ) -> None:
+        """MQTT callback method definition."""
+        msg = message.payload.decode("utf-8")
+        self._log.debug("Received MQTT message:%s", msg)
+        self._on_update(msg)
 
     def subscribe(self, topic: str) -> None:
         """Subscribe to MQTT updates."""
-        self._configuration.subscribe(
-            topic=topic,
-            qos=mqtt.QoS.AT_LEAST_ONCE,
-            callback=self._on_update,
-        )
+        self._topic.append(topic)
+        self.client.subscribe(topic=topic, qos=QOS_FLAG)
 
     def connect(self) -> None:
         """Connect to the MQTT service."""
-        connect_future = self._configuration.connect()
-        self.client = connect_future.result()
+        self.client.connect(self._endpoint, 443, 45)
+        self.client.loop_start()
+
+    def _on_connect(
+        self,
+        client: mqtt.Client | None,
+        userdata: Any | None,
+        flags: Any | None,
+        rc: int | None,
+        properties: Any | None = None,  # pylint: disable=unused-argument,invalid-name
+    ) -> None:
+        """MQTT callback method."""
+        logger = self._log.getChild("Conn_State")
+        logger.debug(connack_string(rc))
+        if rc == 0:
+            self._disconnected = False
+            logger.debug("MQTT connected")
+            self._events.call(
+                LandroidEvent.MQTT_CONNECTION, state=self.client.is_connected()
+            )
+        else:
+            logger.debug("MQTT connection failed")
+            self._events.call(
+                LandroidEvent.MQTT_CONNECTION, state=self.client.is_connected()
+            )
+
+    def _on_disconnect(
+        self,
+        client: mqtt.Client | None,
+        userdata: Any | None,
+        rc: int | None,
+        properties: Any | None = None,  # pylint: disable=unused-argument,invalid-name
+    ) -> None:
+        """MQTT callback method."""
+        logger = self._log.getChild("Conn_State")
+        if rc > 0:
+            logger.debug(
+                "Unexpected MQTT disconnect (%s) - retrying", connack_string(rc)
+            )
+            self.client.reconnect_delay_set(min_delay=1, max_delay=120)
+            self.client.reconnect()
 
     def disconnect(
         self, reasoncode=None, properties=None  # pylint: disable=unused-argument
     ):
         """Disconnect from AWSIoT MQTT server."""
-        self.client = None
-        self._configuration.disconnect()
+        self._disconnected = True
+        self.client.loop_stop()
+        self.client.disconnect()
 
     def ping(self, serial_number: str, topic: str) -> None:
         """Ping (update) the mower."""
         cmd = self.format_message(serial_number, {"cmd": Command.FORCE_REFRESH})
-        _LOGGER.debug("Sending '%s' on topic '%s'", cmd, topic)
-        self._configuration.publish(topic, cmd, mqtt.QoS.AT_LEAST_ONCE)
+        self._log.debug("Sending '%s' on topic '%s'", cmd, topic)
+        self.client.publish(topic, cmd, QOS_FLAG)
 
     def command(self, serial_number: str, topic: str, action: Command) -> None:
         """Send a specific command to the mower."""
         cmd = self.format_message(serial_number, {"cmd": action})
-        _LOGGER.debug("Sending '%s' on topic '%s'", cmd, topic)
-        self._configuration.publish(topic, cmd, mqtt.QoS.AT_LEAST_ONCE)
+        self._log.debug("Sending '%s' on topic '%s'", cmd, topic)
+        self.client.publish(topic, cmd, QOS_FLAG)
 
     def publish(self, serial_number: str, topic: str, message: dict) -> None:
         """Publish message to the mower."""
-        _LOGGER.debug("Publishing message '%s'", message)
-        self._configuration.publish(
-            topic,
-            self.format_message(serial_number, message),
-            mqtt.QoS.AT_LEAST_ONCE,
+        self._log.debug("Publishing message '%s'", message)
+        self.client.publish(
+            topic, self.format_message(serial_number, message), QOS_FLAG
         )
 
     def format_message(self, serial_number: str, message: dict) -> str:
@@ -166,6 +234,6 @@ class MQTT(LDict):
         }
 
         msg.update(message)
-        _LOGGER.debug("Formatting message '%s' to '%s'", message, msg)
+        self._log.debug("Formatting message '%s' to '%s'", message, msg)
 
         return json.dumps(msg)

@@ -249,13 +249,17 @@ class WorxCloud(dict):
             self._cloud.BRAND_PREFIX,
             self._endpoint,
             self._user_id,
+            self._log,
             self._on_update,
         )
+
+        self.mqtt.connect()
+        while self.mqtt.connected is False:
+            pass
 
         for mower in self._mowers:
             self.mqtt.subscribe(mower["mqtt_topics"]["command_out"])
 
-        self.mqtt.connect()
         self._log.debug("MQTT connect done")
 
         # Convert time strings to objects.
@@ -286,11 +290,11 @@ class WorxCloud(dict):
         """Return current authentication result."""
         return self._auth_result
 
-    def _on_update(self, topic, payload, dup, qos, retain, **kwargs):
+    def _on_update(self, payload):
         """Triggered when a MQTT message was received."""
         data = json.loads(payload)
         logger = self._log.getChild("MQTT_data_in")
-        logger.debug("MQTT data received '%s' on topic '%s'", payload, topic)
+        logger.debug("MQTT data received '%s'", payload)
 
         mower = self.get_mower(data["cfg"]["sn"])
         device = self.get_device(mower["name"])
