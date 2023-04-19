@@ -307,6 +307,7 @@ class worxLandroidS extends eqLogic {
                 $eqLogic->setConfiguration('mac_address', implode(":", str_split($device['mac_address'], 2)));
             }
             $eqLogic->setConfiguration('firmware_version', $device['firmware']['version']);
+            $eqLogic->setConfiguration('product_code', $device['product_code']);
             $eqLogic->save();
         }
     }

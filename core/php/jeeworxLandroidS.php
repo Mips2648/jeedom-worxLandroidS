@@ -42,6 +42,13 @@ try {
         }
         log::add('worxLandroidS', 'debug', "new message for '{$result['uuid']}': " . json_encode($result['data']));
         $eqLogic->on_message($result['data']);
+    } elseif (isset($result['activity_logs'])) {
+        /** @var worxLandroidS */
+        $eqLogic = eqLogic::byLogicalId($result['activity_logs'], 'worxLandroidS');
+        if (!is_object($eqLogic)) {
+            log::add('worxLandroidS', 'error', __('worxLandroidS eqLogic non trouvé : ', __FILE__) . $result['uuid']);
+        }
+        log::add('worxLandroidS', 'debug', "activity_logs for '{$result['activity_logs']}': " . json_encode($result['data']));
     } else {
         log::add('worxLandroidS', 'debug', 'unknown message: ' . json_encode($result));
     }

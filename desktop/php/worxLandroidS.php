@@ -163,8 +163,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
                             <div class="form-group">
                                 <label class="col-sm-3 control-label"> {{Type Tondeuse}}</label>
                                 <div class="col-sm-3">
-                                    <span class="label label-info eqLogicAttr" data-l1key="configuration" data-l2key="mowerDescription"></span>
-                                    <span class="label label-info eqLogicAttr" data-l1key="configuration" data-l2key="MowerType"></span>
+                                    <span class="label label-info eqLogicAttr" data-l1key="configuration" data-l2key="product_code"></span>
                                 </div>
                             </div>
                             <div class="form-group">

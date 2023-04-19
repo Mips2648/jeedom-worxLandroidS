@@ -93,6 +93,13 @@ class worxLandroidS:
                     self.close()
                 elif message['action'] == 'synchronize':
                     await self._send_devices()
+                elif message['action'] == 'get_activity_logs':
+                    device = self._cloud.get_device_by_serial_number(message['serial_number'])
+                    tmp = {
+                        "activity_logs": device.uuid,
+                        "data": self._cloud.get_activity_logs(device.serial_number)
+                    }
+                    await self.__send_async(tmp)
                 else:
                     await self._executeAction(message)
             except Exception as e:

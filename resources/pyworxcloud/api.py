@@ -105,10 +105,25 @@ class LandroidCloudAPI:
             f"https://{self.cloud.ENDPOINT}/api/v2/product-items?status=1",
             HEADERS(self.access_token),
         )
+        products = self.get_products()
+
         for mower in mowers:
             mower["firmware_version"] = "{:.2f}".format(mower["firmware_version"])
+            mower["product_code"] = next(p for p in products if p["id"] == mower["product_id"])["code"]
 
         return mowers
+
+    def get_products(self):
+        products = GET(
+            f"https://{self.cloud.ENDPOINT}/api/v2/products",
+            HEADERS(self.access_token),)
+        return products
+
+    def get_activity_logs(self, serial_number: str):
+        logs = GET(
+            f"https://{self.cloud.ENDPOINT}/api/v2/product-items/{serial_number}/activity-log",
+            HEADERS(self.access_token),)
+        return logs
 
     @property
     def data(self) -> str:

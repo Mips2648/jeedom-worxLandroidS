@@ -18,7 +18,6 @@
 if (!isConnect('admin')) {
 	throw new Exception('401 Unauthorized');
 }
-$eqLogics = worxLandroidS::byType('worxLandroidS');
 ?>
 
 <table class="table table-condensed tablesorter" id="table_healthworxLandroidS">
@@ -35,25 +34,35 @@ $eqLogics = worxLandroidS::byType('worxLandroidS');
 	</thead>
 	<tbody>
 		<?php
+		/** @var eqLogic[] */
+		$eqLogics = worxLandroidS::byType('worxLandroidS', true);
 		foreach ($eqLogics as $eqLogic) {
 
-			// get history
-			$sn = $eqLogic->getConfiguration('serialNumber');
-			$api_token = config::byKey('api_token', 'worxLandroidS');
+			// // get history
+			// $sn = $eqLogic->getConfiguration('serialNumber');
+			// $api_token = config::byKey('api_token', 'worxLandroidS');
 
-			$url       = 'https://api.worxlandroid.com/api/v2/product-items/' . $sn . '/activity-log';
+			// $url       = 'https://api.worxlandroid.com/api/v2/product-items/' . $sn . '/activity-log';
 
-			$content = "application/json";
-			$ch      = curl_init($url);
-			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-			curl_setopt($ch, CURLOPT_HEADER, FALSE);
-			curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-				"Content-Type: application/json",
-				'Authorization: Bearer ' . $api_token
-			));
+			// $content = "application/json";
+			// $ch      = curl_init($url);
+			// curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+			// curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			// curl_setopt($ch, CURLOPT_HEADER, FALSE);
+			// curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+			// 	"Content-Type: application/json",
+			// 	'Authorization: Bearer ' . $api_token
+			// ));
 
-			$jsonHistory = curl_exec($ch);
+			// $jsonHistory = curl_exec($ch);
+
+			$params = [
+				'action' => 'get_activity_logs',
+				'serial_number' => $eqLogic->getConfiguration('serial_number')
+			];
+			worxLandroidS::sendToDaemon($params);
+			// $eqLogic->setCache()
+
 			log::add('worxLandroidS', 'info', 'Connexion result :' . $jsonHistory);
 			if (is_null($jsonHistory)) {
 			} else {

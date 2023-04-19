@@ -531,9 +531,16 @@ class WorxCloud(dict):
             f"Mower with serialnumber {serial_number} was not found."
         )
 
+    def get_activity_logs(self, serial_number: str):
+        return self._api.get_activity_logs(serial_number)
+
     def get_device(self, name: str) -> DeviceHandler:
         """Get a specific device by mower name."""
         return self.devices[name]
+
+    def get_device_by_serial_number(self, serial_number: str):
+        mower = self.get_mower(serial_number)
+        return self.get_device(mower["name"])
 
     def update(self, serial_number: str) -> None:
         """Request a state refresh."""
