@@ -274,6 +274,7 @@ class WorxCloud(dict):
 
     def renew_connection(self) -> bool:
         try:
+            self._log.info("Renew connection")
             self._api.update_token()
         except Exception as e:
             self._log.warning("Exception during refresh token:%s", e)
@@ -513,7 +514,7 @@ class WorxCloud(dict):
     def _fetch(self) -> None:
         """Fetch base API information."""
         self._mowers = self._api.get_mowers()
-
+        self._log.info("Found %s mower(s)", len(self._mowers))
         for mower in self._mowers:
             device = DeviceHandler(self._api, mower)
             _LOGGER.debug("Mower '%s' data: %s", mower["name"], mower)
