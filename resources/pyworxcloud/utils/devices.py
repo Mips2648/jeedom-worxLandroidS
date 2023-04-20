@@ -49,7 +49,11 @@ class DeviceHandler(LDict):
         self._mower = mower
         self._tz = tz
 
-        self.__json_data = mower["last_status"]["payload"]
+        try:
+            self.__json_data = mower["last_status"]["payload"]
+        except:
+            _LOGGER.info("no last_status payload found for '%s', is your mower connected?", mower["name"])
+            pass
 
         if not isinstance(mower, type(None)) and not isinstance(api, type(None)):
             self.__mapinfo(api, mower)
@@ -97,8 +101,6 @@ class DeviceHandler(LDict):
 
         if not "time_zone" in data:
             data["time_zone"] = "UTC"
-
-        _LOGGER.debug("mapinfo data: %s", data)
 
         self.battery = Battery(data)
         self.blades = Blades(data)

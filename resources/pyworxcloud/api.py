@@ -54,9 +54,9 @@ class LandroidCloudAPI:
         self._logger.debug("get token:%s", str(resp))
         self.access_token = resp["access_token"]
         self.refresh_token = resp["refresh_token"]
-        self.expires_in = resp["expires_in"]
+        self.expires_in = int(resp["expires_in"])
         now = int(time.time())
-        self._token_expire = now + int(resp["expires_in"])
+        self._token_expire = now + self.expires_in
 
     def update_token(self) -> None:
         """Refresh the tokens."""

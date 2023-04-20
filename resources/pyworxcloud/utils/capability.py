@@ -34,8 +34,6 @@ class Capability:
         self.__int__: int = 0
         self.ready: bool = False
 
-        _LOGGER.debug("Capability data: %s", device_data)
-
         try:
             if "sc" in device_data["last_status"]["payload"]["cfg"]:
                 if "ots" in device_data["last_status"]["payload"]["cfg"]["sc"]:

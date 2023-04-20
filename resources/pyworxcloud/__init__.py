@@ -177,7 +177,7 @@ class WorxCloud(dict):
 
     def authenticate(self) -> bool:
         """Authenticate against the API."""
-        self._log.debug("Authenticating %s", self._username)
+        self._log.debug("Authenticating xxx@%s", self._username.split("@")[1])
 
         self._api.get_token()
         auth = self._api.authenticate()
@@ -516,8 +516,8 @@ class WorxCloud(dict):
         self._mowers = self._api.get_mowers()
         self._log.info("Found %s mower(s)", len(self._mowers))
         for mower in self._mowers:
-            device = DeviceHandler(self._api, mower)
             _LOGGER.debug("Mower '%s' data: %s", mower["name"], mower)
+            device = DeviceHandler(self._api, mower)
             self.devices.update({mower["name"]: device})
 
             self._decode_data(device)
