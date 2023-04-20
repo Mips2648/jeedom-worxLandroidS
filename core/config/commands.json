@@ -559,6 +559,19 @@
     ],
     "zone": [
         {
+            "logicalId": "zone_current",
+            "name": "Zone actuelle",
+            "type": "info",
+            "subtype": "numeric",
+            "isVisible": 0,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            },
+            "initialValue": 0
+        },
+        {
             "logicalId": "zone_next_start",
             "name": "Zone prochain départ",
             "type": "info",
