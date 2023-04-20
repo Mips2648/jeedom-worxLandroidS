@@ -409,10 +409,10 @@ class worxLandroidS extends eqLogic {
         $this->checkAndUpdateCmd('statistics_worktime_total', $data['statistics']['worktime_total']);
 
         $this->checkAndUpdateCmd('status_id', $data['status']['id']);
-        $this->checkAndUpdateCmd('status_description', $data['status']['description']);
+        $this->checkAndUpdateCmd('status_description', self::getStatusDescription($data['status']['id']));
 
         $this->checkAndUpdateCmd('error_id', $data['error']['id']);
-        $this->checkAndUpdateCmd('error_description', $data['error']['description']);
+        $this->checkAndUpdateCmd('error_description', self::getErrorDescription($data['error']['id']));
 
         if (array_key_exists('gps', $data)) {
             $this->checkAndUpdateCmd('gps_latitude', $data['gps']['latitude']);
@@ -574,143 +574,59 @@ class worxLandroidS extends eqLogic {
     }
 
 
-    public static function getErrorDescription($errorcode) {
-        switch ($errorcode) {
-                /*
-          case '0': return 'No error';         break;
-          case '1': return  'Trapped';         break;
-          case '2': return  'Lifted';         break;
-          case '3': return  'Wire missing';         break;
-          case '4': return  'Outside wire';        break;
-          case '5': return  'Rain delay';  break;
-          case '6': return  'Close door to mow';        break;
-          case '7': return  'Close door to go home';    break;
-          case '8': return  'Blade motor blocked';       break;
-          case '9': return  'Wheel motor blocked';       break;
-          case '10': return  'Trapped timeout';         break;
-          case '11': return  'Upside down';         break;
-          case '12': return  'Battery low';         break;
-          case '13': return  'Reverse wire';         break;
-          case '14': return  'Charge error';         break;
-          case '15': return  'Timeout finding home';        break;
-          default: return 'Unknown';
-          */
-            case '0':
-                return __('Aucune erreur', __FILE__);
-                break;
-            case '1':
-                return __('Bloquée', __FILE__);
-                break;
-            case '2':
-                return __('Soulevée', __FILE__);
-                break;
-            case '3':
-                return __('Câble non trouvé', __FILE__);
-                break;
-            case '4':
-                return __('En dehors des limites', __FILE__);
-                break;
-            case '5':
-                return __('Délai pluie', __FILE__);
-                break;
-            case '6':
-                return 'Close door to mow';
-                break;
-            case '7':
-                return 'Close door to go home';
-                break;
-            case '8':
-                return __('Moteur lames bloqué', __FILE__);
-                break;
-            case '9':
-                return __('Moteur roues bloqué', __FILE__);
-                break;
-            case '10':
-                return __('Timeout après blocage', __FILE__);
-                break;
-            case '11':
-                return __('Renversée', __FILE__);
-                break;
-            case '12':
-                return __('Batterie faible', __FILE__);
-                break;
-            case '13':
-                return __('Câble inversé', __FILE__);
-                break;
-            case '14':
-                return __('Erreur charge batterie', __FILE__);
-                break;
-            case '15':
-                return __('Delai recherche station dépassé', __FILE__);
-                break;
-            default:
-                return 'communication tondeuse impossible';
-                break;
-        }
+    public static function getErrorDescription($code) {
+        $desc = [
+            -1 => __('Inconnu', __FILE__),
+            0 => __('Aucune erreur', __FILE__),
+            1 => __('Coincée', __FILE__),
+            2 => __('Soulevée', __FILE__),
+            3 => __('Câble non trouvé', __FILE__),
+            4 => __('En dehors des limites', __FILE__),
+            5 => __('Délai pluie', __FILE__),
+            6 => "close door to mow",
+            7 => "close door to go home",
+            8 => __('Moteur lames bloqué', __FILE__),
+            9 => __('Moteur roues bloqué', __FILE__),
+            10 => __('Timeout après blocage', __FILE__),
+            11 => __('Renversée', __FILE__),
+            12 => __('Batterie faible', __FILE__),
+            13 => __('Câble inversé', __FILE__),
+            14 => __('Erreur charge batterie', __FILE__),
+            15 => __('Délai recherche base dépassé', __FILE__),
+            16 => __('Verrouillée', __FILE__),
+            17 => "battery temperature error",
+            18 => "dummy model",
+            19 => "battery trunk open timeout",
+            20 => "wire sync",
+            21 => "msg num",
+        ];
+        return $desc[$code];
     }
 
-    public static function getStatusDescription($statuscode) {
-        switch ($statuscode) {
-            case '0':
-                return __("Inactive", __FILE__);
-                break;
-            case '1':
-                return __("Sur la base", __FILE__);
-                break;
-            case '2':
-                return __("Séquence de démarrage", __FILE__);
-                break;
-            case '3':
-                return __("Quitte la base", __FILE__);
-                break;
-            case '4':
-                return __("Suit le câble", __FILE__);
-                break;
-            case '5':
-                return __("Recherche de la base", __FILE__);
-                break;
-            case '6':
-                return __("Recherche du câble", __FILE__);
-                break;
-            case '7':
-                return __("En cours de tonte", __FILE__);
-                break;
-            case '8':
-                return __("Soulevée", __FILE__);
-                break;
-            case '9':
-                return __("Coincée", __FILE__);
-                break;
-            case '10':
-                return __("Lames bloquées", __FILE__);
-                break;
-            case '11':
-                return "Debug";
-                break;
-            case '12':
-                return __("Remote control", __FILE__);
-                break;
-            case '30':
-                return __("Retour à la base", __FILE__);
-                break;
-            case '31':
-                return __("Création de zones", __FILE__);
-                break;
-            case '32':
-                return __("Coupe la bordure", __FILE__);
-                break;
-            case '33':
-                return __("Départ vers zone de tonte", __FILE__);
-                break;
-            case '34':
-                return __("Pause", __FILE__);
-                break;
+    public static function getStatusDescription($code) {
+        $desc = [
+            -1 => __('Inconnu', __FILE__),
+            0 => __("Inactive", __FILE__),
+            1 => __("Sur la base", __FILE__),
+            2 => __("Séquence de démarrage", __FILE__),
+            3 => __("Quitte la base", __FILE__),
+            4 => __("Suit le câble", __FILE__),
+            5 => __("Recherche de la base", __FILE__),
+            6 => __("Recherche du câble", __FILE__),
+            7 => __("En cours de tonte", __FILE__),
+            8 => __("Soulevée", __FILE__),
+            9 => __("Coincée", __FILE__),
+            10 => __("Lames bloquées", __FILE__),
+            11 => 'Debug',
+            12 => __("Contrôle à distance", __FILE__),
+            30 => __("Retour à la base", __FILE__),
+            31 => __("Création de zones", __FILE__),
+            32 => __("Coupe la bordure", __FILE__),
+            33 => __("Départ vers zone de tonte", __FILE__),
+            34 => __("Pause", __FILE__),
 
-            default:
-                return 'unkown';
-                // code...
-                break;
-        }
+        ];
+        return $desc[$code];
     }
 
     public static function getSavedDaySchedule($_id, $i) {
@@ -986,8 +902,6 @@ class worxLandroidS extends eqLogic {
             $replace['#bladesDurationColor#'] = 'orange';
         }
 
-        $replace['#status_description#'] = $this->getStatusDescription($replace['#status_id#']);
-
         $replace['#errorColor#'] = 'darkgreen';
         if ($replace['#error_id#'] == 5) {
             $replace['#errorColor#'] = 'lightblue';
@@ -1025,10 +939,9 @@ class worxLandroidS extends eqLogic {
                 $replace['#errorIcon#'] = 'fas fa-exclamation-circle icon_red';
                 break;
         }
-        $replace['#error_description#'] = $this->getErrorDescription($replace['#error_id#']);
 
         $code = $replace['#status_id#'];
-        if ($code <  5 or $code ==  10 or $code == 9 or $code == 34) {
+        if ($code < 5 or $code == 10 or $code == 9 or $code == 34) {
             $replace['#moving#'] = 'display:none';
         }
 

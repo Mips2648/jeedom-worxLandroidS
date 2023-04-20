@@ -33,6 +33,9 @@ class DeviceHandler(LDict):
     __raw_data: str = None
     __json_data: str = None
 
+    uuid: str
+    serial_number: str
+
     def __init__(
         self,
         api: Any = None,

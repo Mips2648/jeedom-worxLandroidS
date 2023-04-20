@@ -70,6 +70,8 @@ class worxLandroidS:
         device_to_send = (vars(device)).copy()
         for key in ['_api', '_mower', '_tz', '_DeviceHandler__is_decoded', '_DeviceHandler__raw_data', '_DeviceHandler__json_data']:
             device_to_send.pop(key, '')
+        if _LOGGER.level > logging.DEBUG:
+            device_to_send.pop('last_status', '')
         return device_to_send
 
     def _on_message(self, name, device: DeviceHandler):
