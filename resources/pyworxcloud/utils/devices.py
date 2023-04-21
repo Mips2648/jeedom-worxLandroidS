@@ -49,11 +49,12 @@ class DeviceHandler(LDict):
         self._mower = mower
         self._tz = tz
 
-        try:
-            self.__json_data = mower["last_status"]["payload"]
-        except:
-            _LOGGER.info("no last_status payload found for '%s', is your mower connected?", mower["name"])
-            pass
+        if mower is not None:
+            try:
+                self.__json_data = mower["last_status"]["payload"]
+            except:
+                _LOGGER.info("no last_status payload found for '%s', is your mower connected?", mower["name"])
+                pass
 
         if not isinstance(mower, type(None)) and not isinstance(api, type(None)):
             self.__mapinfo(api, mower)
@@ -121,7 +122,6 @@ class DeviceHandler(LDict):
             self.lawn = Lawn(data["lawn_perimeter"], data["lawn_size"])
 
         self.name = data["name"]
-        self.model = "Model info not available in API"  # f"{self.chassis.default_name}{self.chassis.meters}"
 
         for attr in UNWANTED_ATTRIBS:
             if hasattr(self, attr):

@@ -97,9 +97,12 @@ class worxLandroidS:
                     await self._send_devices()
                 elif message['action'] == 'get_activity_logs':
                     device = self._cloud.get_device_by_serial_number(message['serial_number'])
+
+                    logs = self._cloud.get_activity_logs(device)
+
                     tmp = {
                         "activity_logs": device.uuid,
-                        "data": self._cloud.get_activity_logs(device.serial_number)
+                        "data": [l.__dict__ for l in logs.values()]
                     }
                     await self.__send_async(tmp)
                 else:

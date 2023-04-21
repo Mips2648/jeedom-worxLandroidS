@@ -1,6 +1,7 @@
 """Utils."""
 from __future__ import annotations
 
+from .activity import Activity
 from .battery import Battery
 from .blades import Blades
 from .capability import Capability, DeviceCapability
@@ -17,6 +18,7 @@ from .warranty import Warranty
 from .zone import Zone
 
 __all__ = [
+    Activity,
     Battery,
     Blades,
     Capability,

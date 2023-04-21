@@ -23,6 +23,7 @@ from .exceptions import (
 from .helpers import convert_to_time, get_logger
 from .utils import (
     MQTT,
+    Activity,
     Battery,
     DeviceCapability,
     DeviceHandler,
@@ -36,7 +37,7 @@ from .utils.mqtt import Command
 from .utils.schedules import TYPE_TO_STRING
 
 if sys.version_info < (3, 7, 0):
-    sys.exit("The pyWorxcloud module requires Python 3.10.0 or later")
+    sys.exit("The pyWorxcloud module requires Python 3.7.0 or later")
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -532,8 +533,13 @@ class WorxCloud(dict):
             f"Mower with serialnumber {serial_number} was not found."
         )
 
-    def get_activity_logs(self, serial_number: str):
-        return self._api.get_activity_logs(serial_number)
+    def get_activity_logs(self, device: DeviceHandler):
+        logs = self._api.get_activity_logs(device.serial_number)
+        _result = {}
+        for raw_log in logs:
+            log = Activity(raw_log)
+            _result.update({raw_log["_id"]: log})
+        return _result
 
     def get_device(self, name: str) -> DeviceHandler:
         """Get a specific device by mower name."""

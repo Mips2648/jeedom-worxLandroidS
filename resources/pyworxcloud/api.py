@@ -108,8 +108,15 @@ class LandroidCloudAPI:
         products = self.get_products()
 
         for mower in mowers:
+            product = next(p for p in products if p["id"] == mower["product_id"])
+
             mower["firmware_version"] = "{:.2f}".format(mower["firmware_version"])
-            mower["product_code"] = next(p for p in products if p["id"] == mower["product_id"])["code"]
+            mower["product"] = {
+                "code": product["code"],
+                "description": str.format("{}{}", product["default_name"], product["meters"]),
+                "year": product["product_year"],
+                "cutting_width": product["cutting_width"]
+            }
 
         return mowers
 
@@ -125,7 +132,7 @@ class LandroidCloudAPI:
             HEADERS(self.access_token),)
         return logs
 
-    @property
+    @ property
     def data(self) -> str:
         """Return the latest dataset of information and states from the API."""
         return self.api_data

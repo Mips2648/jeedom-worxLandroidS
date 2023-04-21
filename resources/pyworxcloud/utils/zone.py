@@ -11,10 +11,10 @@ class Zone(LDict):
         """Initialize zone object."""
         super().__init__()
 
-        self["current"] = None
-        self["index"] = None
+        self["index"] = data["dat"]["lz"] if "dat" in data else 0
         self["indicies"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         self["starting_point"] = [0, 0, 0, 0]
+        self["current"] = self["indicies"][self["index"]]
 
     @property
     def current(self) -> int:

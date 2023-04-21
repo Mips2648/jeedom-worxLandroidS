@@ -49,6 +49,7 @@ try {
             log::add('worxLandroidS', 'error', __('worxLandroidS eqLogic non trouvé : ', __FILE__) . $result['uuid']);
         }
         log::add('worxLandroidS', 'debug', "activity_logs for '{$result['activity_logs']}': " . json_encode($result['data']));
+        $eqLogic->save_activity_logs($result['data']);
     } else {
         log::add('worxLandroidS', 'debug', 'unknown message: ' . json_encode($result));
     }

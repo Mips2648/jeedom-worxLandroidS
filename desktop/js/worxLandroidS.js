@@ -24,9 +24,9 @@ $("#bt_addworxLandroidSInfo").on('click', function (event) {
     modifyWithoutSave = true
 });
 
-$('#bt_healthworxLandroidS').on('click', function () {
-    $('#md_modal').dialog({ title: "{{Santé worxLandroidS}}" });
-    $('#md_modal').load('index.php?v=d&plugin=worxLandroidS&modal=health').dialog('open');
+$('#bt_activityworxLandroidS').on('click', function () {
+    $('#md_modal').dialog({ title: "{{Rapport d'activité}}" });
+    $('#md_modal').load('index.php?v=d&plugin=worxLandroidS&modal=activity').dialog('open');
 });
 
 $('.pluginAction[data-action=openLocation]').on('click', function () {

@@ -33,10 +33,10 @@ $eqLogics = eqLogic::byType($plugin->getId());
                 <br>
                 <span>{{Synchroniser}}</span>
             </div>
-            <div class="cursor logoSecondary" id="bt_healthworxLandroidS">
-                <i class="fas fa-medkit"></i>
+            <div class="cursor logoSecondary" id="bt_activityworxLandroidS">
+                <i class="fas fa-history"></i>
                 <br>
-                <span>{{Santé}}</span>
+                <span>{{Rapport d'activité}}</span>
             </div>
         </div>
 
@@ -164,6 +164,19 @@ $eqLogics = eqLogic::byType($plugin->getId());
                                 <label class="col-sm-3 control-label"> {{Type Tondeuse}}</label>
                                 <div class="col-sm-3">
                                     <span class="label label-info eqLogicAttr" data-l1key="configuration" data-l2key="product_code"></span>
+                                    <span class="label label-info eqLogicAttr" data-l1key="configuration" data-l2key="product_description"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label"> {{Année de production}}</label>
+                                <div class="col-sm-3">
+                                    <span class="label label-info eqLogicAttr" data-l1key="configuration" data-l2key="product_year"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label"> {{Largeur de coupe}}</label>
+                                <div class="col-sm-3">
+                                    <span class="label label-info eqLogicAttr" data-l1key="configuration" data-l2key="product_cutting_width"></span>
                                 </div>
                             </div>
                             <div class="form-group">

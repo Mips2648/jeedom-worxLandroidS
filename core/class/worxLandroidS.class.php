@@ -37,59 +37,7 @@ class worxLandroidS extends eqLogic {
         return config::byKey('socketport', __CLASS__, 55073);
     }
 
-    // public static function daemon() {
 
-    //     $RESOURCE_PATH = realpath(dirname(__FILE__) . '/../../resources/');
-    //     $CERTFILE      = $RESOURCE_PATH . '/cert.pem';
-    //     $PKEYFILE      = $RESOURCE_PATH . '/pkey.pem';
-    //     $ROOT_CA       = $RESOURCE_PATH . '/vs-ca.pem';
-    //     $default_message_file = $RESOURCE_PATH . '/message_default.json';
-    //     // log::add(__CLASS__, 'debug', '$RESOURCE_PATH: ' . $CERTFILE);
-    //     // init first connection
-    //     if (config::byKey('initCloud', __CLASS__) == true) {
-    //         //log::add(__CLASS__, 'info', 'Paramètres utilisés, Host : ' . config::byKey('worxLandroidSAdress', __CLASS__, '127.0.0.1') . ', Port : ' . config::byKey('worxLandroidSPort', __CLASS__, '1883') . ', ID : ' . config::byKey('worxLandroidSId', __CLASS__, 'Jeedom'));
-
-    //         $email  = config::byKey('email', __CLASS__);
-    //         $passwd = config::byKey('passwd', __CLASS__);
-    //         // get mqtt config
-    //         $url    = "https://id.eu.worx.com/oauth/token";
-
-    //         $token       = "725f542f5d2c4b6a5145722a2a6a5b736e764f6e725b462e4568764d4b58755f6a767b2b76526457";
-    //         $ch          = curl_init();
-    //         $data        = array(
-    //             "username" => $email,
-    //             "password" => $passwd,
-    //             "client_id" => "150da4d2-bb44-433b-9429-3773adc70a2a",
-    //             "grant_type" => "password",
-    //             "type" => "app",
-    //             "client_secret" => "nCH3A0WvMYn66vGorjSrnGZ2YtjQWDiCvjg7jNxK",
-    //             "scope" => "*"
-    //         );
-    //         $data_string = json_encode($data);
-
-    //         $ch = curl_init($url);
-    //         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-    //         curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-    //         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    //         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-    //             'Content-Type: application/json',
-    //             //'Content-Length: ' . strlen($data_string),
-    //             'x-auth-token:' . $token
-    //         ));
-    //         $result = curl_exec($ch);
-    //         $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    //         log::add(__CLASS__, 'info', 'Connexion result :' . $result . $httpcode);
-    //         $json = json_decode($result, true);
-    //         if (is_null($json) or $httpcode <> '200') {
-    //             log::add(__CLASS__, 'info', 'Connexion KO');
-
-    //             event::add('jeedom::alert', array(
-    //                 'level' => 'warning',
-    //                 'page' => __CLASS__,
-    //                 'message' => __('Données de connexion incorrectes', __FILE__)
-    //             ));
-    //             //$this->checkAndUpdateCmd('communicationStatus',false);
-    //             //return false;
     //         } else {
     //             log::add(__CLASS__, 'info', 'Connexion OK');
     //             // get users parameters
@@ -307,7 +255,10 @@ class worxLandroidS extends eqLogic {
                 $eqLogic->setConfiguration('mac_address', implode(":", str_split($device['mac_address'], 2)));
             }
             $eqLogic->setConfiguration('firmware_version', $device['firmware']['version']);
-            $eqLogic->setConfiguration('product_code', $device['product_code']);
+            $eqLogic->setConfiguration('product_code', $device['product']['code']);
+            $eqLogic->setConfiguration('product_description', $device['product']['description']);
+            $eqLogic->setConfiguration('product_year', $device['product']['year']);
+            $eqLogic->setConfiguration('product_cutting_width', $device['product']['cutting_width'] . ' mm');
             $eqLogic->save();
         }
     }
@@ -326,50 +277,6 @@ class worxLandroidS extends eqLogic {
 
     public static function synchronize() {
         self::sendToDaemon(['action' => 'synchronize']);
-    }
-
-    public static function create_equipement($product, $MowerType, $mowerDescription, $doubleSchedule) {
-        $elogic = new worxLandroidS();
-        $elogic->setEqType_name(__CLASS__);
-        $elogic->setLogicalId($product['mac_address']);
-        $elogic->setName($product['name']);
-        $elogic->setConfiguration('serialNumber', $product['serial_number']);
-        $elogic->setConfiguration('warranty_expiration_date', $product['warranty_expires_at']);
-        $elogic->setConfiguration('MowerType', $MowerType);
-        $elogic->setConfiguration('maxBladesDuration', 300);
-        $elogic->setConfiguration('mowerDescription', $mowerDescription);
-        $elogic->setConfiguration('doubleSchedule', $doubleSchedule);
-
-        $commandIn = $MowerType . '/' . $product['mac_address'] . '/commandIn'; //config::byKey('MowerType', __CLASS__).'/'. $json2_data->dat->mac .'/commandIn';
-
-        // $elogic->newAction('off_today', $commandIn, "off_today", 'other');
-        // $elogic->newAction('on_today', $commandIn, "on_today", 'other');
-        // $elogic->newAction('rain_delay_0', $commandIn, "0", 'other');
-        // $elogic->newAction('rain_delay_30', $commandIn, "30", 'other');
-        // $elogic->newAction('rain_delay_60', $commandIn, "60", 'other');
-        // $elogic->newAction('rain_delay_120', $commandIn, "120", 'other');
-        // $elogic->newAction('rain_delay_240', $commandIn, "240", 'other');
-        // $elogic->newAction('userMessage', $commandIn, "#message#", 'message');
-
-        $display = array(
-            'isvisible' => 1,
-            'name' => __('Lames remplacees', __FILE__)
-        );
-        // $elogic->newAction('newBlades', $commandIn, "", 'other', $display);
-        // $elogic->newInfo('virtualInfo', '', 'string', 0, 'statusCode,statusDescription,batteryLevel,wifiQuality,currentZone');
-
-        $display = array(
-            'message_placeholder' => __('num jour;hh:mm;durée mn;bord(0 ou 1)', __FILE__),
-            'isvisible' => 0,
-            'title_disable' => true
-        );
-
-        // $elogic->newAction('set_schedule', $commandIn, "", 'message', $display);
-
-        // for ($i = 0; $i < 7; $i++) {
-        //     $elogic->newAction('on_' . $i, $commandIn, 'on_' . $i, 'other');
-        //     $elogic->newAction('off_' . $i, $commandIn, 'off_' . $i, 'other');
-        // }
     }
 
     public function on_message($data) {
@@ -425,6 +332,28 @@ class worxLandroidS extends eqLogic {
         }
     }
 
+    public function save_activity_logs($data) {
+        foreach ($data as &$v) {
+            unset($v['_payload']);
+            $v['status']['description'] = self::getStatusDescription($v['status']['id']);
+            $v['error']['description'] = self::getErrorDescription($v['error']['id']);
+        }
+
+        $path = dirname(__FILE__) . '/../../data';
+        if (!is_dir($path)) {
+            mkdir($path, 0770, true);
+        }
+        $file = $path . '/activity_logs_' . $this->getId() . '.json';
+        file_put_contents($file, json_encode($data, JSON_FORCE_OBJECT));
+    }
+
+    public function get_activity_logs() {
+        $path = dirname(__FILE__) . '/../../data';
+        $file = $path . '/activity_logs_' . $this->getId() . '.json';
+        $data = json_decode(file_get_contents($file), true);
+        return $data;
+    }
+
     public static function message($message) {
         log::add(__CLASS__, 'debug', 'Message ' . $message->payload . ' sur ' . $message->topic);
         //json message
@@ -461,43 +390,6 @@ class worxLandroidS extends eqLogic {
           dat->ls statusCode: number;
           statusDescription: string;
           schedule: TimePeriod[];
-
-
-          0: "Idle",
-          1: "Home",
-          2: "Start sequence",
-          3: "Leaving home",
-          4: "Follow wire",
-          5: "Searching home",
-          6: "Searching wire",
-          7: "Mowing",
-          8: "Lifted",
-          9: "Trapped",
-          10: "Blade blocked",
-          11: "Debug",
-          12: "Remote control",
-          30: "Going home",
-          32: "Cutting edge"
-        };
-
-        public static ERROR_CODES = {
-        0: "No error",
-        1: "Trapped",
-        2: "Lifted",
-        3: "Wire missing",
-        4: "Outside wire",
-        5: "Rain delay",
-        6: "Close door to mow",
-        7: "Close door to go home",
-        8: "Blade motor blocked",
-        9: "Wheel motor blocked",
-        10: "Trapped timeout",
-        11: "Upside down",
-        12: "Battery low",
-        13: "Reverse wire",
-        14: "Charge error",
-        15: "Timeout finding home"
-
         */
 
         // $elogic->newInfo('langue', $json2_data->cfg->lg, 'string', 0, '');
@@ -579,7 +471,7 @@ class worxLandroidS extends eqLogic {
         $desc = [
             -1 => __('Inconnu', __FILE__),
             0 => __('Aucune erreur', __FILE__),
-            1 => __('Coincée', __FILE__),
+            1 => __('Bloquée', __FILE__),
             2 => __('Soulevée', __FILE__),
             3 => __('Câble non trouvé', __FILE__),
             4 => __('En dehors des limites', __FILE__),
@@ -616,7 +508,7 @@ class worxLandroidS extends eqLogic {
             6 => __("Recherche du câble", __FILE__),
             7 => __("En cours de tonte", __FILE__),
             8 => __("Soulevée", __FILE__),
-            9 => __("Coincée", __FILE__),
+            9 => __("Bloquée", __FILE__),
             10 => __("Lames bloquées", __FILE__),
             11 => 'Debug',
             12 => __("Contrôle à distance", __FILE__),
