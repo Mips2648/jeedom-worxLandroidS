@@ -259,7 +259,10 @@ class worxLandroidS extends eqLogic {
             $eqLogic->setConfiguration('product_description', $device['product']['description']);
             $eqLogic->setConfiguration('product_year', $device['product']['year']);
             $eqLogic->setConfiguration('product_cutting_width', $device['product']['cutting_width'] . ' mm');
+            $eqLogic->setConfiguration('lawn_perimeter', $device['lawn']['perimeter'] . ' m');
+            $eqLogic->setConfiguration('lawn_size', $device['lawn']['size'] . ' m²');
             $eqLogic->save();
+            $eqLogic->on_message($device);
         }
     }
 
@@ -277,6 +280,23 @@ class worxLandroidS extends eqLogic {
 
     public static function synchronize() {
         self::sendToDaemon(['action' => 'synchronize']);
+    }
+
+    public function set_schedule() {
+        $primary = [
+            ["11:00", 150, 1],
+            ["11:00", 150, 0],
+            ["00:00", 0, 0],
+            ["11:00", 150, 1],
+            ["11:00", 135, 0],
+            ["11:00", 135, 0],
+            ["11:00", 135, 0]
+        ];
+        self::sendToDaemon([
+            'action' => 'set_schedule',
+            'serial_number' => $this->getConfiguration('serial_number'),
+            'args' => [$primary]
+        ]);
     }
 
     public function on_message($data) {
@@ -329,6 +349,38 @@ class worxLandroidS extends eqLogic {
 
         if ($this->getConfiguration('automaticWidget', 0) == 1) {
             $this->refreshWidget();
+        }
+
+        //rain delay
+        $rain_delay_active = $this->getConfiguration('rain_delay_active');
+        if ($data['rainsensor']['delay'] == 0 & $rain_delay_active != 0) {
+            $this->setConfiguration('rain_delay_active', 0);
+            $this->save(true);
+            log::add(__CLASS__, 'info', "rain delay inactive for {$this->getName()}");
+        } elseif ($data['rainsensor']['delay'] > 0 & $rain_delay_active != 1) {
+            $this->setConfiguration('rain_delay_active', 1);
+            $this->save(true);
+            log::add(__CLASS__, 'info', "rain delay active for {$this->getName()}");
+        }
+
+        //schedule
+        $old_schedules = $this->getConfiguration('schedules');
+        if ($old_schedules != $data['schedules']) {
+            $this->setConfiguration('schedules', $data['schedules']);
+            $this->save(true);
+            log::add(__CLASS__, 'info', "Schedules updated for {$this->getName()}");
+        }
+
+        //zone
+        $new_zone = json_encode([
+            "indicies" => $data['zone']['indicies'],
+            "starting_point" => $data['zone']['starting_point']
+        ]);
+        $old_zone = $this->getConfiguration('zone');
+        if ($old_zone != $new_zone) {
+            $this->setConfiguration('zone', $new_zone);
+            $this->save(true);
+            log::add(__CLASS__, 'info', "Zone updated for {$this->getName()}");
         }
     }
 
@@ -754,7 +806,7 @@ class worxLandroidS extends eqLogic {
                 $replace['#' . $cmd->getLogicalId() . '_visible#'] = 'display:none';
             }
 
-            $addCmds = ['set_schedule', 'set_mowing_zone', 'setpartymode', 'unsetpartymode'];
+            $addCmds = ['activateschedules', 'deactivateschedules', 'set_mowing_zone', 'setpartymode', 'unsetpartymode'];
 
             if ($cmd->getIsVisible() and (in_array($cmd->getLogicalId(), $addCmds))) {
                 $cmdaction_html .= $cmd->toHtml($_version, '');
@@ -796,8 +848,10 @@ class worxLandroidS extends eqLogic {
         }
 
         $replace['#errorColor#'] = 'darkgreen';
+        $replace['#error_title#'] = $replace['#error_description#'];
         if ($replace['#error_id#'] == 5) {
             $replace['#errorColor#'] = 'lightblue';
+            $replace['#error_title#'] = $replace['#error_title#'] . ' (' . $replace['#rainsensor_remaining#'] . ' min)';
         } elseif ($replace['#error_id#'] != 0) {
             $replace['#errorColor#'] = 'orange';
         }
@@ -901,6 +955,29 @@ class worxLandroidSCmd extends cmd {
                     if ($i > 3) break;
                 }
                 $params['args'] = [$points];
+                break;
+            case 'set_schedule':
+                $primary = [
+                    ["11:00", 150, 1],
+                    ["11:00", 150, 0],
+                    ["00:00", 0, 0],
+                    ["11:00", 150, 1],
+                    ["11:00", 135, 0],
+                    ["11:00", 135, 0],
+                    ["11:00", 135, 0]
+                ];
+                $secondary = [
+                    ["11:00", 150, 1],
+                    ["11:00", 150, 0],
+                    ["00:00", 0, 0],
+                    ["11:00", 150, 1],
+                    ["11:00", 135, 0],
+                    ["11:00", 135, 0],
+                    ["11:00", 135, 0]
+                ];
+                $params['args'] = [$primary, $secondary];
+
+                break;
             default:
                 # code...
                 break;

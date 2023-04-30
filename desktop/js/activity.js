@@ -43,7 +43,7 @@ function get_activity_logs(mower_id) {
         type: "POST",
         url: "plugins/worxLandroidS/core/ajax/worxLandroidS.ajax.php",
         data: {
-            action: "get_activity_logs",
+            action: "getActivityLogs",
             id: mower_id
         },
         dataType: 'json',

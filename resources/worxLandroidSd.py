@@ -94,6 +94,7 @@ class worxLandroidS:
                 if message['action'] == 'stop':
                     self.close()
                 elif message['action'] == 'synchronize':
+                    self._cloud.fetch()
                     await self._send_devices()
                 elif message['action'] == 'get_activity_logs':
                     device = self._cloud.get_device_by_serial_number(message['serial_number'])
@@ -113,7 +114,7 @@ class worxLandroidS:
     async def _auto_reconnect(self):
         try:
             while True:
-                await asyncio.sleep(self._cloud.get_token_expires_in() * 0.8)
+                await asyncio.sleep(self._cloud.get_token_expires_in() * 0.9)
                 success = self._cloud.renew_connection()
                 retry = 0
                 while not success and retry < 12:
@@ -148,7 +149,10 @@ class worxLandroidS:
             else:
                 worx_method(message['serial_number'])
         except Exception as e:
-            _LOGGER.error('Error during execute action: %s', e)
+            exception_type, exception_object, exception_traceback = sys.exc_info()
+            filename = exception_traceback.tb_frame.f_code.co_filename
+            line_number = exception_traceback.tb_lineno
+            _LOGGER.error('Error during execute action: %s(%s) in %s on line %s', e, exception_type, filename, line_number)
 
     def __methodNotFound(*_):
         _LOGGER.error('unknown method')
@@ -259,5 +263,8 @@ try:
     worx = worxLandroidS(config)
     asyncio.get_event_loop().run_until_complete(worx.main())
 except Exception as e:
-    _LOGGER.error('Fatal error: %s', e)
+    exception_type, exception_object, exception_traceback = sys.exc_info()
+    filename = exception_traceback.tb_frame.f_code.co_filename
+    line_number = exception_traceback.tb_lineno
+    _LOGGER.error('Fatal error: %s(%s) in %s on line %s', e, exception_type, filename, line_number)
 shutdown()

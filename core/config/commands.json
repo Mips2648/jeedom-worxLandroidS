@@ -194,7 +194,7 @@
             "name": "Tangage",
             "type": "info",
             "subtype": "numeric",
-            "isVisible": 0,
+            "isVisible": 1,
             "isHistorized": 0,
             "template": {
                 "dashboard": "line",
@@ -207,7 +207,7 @@
             "name": "Roulis",
             "type": "info",
             "subtype": "numeric",
-            "isVisible": 0,
+            "isVisible": 1,
             "isHistorized": 0,
             "template": {
                 "dashboard": "line",
@@ -220,7 +220,7 @@
             "name": "Direction",
             "type": "info",
             "subtype": "numeric",
-            "isVisible": 0,
+            "isVisible": 1,
             "isHistorized": 0,
             "template": {
                 "dashboard": "line",

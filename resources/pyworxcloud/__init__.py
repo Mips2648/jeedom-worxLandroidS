@@ -237,7 +237,7 @@ class WorxCloud(dict):
             bool: True if connection was successful, otherwise False.
         """
         self._log.debug("Fetching basic API data")
-        self._fetch()
+        self.fetch()
         self._log.debug("Done fetching basic API data")
 
         self._endpoint = self._mowers[0]["mqtt_endpoint"]
@@ -246,7 +246,7 @@ class WorxCloud(dict):
         self._log.debug("Setting up MQTT handler")
         # setup MQTT handler
         self.mqtt = MQTT(
-            self._api.access_token,
+            self._api,
             self._cloud.BRAND_PREFIX,
             self._endpoint,
             self._user_id,
@@ -260,8 +260,6 @@ class WorxCloud(dict):
 
         for mower in self._mowers:
             self.mqtt.subscribe(mower["mqtt_topics"]["command_out"])
-
-        self._log.debug("MQTT connect done")
 
         # Convert time strings to objects.
         # self._log.debug("Converting date and time string")
@@ -363,7 +361,7 @@ class WorxCloud(dict):
 
             # Check for extra module availability
             if "modules" in data["dat"]:
-                if "4G" in data["dat"]["modules"]:
+                if "4G" in data["dat"]["modules"] and "gps" in data["dat"]["modules"]["4G"]:
                     device.gps = Location(
                         data["dat"]["modules"]["4G"]["gps"]["coo"][0],
                         data["dat"]["modules"]["4G"]["gps"]["coo"][1],
@@ -453,51 +451,51 @@ class WorxCloud(dict):
                         "end"
                     ] = end_time.time().strftime("%H:%M")
 
-            # Fetch secondary schedule
-            if "dd" in data["cfg"]["sc"]:
-                sch_type = ScheduleType.SECONDARY
-                device.schedules.update({TYPE_TO_STRING[sch_type]: Weekdays()})
+                # Fetch secondary schedule
+                if "dd" in data["cfg"]["sc"]:
+                    sch_type = ScheduleType.SECONDARY
+                    device.schedules.update({TYPE_TO_STRING[sch_type]: Weekdays()})
 
-                for day in range(0, len(data["cfg"]["sc"]["d"])):
-                    device.schedules[TYPE_TO_STRING[sch_type]][DAY_MAP[day]][
-                        "start"
-                    ] = data["cfg"]["sc"]["dd"][day][0]
-                    device.schedules[TYPE_TO_STRING[sch_type]][DAY_MAP[day]][
-                        "duration"
-                    ] = data["cfg"]["sc"]["dd"][day][1]
-                    device.schedules[TYPE_TO_STRING[sch_type]][DAY_MAP[day]][
-                        "boundary"
-                    ] = bool(data["cfg"]["sc"]["dd"][day][2])
-
-                    time_start = datetime.strptime(
-                        data["cfg"]["sc"]["dd"][day][0],
-                        "%H:%M",
-                    )
-
-                    if isinstance(
+                    for day in range(0, len(data["cfg"]["sc"]["dd"])):
+                        device.schedules[TYPE_TO_STRING[sch_type]][DAY_MAP[day]][
+                            "start"
+                        ] = data["cfg"]["sc"]["dd"][day][0]
                         device.schedules[TYPE_TO_STRING[sch_type]][DAY_MAP[day]][
                             "duration"
-                        ],
-                        type(None),
-                    ):
+                        ] = data["cfg"]["sc"]["dd"][day][1]
                         device.schedules[TYPE_TO_STRING[sch_type]][DAY_MAP[day]][
-                            "duration"
-                        ] = "0"
+                            "boundary"
+                        ] = bool(data["cfg"]["sc"]["dd"][day][2])
 
-                    duration = int(
+                        time_start = datetime.strptime(
+                            data["cfg"]["sc"]["dd"][day][0],
+                            "%H:%M",
+                        )
+
+                        if isinstance(
+                            device.schedules[TYPE_TO_STRING[sch_type]][DAY_MAP[day]][
+                                "duration"
+                            ],
+                            type(None),
+                        ):
+                            device.schedules[TYPE_TO_STRING[sch_type]][DAY_MAP[day]][
+                                "duration"
+                            ] = "0"
+
+                        duration = int(
+                            device.schedules[TYPE_TO_STRING[sch_type]][DAY_MAP[day]][
+                                "duration"
+                            ]
+                        )
+
+                        duration = duration * (
+                            1 + (int(device.schedules["time_extension"]) / 100)
+                        )
+                        end_time = time_start + timedelta(minutes=duration)
+
                         device.schedules[TYPE_TO_STRING[sch_type]][DAY_MAP[day]][
-                            "duration"
-                        ]
-                    )
-
-                    duration = duration * (
-                        1 + (int(device.schedules["time_extension"]) / 100)
-                    )
-                    end_time = time_start + timedelta(minutes=duration)
-
-                    device.schedules[TYPE_TO_STRING[sch_type]][DAY_MAP[day]][
-                        "end"
-                    ] = end_time.time().strftime("%H:%M")
+                            "end"
+                        ] = end_time.time().strftime("%H:%M")
 
             device.schedules.update_progress_and_next(
                 tz=self._tz
@@ -512,7 +510,7 @@ class WorxCloud(dict):
         device.is_decoded = True
         logger.debug("Data for %s has been decoded", device.name)
 
-    def _fetch(self) -> None:
+    def fetch(self) -> None:
         """Fetch base API information."""
         self._mowers = self._api.get_mowers()
         self._log.info("Found %s mower(s)", len(self._mowers))
@@ -772,11 +770,26 @@ class WorxCloud(dict):
         else:
             raise OfflineError("The device is currently offline, no action was sent.")
 
+    def set_schedule(self, serial_number: str, primary=None, secondary=None):
+        mower = self.get_mower(serial_number)
+        if mower["online"]:
+            payload = {"d": primary}
+            if secondary:
+                payload["dd"] = secondary
+            _LOGGER.debug("schedule payload:%s", payload)
+            # self.mqtt.publish(
+            #     serial_number,
+            #     mower["mqtt_topics"]["command_in"],
+            #     {"sc": payload}
+            # )
+        else:
+            raise OfflineError("The device is currently offline, no action was sent.")
+
     def toggle_schedule(self, serial_number: str, enable: bool) -> None:
         """Turn on or off the schedule.
 
         Args:
-            enable (bool): True is enabling the schedule, Fasle is disabling the schedule.
+            enable (bool): True is enabling the schedule, False is disabling the schedule.
 
         Raises:
             OfflineError: Raised if the device is offline.
@@ -784,9 +797,9 @@ class WorxCloud(dict):
         mower = self.get_mower(serial_number)
         if mower["online"]:
             self.mqtt.publish(
-                serial_number, mower["mqtt_topics"]["command_in"],
-                {"sc": {"m": 1}} if enable
-                else {"sc": {"m": 0}}
+                serial_number,
+                mower["mqtt_topics"]["command_in"],
+                {"sc": {"m": 1}} if enable else {"sc": {"m": 0}}
             )
         else:
             raise OfflineError("The device is currently offline, no action was sent.")
