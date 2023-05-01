@@ -49,22 +49,6 @@ try {
         $logs = $eqLogic->get_activity_logs();
         log::add('worxLandroidS', 'debug', 'getActivityLogs:' . json_encode($logs));
         ajax::success($logs);
-    } elseif (init('action') == 'getSchedules') {
-        /** @var worxLandroidS */
-        $eqLogic = eqLogic::byId(init('id'));
-        if (!is_object($eqLogic)) {
-            throw new Exception(__('worxLandroidS eqLogic non trouvé : ', __FILE__) . init('id'));
-        }
-
-        ajax::success(json_decode($eqLogic->getConfiguration('schedules'), true));
-    } elseif (init('action') == 'getZone') {
-        /** @var worxLandroidS */
-        $eqLogic = eqLogic::byId(init('id'));
-        if (!is_object($eqLogic)) {
-            throw new Exception(__('worxLandroidS eqLogic non trouvé : ', __FILE__) . init('id'));
-        }
-
-        ajax::success(json_decode($eqLogic->getConfiguration('zone'), true));
     }
 
     throw new Exception(__('Aucune methode correspondante à: ', __FILE__) . init('action'));
