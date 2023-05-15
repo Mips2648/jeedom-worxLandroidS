@@ -103,6 +103,7 @@ class DeviceHandler(LDict):
         if not "time_zone" in data:
             data["time_zone"] = "UTC"
 
+        _LOGGER.debug("Start mapping...")
         self.battery = Battery(data)
         self.blades = Blades(data)
         self.chassis = ProductInfo(InfoType.MOWER, api, data["product_id"])

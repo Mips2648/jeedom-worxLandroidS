@@ -257,6 +257,12 @@ function printZonePanel(zone) {
 }
 
 function printAutoSchedulePanel(auto_schedule) {
+    auto_schedule = auto_schedule || false
+    if (!auto_schedule) {
+        $("#div_autoschedulesPanel").hide();
+        return;
+    }
+
     const MAP_soil_type = {
         'clay': 'Argile',
         'silt': 'Limon',
@@ -339,7 +345,6 @@ function printEqLogic(_eqLogic) {
     printSchedulesPanel(schedule);
     printZonePanel(JSON.parse(_eqLogic.configuration.zone));
     printAutoSchedulePanel(schedule['auto_schedule']);
-
 }
 
 function translateWeekday(weekday) {

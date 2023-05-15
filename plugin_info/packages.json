@@ -1,7 +1,8 @@
 {
   "pre-install": {},
   "apt": {
-    "python3-requests": {}
+    "python3-requests": {},
+    "python3-dev": {}
   },
   "pip3": {
     "requests": {},
