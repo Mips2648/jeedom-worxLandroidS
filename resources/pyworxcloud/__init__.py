@@ -18,7 +18,8 @@ from .exceptions import (
     NoOneTimeScheduleError,
     NoPartymodeError,
     OfflineError,
-    RequestException,
+    ZoneNoProbability,
+    ZoneNotDefined,
 )
 from .helpers import convert_to_time, get_logger
 from .utils import (
@@ -393,7 +394,6 @@ class WorxCloud(dict):
 
                 # Map current zone to zone index
                 device.zone.current = device.zone.indicies[device.zone.index]
-                # device.zone.current = 1
 
             # Fetch main schedule
             if "sc" in data["cfg"]:
@@ -696,6 +696,10 @@ class WorxCloud(dict):
         elif not mower["online"]:
             raise OfflineError("The device is currently offline, no action was sent.")
 
+    def rotate_left(self, l: list) -> list:
+        l.append(l.pop(0))
+        return l
+
     def set_mowing_zone(self, serial_number: str, zone: str) -> None:
         """Set zone to be mowed when next mowing task is started.
 
@@ -711,19 +715,25 @@ class WorxCloud(dict):
             if not isinstance(zone, int):
                 zone = int(zone)
 
+            self._log.debug("zone:%s", device.zone)
+
             if device.zone["starting_point"][zone] == 0:
-                raise RequestException("Cannot request this zone as it is not defined.")
+                raise ZoneNotDefined("Cannot request this zone as it is not defined.")
 
-            # new_zones = device.zone["indicies"]
+            if not zone in device.zone["indicies"]:
+                raise ZoneNoProbability(
+                    "Cannot request this zone as it is not active."
+                )
 
-            # while not new_zones[device.zone["index"]] == zone:
-            #     tmp = []
-            #     for i in range(1, 10):
-            #         tmp.append(new_zones[i])
-            #     tmp.append(new_zones[0])
-            #     new_zones = tmp
+            new_zones = device.zone["indicies"]
 
-            new_zones = [zone] * 10
+            self._log.debug("current_zones:%s", new_zones)
+
+            while not new_zones[device.zone["index"]] == zone:
+                new_zones = self.rotate_left(new_zones)
+
+            # new_zones = [zone] * 10
+            self._log.debug("new_zones:%s", new_zones)
 
             self.mqtt.publish(
                 serial_number,

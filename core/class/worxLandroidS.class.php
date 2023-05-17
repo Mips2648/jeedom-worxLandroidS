@@ -327,7 +327,7 @@ class worxLandroidS extends eqLogic {
         $this->checkAndUpdateCmd('zone_starting_point_1', $data['zone']['starting_point'][1]);
         $this->checkAndUpdateCmd('zone_starting_point_2', $data['zone']['starting_point'][2]);
         $this->checkAndUpdateCmd('zone_starting_point_3', $data['zone']['starting_point'][3]);
-        $this->checkAndUpdateCmd('zone_next_start', $data['zone']['indicies'][0]);
+        $this->checkAndUpdateCmd('zone_next_start', $data['zone']['current']);
         $this->checkAndUpdateCmd('zone_current', $data['zone']['current'] + 1);
 
         $this->checkAndUpdateCmd('schedules_active', $data['schedules']['active']);

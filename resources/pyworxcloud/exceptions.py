@@ -83,3 +83,11 @@ class MowerNotFoundError(Exception):
 
 class NoConnectionError(Exception):
     """Raised when the endpoint cannot be reached."""
+
+
+class ZoneNotDefined(Exception):
+    """Raised when the requested zone is not defined."""
+
+
+class ZoneNoProbability(Exception):
+    """Raised when the requested zone is has no probability set."""

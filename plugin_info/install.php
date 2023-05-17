@@ -32,11 +32,6 @@ function worxLandroidS_update() {
 
     /** @var worxLandroidS */
     foreach (eqLogic::byType($pluginId) as $eqLogic) {
-        /** @var cmd */
-        // $cmd = $eqLogic->getCmd('info', 'zone_current');
-        // if (is_object($cmd)) {
-        //     $cmd->remove();
-        // }
         $cmd = $eqLogic->getCmd('action', 'setzone');
         if (is_object($cmd)) {
             $cmd->remove();
