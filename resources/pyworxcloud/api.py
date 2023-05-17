@@ -50,13 +50,16 @@ class LandroidCloudAPI:
             "username": self.username,
             "password": self.password
         }
-        resp = POST(url, request_body, HEADERS())
-        self._logger.debug("get token:%s", str(resp))
-        self.access_token = resp["access_token"]
-        self.refresh_token = resp["refresh_token"]
-        self.expires_in = int(resp["expires_in"])
-        now = int(time.time())
-        self._token_expire = now + self.expires_in
+        try:
+            resp = POST(url, request_body, HEADERS())
+            self._logger.debug("get token:%s", str(resp))
+            self.access_token = resp["access_token"]
+            self.refresh_token = resp["refresh_token"]
+            self.expires_in = int(resp["expires_in"])
+            now = int(time.time())
+            self._token_expire = now + self.expires_in
+        except Exception as e:
+            self._logger.warning("Failed to get token:%s", e)
 
     def update_token(self) -> None:
         """Refresh the tokens."""
