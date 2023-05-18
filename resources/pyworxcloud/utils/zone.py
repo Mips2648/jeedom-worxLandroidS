@@ -11,11 +11,13 @@ class Zone(LDict):
         """Initialize zone object."""
         super().__init__()
 
-        if "last_status" in data:
+        try:
             self["index"] = data["last_status"]["payload"]["dat"]["lz"]
             self["indicies"] = data["last_status"]["payload"]["cfg"]["mzv"]
             self["starting_point"] = data["last_status"]["payload"]["cfg"]["mz"]
             self["current"] = self["indicies"][self["index"]]
+        except TypeError:
+            pass
         else:
             self["index"] = 0
             self["indicies"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
