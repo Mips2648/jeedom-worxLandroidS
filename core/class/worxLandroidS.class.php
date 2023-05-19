@@ -814,14 +814,16 @@ class worxLandroidS extends eqLogic {
         }
         $replace['#cmdaction#'] = $cmdaction_html;
 
-        $batteryLevel = $this->getCmdInfoValue('battery_percent', 0);
+        $batteryLevelCmd = $this->getCmd(null, 'battery_percent');
+        $batteryLevel = is_object($batteryLevelCmd) ? $batteryLevelCmd->execCmd() : 0;
         if ($batteryLevel > 90)  $replace['#batteryIMG#']  = "batterie_full.png";
         elseif ($batteryLevel > 75) $replace['#batteryIMG#']  = "batterie_high.png";
         elseif ($batteryLevel > 50) $replace['#batteryIMG#']  = 'batterie_medium.png';
         elseif ($batteryLevel > 25) $replace['#batteryIMG#']  = 'batterie_low.png';
         else $replace['#batteryIMG#']  = 'batterie_highlow.png';
 
-        $wifiQuality = $this->getCmdInfoValue('rssi', 0);
+        $wifiQualityCmd = $this->getCmd(null, 'rssi');
+        $wifiQuality = is_object($wifiQualityCmd) ? $wifiQualityCmd->execCmd() : -100;
         if ($wifiQuality <= -90) $replace['#wifiIconClass#']  = 'jeedom2-fdp1-signal0';
         elseif ($wifiQuality <= -80) $replace['#wifiIconClass#']  = 'jeedom2-fdp1-signal1';
         elseif ($wifiQuality <= -70) $replace['#wifiIconClass#']  = 'jeedom2-fdp1-signal2';
@@ -840,7 +842,9 @@ class worxLandroidS extends eqLogic {
         }
         $replace['#raindelay#'] =  $rainCmdHtml;
 
-        $replace['#blades_current_on#'] = round($this->getCmdInfoValue('blades_current_on', 0) / 60);
+        $bladesCmd = $this->getCmd(null, 'blades_current_on');
+        $blades = is_object($bladesCmd) ? $bladesCmd->execCmd() : 0;
+        $replace['#blades_current_on#'] = round($blades / 60);
 
         $replace['#bladesDurationColor#'] = 'green';
         if ($replace['#blades_current_on#'] > $this->getConfiguration('maxBladesDuration')) {
