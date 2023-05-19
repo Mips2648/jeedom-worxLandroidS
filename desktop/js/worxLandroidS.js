@@ -267,12 +267,23 @@ function printAutoSchedulePanel(auto_schedule) {
         'clay': 'Argile',
         'silt': 'Limon',
         'sand': 'Sable',
-        'ignore': 'Inconnu'
+        'ignore': 'Inconnu',
+        'unknown': 'Inconnu'
     };
 
     const MAP_grass_type = {
-        'mixed_species': 'Espèces mixtes'
+        'mixed_species': 'Espèces mixtes',
+        'unknown': 'Inconnu'
     };
+
+    if (auto_schedule['enabled']) {
+        labelClass = 'label-success';
+        text = '<i class="fas fa-check"> Actif</i>'
+    } else {
+        labelClass = 'label-danger';
+        text = '<i class="fas fa-times"> Inactif</i>'
+    }
+    $('#auto_schedule').html('<label class="label ' + labelClass + '">' + text + '</label>')
 
     const settings = auto_schedule['settings'];
 
@@ -283,46 +294,39 @@ function printAutoSchedulePanel(auto_schedule) {
 
     $('#table_exclusions tbody').empty();
 
-    for (let day = 1; day <= 7; day++) {
-        let data = settings['exclusion_scheduler']['days'][day % 7]
+    if (settings['exclusion_scheduler'].includes('days')) {
+        for (let day = 1; day <= 7; day++) {
+            let data = settings['exclusion_scheduler']['days'][day % 7]
 
-        if (data.exclude_day) {
-            let tr = '<tr>';
-            tr += '<td>' + translateWeekday(day) + '</td>';
-            tr += '<td><input class="form-control" type="time" value="--:--"></td>';
-            tr += '<td><input class="form-control" type="time" value="--:--"></td>';
-            tr += '<td></td>';
-            tr += '<td><input class="form-control" type="checkbox" ' + (data.exclude_day ? 'checked' : '') + '></td>';
-            tr += '</tr>'
-            $('#table_exclusions tbody').append(tr);
-        } else {
-            let dayNamePrinted = false
-            data.slots.forEach(slot => {
+            if (data.exclude_day) {
                 let tr = '<tr>';
-                if (!dayNamePrinted) {
-                    tr += '<td>' + translateWeekday(day) + '</td>';
-                    dayNamePrinted = true
-                } else {
-                    tr += '<td></td>';
-                }
-                tr += '<td><input class="form-control" type="time" value="' + slot.start_time + '"></td>';
-                tr += '<td><input class="form-control" type="time" value="' + slot.end_time + '"></td>';
-                tr += '<td>' + slot.duration + ' min</td>';
+                tr += '<td>' + translateWeekday(day) + '</td>';
+                tr += '<td><input class="form-control" type="time" value="--:--"></td>';
+                tr += '<td><input class="form-control" type="time" value="--:--"></td>';
+                tr += '<td></td>';
                 tr += '<td><input class="form-control" type="checkbox" ' + (data.exclude_day ? 'checked' : '') + '></td>';
                 tr += '</tr>'
                 $('#table_exclusions tbody').append(tr);
-            });
+            } else {
+                let dayNamePrinted = false
+                data.slots.forEach(slot => {
+                    let tr = '<tr>';
+                    if (!dayNamePrinted) {
+                        tr += '<td>' + translateWeekday(day) + '</td>';
+                        dayNamePrinted = true
+                    } else {
+                        tr += '<td></td>';
+                    }
+                    tr += '<td><input class="form-control" type="time" value="' + slot.start_time + '"></td>';
+                    tr += '<td><input class="form-control" type="time" value="' + slot.end_time + '"></td>';
+                    tr += '<td>' + slot.duration + ' min</td>';
+                    tr += '<td><input class="form-control" type="checkbox" ' + (data.exclude_day ? 'checked' : '') + '></td>';
+                    tr += '</tr>'
+                    $('#table_exclusions tbody').append(tr);
+                });
+            }
         }
     }
-
-    if (auto_schedule['enabled']) {
-        labelClass = 'label-success';
-        text = '<i class="fas fa-check"> Actif</i>'
-    } else {
-        labelClass = 'label-danger';
-        text = '<i class="fas fa-times"> Inactif</i>'
-    }
-    $('#auto_schedule').html('<label class="label ' + labelClass + '">' + text + '</label>')
 
     //TODO: add save feature, for now disabling input
     $("#div_autoschedulesPanel a").hide()

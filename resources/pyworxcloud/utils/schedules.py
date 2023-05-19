@@ -201,13 +201,19 @@ class AutoScheduleSettings(LDict):
         from ..helpers.time_format import minute_to_hour
 
         if data is None:
+            self["boost"] = 0
+            self["grass_type"] = CONST_UNKNOWN
+            self["irrigation"] = False
+            self["nutrition"] = None
+            self["soil_type"] = CONST_UNKNOWN
+            self["exclusion_scheduler"] = {}
             return
 
         try:
             self["boost"] = data["boost"] if "boost" in data else 0
             self["grass_type"] = data["grass_type"] if "grass_type" in data else CONST_UNKNOWN
             self["irrigation"] = data["irrigation"] if "irrigation" in data else False
-            self["nutrition"] = data["nutrition"] if "nutrition" in data else {"k": 0, "n": 0, "p": 0}
+            self["nutrition"] = data["nutrition"] if "nutrition" in data else None
             self["soil_type"] = data["soil_type"] if "soil_type" in data else CONST_UNKNOWN
             self["exclusion_scheduler"] = data["exclusion_scheduler"] if "exclusion_scheduler" in data else {}
 
