@@ -294,7 +294,7 @@ function printAutoSchedulePanel(auto_schedule) {
 
     $('#table_exclusions tbody').empty();
 
-    if (settings['exclusion_scheduler'].includes('days')) {
+    if (settings['exclusion_scheduler'].hasOwnProperty('days')) {
         for (let day = 1; day <= 7; day++) {
             let data = settings['exclusion_scheduler']['days'][day % 7]
 

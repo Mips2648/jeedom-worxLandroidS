@@ -89,7 +89,8 @@
             "template": {
                 "dashboard": "line",
                 "mobile": "line"
-            }
+            },
+            "initialValue": 0
         },
         {
             "logicalId": "battery_charging",
