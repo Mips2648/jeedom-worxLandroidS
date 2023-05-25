@@ -45,6 +45,3 @@ if (!isConnect()) {
 		</div>
 	</fieldset>
 </form>
-<legend>
-	{{En cas d'arrêt prolongé, il est conseillé de désactiver le plugin ou d'arrêter cron et démon }}
-</legend>
