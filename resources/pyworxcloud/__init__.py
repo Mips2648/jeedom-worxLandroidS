@@ -746,6 +746,7 @@ class WorxCloud(dict):
     def set_zones_vector(self, serial_number: str, vector) -> None:
         mower = self.get_mower(serial_number)
         if mower["online"]:
+            device = self.get_device(mower["name"])
             _LOGGER.debug("vector:%s", vector)
 
             new_indicies = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -758,6 +759,8 @@ class WorxCloud(dict):
                     if vector[zone] == 0:
                         _LOGGER.debug("zone:%s is 0", zone)
                         continue
+                    if device.zone["starting_point"][zone] == 0:
+                        raise ZoneNotDefined(f"Cannot set zone {zone} because starting point is not set.")
                     new_indicies[i] = zone
                     vector[zone] -= 10
                     break
