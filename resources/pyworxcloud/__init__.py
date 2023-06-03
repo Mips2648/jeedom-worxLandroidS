@@ -743,6 +743,38 @@ class WorxCloud(dict):
         else:
             raise OfflineError("The device is currently offline, no action was sent.")
 
+    def set_zones_vector(self, serial_number: str, vector) -> None:
+        mower = self.get_mower(serial_number)
+        if mower["online"]:
+            _LOGGER.debug("vector:%s", vector)
+
+            new_indicies = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            zone = -1
+            for i in range(10):
+                j = 0
+                while j < 4:
+                    j += 1
+                    zone = (zone + 1) % 4
+                    if vector[zone] == 0:
+                        _LOGGER.debug("zone:%s is 0", zone)
+                        continue
+                    new_indicies[i] = zone
+                    vector[zone] -= 10
+                    break
+                else:
+                    _LOGGER.debug("no more zones to set")
+                    break
+
+            _LOGGER.debug("new_indicies:%s", new_indicies)
+
+            self.mqtt.publish(
+                serial_number,
+                mower["mqtt_topics"]["command_in"],
+                {"mzv": new_indicies},
+            )
+        else:
+            raise OfflineError("The device is currently offline, no action was sent.")
+
     def set_zones_starting_point(self, serial_number: str, starting_point) -> None:
         mower = self.get_mower(serial_number)
         if mower["online"]:

@@ -662,6 +662,17 @@
                 "title_disable": 1,
                 "message_placeholder": "ex: 1,12,50,90"
             }
+        },
+        {
+            "logicalId": "set_zones_vector",
+            "name": "Définir répartition des zones",
+            "type": "action",
+            "subtype": "message",
+            "isVisible": 0,
+            "display": {
+                "title_disable": 1,
+                "message_placeholder": "ex: 30,30,20,20"
+            }
         }
     ]
 }

@@ -960,6 +960,17 @@ class worxLandroidSCmd extends cmd {
                 }
                 $params['args'] = [$points];
                 break;
+            case 'set_zones_vector':
+                $zones = explode(',', $_options['message']);
+                $vectors = [0, 0, 0, 0];
+                $i = 0;
+                foreach ($zones as $zone) {
+                    if (!is_numeric($zone) || $zone < 0 || $zone > 100) throw new Exception("Zone must be numeric");
+                    $vectors[$i++] = intval($zone);
+                    if ($i > 3) break;
+                }
+                $params['args'] = [$vectors];
+                break;
             case 'set_schedule':
                 $primary = [
                     ["11:00", 150, 1],
