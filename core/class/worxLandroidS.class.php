@@ -168,7 +168,6 @@ class worxLandroidS extends eqLogic {
     public static function deamon_info() {
         $return = array();
         $return['log'] = __CLASS__;
-        $return['launchable'] = 'ok';
         $return['state'] = 'nok';
         $pid_file = jeedom::getTmpFolder(__CLASS__) . '/daemon.pid';
         if (file_exists($pid_file)) {
@@ -177,6 +176,20 @@ class worxLandroidS extends eqLogic {
             } else {
                 shell_exec(system::getCmdSudo() . 'rm -rf ' . $pid_file . ' 2>&1 > /dev/null');
             }
+        }
+
+        $return['launchable'] = 'ok';
+        $email = config::byKey('email', __CLASS__);
+        $pswd = config::byKey('passwd', __CLASS__);
+        if ($email == '') {
+            $return['launchable'] = 'nok';
+            $return['launchable_message'] = __('L\'adresse email n\'est pas configuré', __FILE__);
+        } elseif ($pswd == '') {
+            $return['launchable'] = 'nok';
+            $return['launchable_message'] = __('Le mot de passe n\'est pas configuré', __FILE__);
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $return['launchable'] = 'nok';
+            $return['launchable_message'] = __('L\'adresse email n\'est pas valide', __FILE__);
         }
         return $return;
     }
