@@ -16,7 +16,7 @@ class Zone(LDict):
             self["indicies"] = data["last_status"]["payload"]["cfg"]["mzv"]
             self["starting_point"] = data["last_status"]["payload"]["cfg"]["mz"]
             self["current"] = self["indicies"][self["index"]]
-        except TypeError:
+        except:
             pass
         else:
             self["index"] = 0

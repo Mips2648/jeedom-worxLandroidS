@@ -18,6 +18,8 @@ class Activity(LDict):
         """Initialize the object."""
         super().__init__()
 
+        _LOGGER.debug("create Activity:%s", data)
+
         self._payload = data['payload']
 
         self.id = data['_id']
