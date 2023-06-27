@@ -19,10 +19,18 @@
 require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
 
 function worxLandroidS_install() {
+    $pluginId = 'worxLandroidS';
+    config::save('api', config::genKey(), $pluginId);
+    config::save("api::{$pluginId}::mode", 'localhost');
+    config::save("api::{$pluginId}::restricted", 1);
 }
 
 function worxLandroidS_update() {
     $pluginId = 'worxLandroidS';
+    config::save('api', config::genKey(), $pluginId);
+    config::save("api::{$pluginId}::mode", 'localhost');
+    config::save("api::{$pluginId}::restricted", 1);
+
     $cron = cron::byClassAndFunction($pluginId, 'daemon');
     if (is_object($cron)) {
         $cron->stop();
@@ -47,13 +55,7 @@ function worxLandroidS_update() {
 
 function worxLandroidS_remove() {
     $pluginId = 'worxLandroidS';
-    $cron = cron::byClassAndFunction($pluginId, 'daemon');
-    if (is_object($cron)) {
-        $cron->stop();
-        $cron->remove();
-    }
-    log::add($pluginId, 'info', 'Suppression extension');
-    $resource_path = realpath(dirname(__FILE__) . '/../resources');
-    passthru('sudo /bin/bash ' . $resource_path . '/remove.sh ' . $resource_path . ' > ' . log::getPathToLog('worxLandroidS_dep') . ' 2>&1 &');
-    return true;
+    config::remove('api', $pluginId);
+    config::remove("api::{$pluginId}::mode");
+    config::remove("api::{$pluginId}::restricted");
 }
