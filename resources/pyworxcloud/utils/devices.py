@@ -20,6 +20,7 @@ from .schedules import Schedule
 from .state import States, StateType
 from .warranty import Warranty
 from .zone import Zone
+from .modules import Modules
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -117,6 +118,7 @@ class DeviceHandler(LDict):
         self.firmware = Firmware(data)
         self.schedules = Schedule(data)
         self.lawn = Lawn(data)
+        self.active_modules = Modules(data)
         self.in_topic = data["mqtt_topics"]["command_in"]
         self.out_topic = data["mqtt_topics"]["command_out"]
 

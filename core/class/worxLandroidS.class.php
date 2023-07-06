@@ -274,6 +274,7 @@ class worxLandroidS extends eqLogic {
             $eqLogic->setConfiguration('product_cutting_width', $device['product']['cutting_width'] . ' mm');
             $eqLogic->setConfiguration('lawn_perimeter', $device['lawn']['perimeter'] . ' m');
             $eqLogic->setConfiguration('lawn_size', $device['lawn']['size'] . ' m²');
+            $eqLogic->setConfiguration('accessories', $device['accessories']);
             $eqLogic->save();
             $eqLogic->on_message($device);
         }
@@ -285,6 +286,13 @@ class worxLandroidS extends eqLogic {
         $this->createCommandsFromConfigFile(__DIR__ . '/../config/commands.json', 'partymode');
         $this->createCommandsFromConfigFile(__DIR__ . '/../config/commands.json', 'schedules');
         $this->createCommandsFromConfigFile(__DIR__ . '/../config/commands.json', 'zone');
+
+        $accessories = $this->getConfiguration('accessories');
+        if (is_array($accessories)) {
+            if (isset($accessories['ultrasonic']) && $accessories['ultrasonic']) {
+                $this->createCommandsFromConfigFile(__DIR__ . '/../config/modules.json', 'ultrasonic');
+            }
+        }
     }
 
     public function postInsert() {
@@ -342,6 +350,8 @@ class worxLandroidS extends eqLogic {
         $this->checkAndUpdateCmd('zone_starting_point_3', $data['zone']['starting_point'][3]);
         $this->checkAndUpdateCmd('zone_next_start', $data['zone']['current']);
         $this->checkAndUpdateCmd('zone_current', $data['zone']['current'] + 1);
+
+        $this->checkAndUpdateCmd('modules_ultrasonic', $data['active_modules']['ultrasonic']);
 
         $this->checkAndUpdateCmd('schedules_active', $data['schedules']['active']);
         $this->checkAndUpdateCmd('schedules_daily_progress', $data['schedules']['daily_progress']);
@@ -819,7 +829,7 @@ class worxLandroidS extends eqLogic {
                 $replace['#' . $cmd->getLogicalId() . '_visible#'] = 'display:none';
             }
 
-            $addCmds = ['activateschedules', 'deactivateschedules', 'set_mowing_zone', 'setpartymode', 'unsetpartymode'];
+            $addCmds = ['activateschedules', 'deactivateschedules', 'set_mowing_zone', 'setpartymode', 'unsetpartymode', 'activate_module_us', 'deactivate_module_us'];
 
             if ($cmd->getIsVisible() and (in_array($cmd->getLogicalId(), $addCmds))) {
                 $cmdaction_html .= $cmd->toHtml($_version, '');
@@ -951,6 +961,12 @@ class worxLandroidSCmd extends cmd {
             case 'unsetpartymode':
             case 'deactivateschedules':
                 $params['args'] = [false];
+                break;
+            case 'activate_module_us':
+                $params['args'] = ['US', true];
+                break;
+            case 'deactivate_module_us':
+                $params['args'] = ['US', false];
                 break;
             case 'cutedge':
                 $params['args'] = [true, 0];

@@ -15,6 +15,7 @@ class DeviceCapability(IntEnum):
     ONE_TIME_SCHEDULE = 2
     PARTY_MODE = 4
     TORQUE = 8
+    US = 16
 
 
 CAPABILITY_TO_TEXT = {
@@ -22,6 +23,7 @@ CAPABILITY_TO_TEXT = {
     DeviceCapability.ONE_TIME_SCHEDULE: "One-Time-Schedule",
     DeviceCapability.PARTY_MODE: "Party Mode",
     DeviceCapability.TORQUE: "Motor Torque",
+    DeviceCapability.US: "Anti Collision System",
 }
 
 
@@ -47,6 +49,13 @@ class Capability:
         try:
             if "tq" in device_data["last_status"]["payload"]["cfg"]:
                 self.add(DeviceCapability.TORQUE)
+        except TypeError:
+            pass
+
+        try:
+            if "modules" in device_data["last_status"]["payload"]["cfg"]:
+                if "US" in device_data["last_status"]["payload"]["cfg"]["modules"]:
+                    self.add(DeviceCapability.US)
         except TypeError:
             pass
 

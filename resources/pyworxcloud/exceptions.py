@@ -6,8 +6,8 @@ class NoPartymodeError(Exception):
     """Define an error when partymode is not supported."""
 
 
-class NoOneTimeScheduleError(Exception):
-    """Define an error when OTS is not supported."""
+class DeviceCapabilityError(Exception):
+    """Define an error when a capability is not supported."""
 
 
 class OfflineError(Exception):

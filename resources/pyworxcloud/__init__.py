@@ -14,8 +14,8 @@ from .day_map import DAY_MAP
 from .events import EventHandler, LandroidEvent
 from .exceptions import (
     AuthorizationError,
+    DeviceCapabilityError,
     MowerNotFoundError,
-    NoOneTimeScheduleError,
     NoPartymodeError,
     OfflineError,
     ZoneNoProbability,
@@ -33,6 +33,7 @@ from .utils import (
     ScheduleType,
     Statistic,
     Weekdays,
+    CAPABILITY_TO_TEXT
 )
 from .utils.mqtt import Command
 from .utils.schedules import TYPE_TO_STRING
@@ -502,6 +503,11 @@ class WorxCloud(dict):
                             "end"
                         ] = end_time.time().strftime("%H:%M")
 
+            if "modules" in data["cfg"]:
+                if "US" in data["cfg"]["modules"]:
+                    device.capabilities.add(DeviceCapability.US)
+                    device.active_modules.ultrasonic = bool(data["cfg"]["modules"]["US"]["enabled"])
+
             device.schedules.update_progress_and_next(
                 tz=self._tz
                 if not isinstance(self._tz, type(None))
@@ -854,6 +860,24 @@ class WorxCloud(dict):
         else:
             raise OfflineError("The device is currently offline, no action was sent.")
 
+    def toggle_module(self, serial_number: str, module: str, enable: bool) -> None:
+        mower = self.get_mower(serial_number)
+        if mower["online"]:
+            device = self.get_device(mower["name"])
+            module = module.upper()
+            capa = DeviceCapability[module]
+            if not device.capabilities.check(capa):
+                raise DeviceCapabilityError(f"This device does not have {CAPABILITY_TO_TEXT[capa]} ({capa})")
+            payload = {"modules": {module: {"enabled": 1}}} if enable else {"modules": {module: {"enabled": 0}}}
+            _LOGGER.debug("module payload: %s", payload)
+            self.mqtt.publish(
+                serial_number,
+                mower["mqtt_topics"]["command_in"],
+                payload
+            )
+        else:
+            raise OfflineError("The device is currently offline, no action was sent.")
+
     def ots(self, serial_number: str, boundary: bool, runtime: str) -> None:
         """Start a One-Time-Schedule task
 
@@ -862,7 +886,7 @@ class WorxCloud(dict):
             runtime (str | int): Minutes to run the task before returning to dock.
 
         Raises:
-            NoOneTimeScheduleError: OTS is not supported by the device.
+            DeviceCapabilityError: OTS is not supported by the device.
             OfflineError: Raised when the device is offline.
         """
         mower = self.get_mower(serial_number)
@@ -878,9 +902,7 @@ class WorxCloud(dict):
                     {"sc": {"ots": {"bc": int(boundary), "wtm": runtime}}},
                 )
             elif not device.capabilities.check(DeviceCapability.ONE_TIME_SCHEDULE):
-                raise NoOneTimeScheduleError(
-                    "This device does not support Edgecut-on-demand"
-                )
+                raise DeviceCapabilityError("This device does not support Edgecut-on-demand")
         else:
             raise OfflineError("The device is currently offline, no action was sent.")
 
