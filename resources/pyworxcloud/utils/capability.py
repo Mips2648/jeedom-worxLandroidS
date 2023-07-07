@@ -16,6 +16,7 @@ class DeviceCapability(IntEnum):
     PARTY_MODE = 4
     TORQUE = 8
     US = 16
+    DF = 32
 
 
 CAPABILITY_TO_TEXT = {
@@ -24,6 +25,7 @@ CAPABILITY_TO_TEXT = {
     DeviceCapability.PARTY_MODE: "Party Mode",
     DeviceCapability.TORQUE: "Motor Torque",
     DeviceCapability.US: "Anti Collision System",
+    DeviceCapability.DF: "Digital Fence"
 }
 
 
@@ -56,6 +58,8 @@ class Capability:
             if "modules" in device_data["last_status"]["payload"]["cfg"]:
                 if "US" in device_data["last_status"]["payload"]["cfg"]["modules"]:
                     self.add(DeviceCapability.US)
+                if "DF" in device_data["last_status"]["payload"]["cfg"]["modules"]:
+                    self.add(DeviceCapability.DF)
         except TypeError:
             pass
 

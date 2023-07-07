@@ -352,6 +352,7 @@ class worxLandroidS extends eqLogic {
         $this->checkAndUpdateCmd('zone_current', $data['zone']['current'] + 1);
 
         $this->checkAndUpdateCmd('modules_ultrasonic', $data['active_modules']['ultrasonic']);
+        $this->checkAndUpdateCmd('modules_digital_fence', $data['active_modules']['digital_fence']);
 
         $this->checkAndUpdateCmd('schedules_active', $data['schedules']['active']);
         $this->checkAndUpdateCmd('schedules_daily_progress', $data['schedules']['daily_progress']);

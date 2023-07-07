@@ -507,6 +507,9 @@ class WorxCloud(dict):
                 if "US" in data["cfg"]["modules"]:
                     device.capabilities.add(DeviceCapability.US)
                     device.active_modules.ultrasonic = bool(data["cfg"]["modules"]["US"]["enabled"])
+                if "DF" in data["cfg"]["modules"]:
+                    device.capabilities.add(DeviceCapability.DF)
+                    device.active_modules.digital_fence = bool(data["last_status"]["payload"]["cfg"]["modules"]["DF"]["fh"])
 
             device.schedules.update_progress_and_next(
                 tz=self._tz
