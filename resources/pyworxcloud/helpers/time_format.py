@@ -107,4 +107,4 @@ def convert_to_time(
 
 
 def minute_to_hour(minute: int) -> str:
-    return str.format("{}:{}", str(minute // 60).rjust(2, '0'), str(minute % 60).rjust(2, '0'))
+    return f"{str(minute // 60).rjust(2, '0')}:{str(minute % 60).rjust(2, '0')}"

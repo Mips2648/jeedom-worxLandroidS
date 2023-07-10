@@ -116,7 +116,7 @@ class LandroidCloudAPI:
             mower["firmware_version"] = "{:.2f}".format(mower["firmware_version"])
             mower["product"] = {
                 "code": product["code"],
-                "description": str.format("{}{}", product["default_name"], product["meters"]),
+                "description": f"{product['default_name']}{product['meters']}",
                 "year": product["product_year"],
                 "cutting_width": product["cutting_width"]
             }
