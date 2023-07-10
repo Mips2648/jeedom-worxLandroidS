@@ -43,5 +43,93 @@
             },
             "value": "modules_ultrasonic"
         }
+    ],
+    "digital_fence": [
+        {
+            "logicalId": "modules_digital_fence_fh",
+            "name": "Off Limits Shortcut",
+            "type": "info",
+            "subtype": "binary",
+            "isVisible": 0,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            },
+            "initialValue": 0
+        },
+        {
+            "logicalId": "activate_module_digital_fence_fh",
+            "name": "Activer Off Limits Shortcut",
+            "type": "action",
+            "subtype": "other",
+            "isVisible": 1,
+            "configuration": {
+                "action": "toggle_module"
+            },
+            "template": {
+                "dashboard": "core::binarySwitch",
+                "mobile": "core::binarySwitch"
+            },
+            "value": "modules_digital_fence_fh"
+        },
+        {
+            "logicalId": "deactivate_module_digital_fence_fh",
+            "name": "Désactiver Off Limits Shortcut",
+            "type": "action",
+            "subtype": "other",
+            "isVisible": 1,
+            "configuration": {
+                "action": "toggle_module"
+            },
+            "template": {
+                "dashboard": "core::binarySwitch",
+                "mobile": "core::binarySwitch"
+            },
+            "value": "modules_digital_fence_fh"
+        },
+        {
+            "logicalId": "modules_digital_fence_cut",
+            "name": "Off Limits Zones interdites",
+            "type": "info",
+            "subtype": "binary",
+            "isVisible": 0,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            },
+            "initialValue": 0
+        },
+        {
+            "logicalId": "activate_module_digital_fence_cut",
+            "name": "Activer Off Limits Zones interdites",
+            "type": "action",
+            "subtype": "other",
+            "isVisible": 1,
+            "configuration": {
+                "action": "toggle_module"
+            },
+            "template": {
+                "dashboard": "core::binarySwitch",
+                "mobile": "core::binarySwitch"
+            },
+            "value": "modules_digital_fence_cut"
+        },
+        {
+            "logicalId": "deactivate_module_digital_fence_cut",
+            "name": "Désactiver Off Limits Zones interdites",
+            "type": "action",
+            "subtype": "other",
+            "isVisible": 1,
+            "configuration": {
+                "action": "toggle_module"
+            },
+            "template": {
+                "dashboard": "core::binarySwitch",
+                "mobile": "core::binarySwitch"
+            },
+            "value": "modules_digital_fence_cut"
+        }
     ]
 }

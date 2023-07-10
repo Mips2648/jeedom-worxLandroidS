@@ -19,11 +19,13 @@ class Modules(LDict):
             self["ultrasonic"] = False
 
         try:
-            self["digital_fence"] = bool(data["last_status"]["payload"]["cfg"]["modules"]["DF"]["fh"])
+            self["digital_fence_fh"] = bool(data["last_status"]["payload"]["cfg"]["modules"]["DF"]["fh"])
+            self["digital_fence_cut"] = bool(data["last_status"]["payload"]["cfg"]["modules"]["DF"]["cut"])
         except:
             pass
         else:
-            self["digital_fence"] = False
+            self["digital_fence_fh"] = False
+            self["digital_fence_cut"] = False
 
         try:
             self["cellular"] = bool(data["last_status"]["payload"]["cfg"]["modules"]["4G"]["enabled"])
@@ -43,14 +45,24 @@ class Modules(LDict):
         self["ultrasonic"] = enabled
 
     @property
-    def digital_fence(self) -> bool:
-        """Return digital_fence."""
-        return self["digital_fence"]
+    def digital_fence_fh(self) -> bool:
+        """Return digital_fence_fh."""
+        return self["digital_fence_fh"]
 
-    @digital_fence.setter
-    def digital_fence(self, enabled: bool) -> None:
-        """Set digital_fence information."""
-        self["digital_fence"] = enabled
+    @digital_fence_fh.setter
+    def digital_fence_fh(self, enabled: bool) -> None:
+        """Set digital_fence_fh information."""
+        self["digital_fence_fh"] = enabled
+
+    @property
+    def digital_fence_cut(self) -> bool:
+        """Return digital_fence_cut."""
+        return self["digital_fence_cut"]
+
+    @digital_fence_cut.setter
+    def digital_fence_cut(self, enabled: bool) -> None:
+        """Set digital_fence_cut information."""
+        self["digital_fence_cut"] = enabled
 
     @property
     def cellular(self) -> bool:

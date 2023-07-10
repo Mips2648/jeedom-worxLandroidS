@@ -508,7 +508,8 @@ class WorxCloud(dict):
                     device.active_modules.ultrasonic = bool(data["cfg"]["modules"]["US"]["enabled"])
                 if "DF" in data["cfg"]["modules"]:
                     device.capabilities.add(DeviceCapability.DIGITAL_FENCE)
-                    device.active_modules.digital_fence = bool(data["cfg"]["modules"]["DF"]["fh"])
+                    device.active_modules.digital_fence_fh = bool(data["cfg"]["modules"]["DF"]["fh"])
+                    device.active_modules.digital_fence_cut = bool(data["cfg"]["modules"]["DF"]["cut"])
                 if '4G' in data["cfg"]["modules"]:
                     device.capabilities.add(DeviceCapability.CELLULAR)
                     device.active_modules.cellular = bool(data["cfg"]["modules"]["4G"]["enabled"])
@@ -865,7 +866,7 @@ class WorxCloud(dict):
         else:
             raise OfflineError("The device is currently offline, no action was sent.")
 
-    def toggle_module(self, serial_number: str, module: str, enable: bool) -> None:
+    def toggle_module(self, serial_number: str, module: str, property: str, value: bool) -> None:
         mower = self.get_mower(serial_number)
         if mower["online"]:
             device = self.get_device(mower["name"])
@@ -873,7 +874,7 @@ class WorxCloud(dict):
             capa = DeviceCapability[module]
             if not device.capabilities.check(capa):
                 raise DeviceCapabilityError(f"This device does not have {CAPABILITY_TO_TEXT[capa]} ({capa})")
-            payload = {"modules": {module: {"enabled": 1}}} if enable else {"modules": {module: {"enabled": 0}}}
+            payload = {"modules": {module: {property: 1}}} if value else {"modules": {module: {property: 0}}}
             _LOGGER.debug("module payload: %s", payload)
             self.mqtt.publish(
                 serial_number,

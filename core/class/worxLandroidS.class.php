@@ -289,8 +289,13 @@ class worxLandroidS extends eqLogic {
 
         $accessories = $this->getConfiguration('accessories');
         if (is_array($accessories)) {
-            if (isset($accessories['ultrasonic']) && $accessories['ultrasonic']) {
-                $this->createCommandsFromConfigFile(__DIR__ . '/../config/modules.json', 'ultrasonic');
+            $modules_cmds = self::getCommandsFileContent(__DIR__ . '/../config/modules.json');
+            foreach ($accessories as $key => $value) {
+                if (!$value)
+                    continue;
+                if (array_key_exists($key, $modules_cmds)) {
+                    $this->createCommandsFromConfig($modules_cmds[$key]);
+                }
             }
         }
     }
@@ -352,7 +357,8 @@ class worxLandroidS extends eqLogic {
         $this->checkAndUpdateCmd('zone_current', $data['zone']['current'] + 1);
 
         $this->checkAndUpdateCmd('modules_ultrasonic', $data['active_modules']['ultrasonic']);
-        $this->checkAndUpdateCmd('modules_digital_fence', $data['active_modules']['digital_fence']);
+        $this->checkAndUpdateCmd('modules_digital_fence_fh', $data['active_modules']['digital_fence_fh']);
+        $this->checkAndUpdateCmd('modules_digital_fence_cut', $data['active_modules']['digital_fence_cut']);
         $this->checkAndUpdateCmd('modules_cellular', $data['active_modules']['cellular']);
 
         $this->checkAndUpdateCmd('schedules_active', $data['schedules']['active']);
@@ -831,7 +837,7 @@ class worxLandroidS extends eqLogic {
                 $replace['#' . $cmd->getLogicalId() . '_visible#'] = 'display:none';
             }
 
-            $addCmds = ['activateschedules', 'deactivateschedules', 'set_mowing_zone', 'setpartymode', 'unsetpartymode', 'activate_module_us', 'deactivate_module_us'];
+            $addCmds = ['activateschedules', 'deactivateschedules', 'set_mowing_zone', 'setpartymode', 'unsetpartymode', 'activate_module_us', 'deactivate_module_us', 'activate_module_digital_fence_fh', 'deactivate_module_digital_fence_fh', 'activate_module_digital_fence_cut', 'deactivate_module_digital_fence_cut'];
 
             if ($cmd->getIsVisible() and (in_array($cmd->getLogicalId(), $addCmds))) {
                 $cmdaction_html .= $cmd->toHtml($_version, '');
@@ -965,10 +971,22 @@ class worxLandroidSCmd extends cmd {
                 $params['args'] = [false];
                 break;
             case 'activate_module_us':
-                $params['args'] = ['US', true];
+                $params['args'] = ['US', 'enabled', true];
                 break;
             case 'deactivate_module_us':
-                $params['args'] = ['US', false];
+                $params['args'] = ['US', 'enabled', false];
+                break;
+            case 'activate_module_digital_fence_fh':
+                $params['args'] = ['DF', 'fh', true];
+                break;
+            case 'deactivate_module_digital_fence_fh':
+                $params['args'] = ['DF', 'fh', false];
+                break;
+            case 'activate_module_digital_fence_cut':
+                $params['args'] = ['DF', 'cut', true];
+                break;
+            case 'deactivate_module_digital_fence_cut':
+                $params['args'] = ['DF', 'cut', false];
                 break;
             case 'cutedge':
                 $params['args'] = [true, 0];
