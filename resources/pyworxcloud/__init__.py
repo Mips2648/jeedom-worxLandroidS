@@ -341,7 +341,6 @@ class WorxCloud(dict):
         # device.firmware["version"] = "{:.2f}".format(device.firmware["version"])
         if "dat" in data:
             device.rssi = data["dat"]["rsi"]
-            logger.debug("Status code: %s", data["dat"]["ls"])
             device.status.update(data["dat"]["ls"])
             device.error.update(data["dat"]["le"])
 
@@ -505,11 +504,14 @@ class WorxCloud(dict):
 
             if "modules" in data["cfg"]:
                 if "US" in data["cfg"]["modules"]:
-                    device.capabilities.add(DeviceCapability.US)
+                    device.capabilities.add(DeviceCapability.ULTRASONIC)
                     device.active_modules.ultrasonic = bool(data["cfg"]["modules"]["US"]["enabled"])
                 if "DF" in data["cfg"]["modules"]:
-                    device.capabilities.add(DeviceCapability.DF)
-                    device.active_modules.digital_fence = bool(data["last_status"]["payload"]["cfg"]["modules"]["DF"]["fh"])
+                    device.capabilities.add(DeviceCapability.DIGITAL_FENCE)
+                    device.active_modules.digital_fence = bool(data["cfg"]["modules"]["DF"]["fh"])
+                if '4G' in data["cfg"]["modules"]:
+                    device.capabilities.add(DeviceCapability.CELLULAR)
+                    device.active_modules.cellular = bool(data["cfg"]["modules"]["4G"]["enabled"])
 
             device.schedules.update_progress_and_next(
                 tz=self._tz

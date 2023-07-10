@@ -25,6 +25,13 @@ class Modules(LDict):
         else:
             self["digital_fence"] = False
 
+        try:
+            self["cellular"] = bool(data["last_status"]["payload"]["cfg"]["modules"]["4G"]["enabled"])
+        except:
+            pass
+        else:
+            self["cellular"] = False
+
     @property
     def ultrasonic(self) -> bool:
         """Return ultrasonic."""
@@ -44,3 +51,13 @@ class Modules(LDict):
     def digital_fence(self, enabled: bool) -> None:
         """Set digital_fence information."""
         self["digital_fence"] = enabled
+
+    @property
+    def cellular(self) -> bool:
+        """Return ultrasonic."""
+        return self["cellular"]
+
+    @cellular.setter
+    def cellular(self, enabled: bool) -> None:
+        """Set ultrasonic information."""
+        self["cellular"] = enabled
