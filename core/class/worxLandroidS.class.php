@@ -971,22 +971,22 @@ class worxLandroidSCmd extends cmd {
                 $params['args'] = [false];
                 break;
             case 'activate_module_us':
-                $params['args'] = ['US', 'enabled', true];
+                $params['args'] = ['ULTRASONIC', 'enabled', true];
                 break;
             case 'deactivate_module_us':
-                $params['args'] = ['US', 'enabled', false];
+                $params['args'] = ['ULTRASONIC', 'enabled', false];
                 break;
             case 'activate_module_digital_fence_fh':
-                $params['args'] = ['DF', 'fh', true];
+                $params['args'] = ['DIGITAL_FENCE', 'fh', true];
                 break;
             case 'deactivate_module_digital_fence_fh':
-                $params['args'] = ['DF', 'fh', false];
+                $params['args'] = ['DIGITAL_FENCE', 'fh', false];
                 break;
             case 'activate_module_digital_fence_cut':
-                $params['args'] = ['DF', 'cut', true];
+                $params['args'] = ['DIGITAL_FENCE', 'cut', true];
                 break;
             case 'deactivate_module_digital_fence_cut':
-                $params['args'] = ['DF', 'cut', false];
+                $params['args'] = ['DIGITAL_FENCE', 'cut', false];
                 break;
             case 'cutedge':
                 $params['args'] = [true, 0];
