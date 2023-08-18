@@ -227,7 +227,6 @@ def shutdown():
 _log_level = "error"
 _pidfile = '/tmp/worxLandroidSd.pid'
 _apikey = ''
-_LOGGER = logging.getLogger(__name__)
 
 parser = argparse.ArgumentParser(description='worxLandroidS Daemon for Jeedom plugin')
 parser.add_argument("--loglevel", help="Log Level for the daemon", type=str)
@@ -244,8 +243,9 @@ _log_level = args.loglevel
 _pidfile = args.pid
 _apikey = args.apikey
 
-# jeedom_utils.set_log_level(_log_level)
-_LOGGER.setLevel(jeedom_utils.convert_log_level(_log_level))
+jeedom_utils.init_logger(_log_level)
+_LOGGER = logging.getLogger(__name__)
+
 logging.getLogger('pyworxcloud').setLevel(jeedom_utils.convert_log_level(_log_level))
 
 signal.signal(signal.SIGINT, handler)

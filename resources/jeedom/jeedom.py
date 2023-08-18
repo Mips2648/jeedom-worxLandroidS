@@ -38,9 +38,9 @@ class jeedom_utils():
         return LEVELS.get(level, logging.NOTSET)
 
     @staticmethod
-    def set_log_level(level='error'):
-        _LOGGER = logging.getLogger(__name__)
-        _LOGGER.setLevel(jeedom_utils.convert_log_level(level))
+    def init_logger(level='error'):
+        FORMAT = '[%(asctime)-15s][%(levelname)s] : %(threadName)-9s : %(message)s'
+        logging.basicConfig(level=jeedom_utils.convert_log_level(level), format=FORMAT, datefmt="%Y-%m-%d %H:%M:%S")
 
     @staticmethod
     def stripped(str):
