@@ -73,7 +73,7 @@ class jeedom_utils():
     @staticmethod
     def write_pid(path):
         pid = str(os.getpid())
-        logging.debug("Writing PID " + pid + " to " + str(path))
+        logging.debug("Writing PID %s to %s", pid, path)
         open(path, 'w').write("%s\n" % pid)
 
 # ------------------------------------------------------------------------------
@@ -85,12 +85,12 @@ JEEDOM_SOCKET_MESSAGE = Queue()
 class jeedom_socket_handler(StreamRequestHandler):
     def handle(self):
         global JEEDOM_SOCKET_MESSAGE
-        logging.debug("Client connected to [%s:%d]" % self.client_address)
+        logging.debug("Client connected to [%s:%d]", self.client_address)
         lg = self.rfile.readline()
         JEEDOM_SOCKET_MESSAGE.put(lg)
-        logging.debug("Message read from socket: " + str(lg.strip()))
+        logging.debug("Message read from socket: %s", lg.strip())
         self.netAdapterClientConnected = False
-        logging.debug("Client disconnected from [%s:%d]" % self.client_address)
+        logging.debug("Client disconnected from [%s:%d]", self.client_address)
 
 
 class jeedom_socket():
@@ -110,7 +110,7 @@ class jeedom_socket():
 
     def loopNetServer(self):
         logging.debug("LoopNetServer Thread started")
-        logging.debug("Listening on: [%s:%d]" % (self.address, self.port))
+        logging.debug("Listening on: [%s:%d]", self.address, self.port)
         self.netAdapter.serve_forever()
         logging.debug("LoopNetServer Thread stopped")
 
