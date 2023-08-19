@@ -39,7 +39,7 @@ class jeedom_utils():
 
     @staticmethod
     def init_logger(level='error'):
-        FORMAT = '[%(asctime)-15s][%(levelname)s] : %(threadName)-9s : %(message)s'
+        FORMAT = '[%(asctime)-15s][%(levelname)s] : %(message)s'
         logging.basicConfig(level=jeedom_utils.convert_log_level(level), format=FORMAT, datefmt="%Y-%m-%d %H:%M:%S")
 
     @staticmethod
