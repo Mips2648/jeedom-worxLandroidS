@@ -303,22 +303,26 @@ class WorxCloud(dict):
         else:
             logger.debug("MQTT data received '%s'", payload)
 
-            mower = self.get_mower(data["cfg"]["sn"])
-            device = self.get_device(mower["name"])
+        if not "sn" in data["cfg"] and not "mac" in data["dat"]:
+            logger.debug("Missing sn or mac in MQTT message")
+            return
 
-            if device.raw_data == payload:
-                self._log.debug("Data was already present and not changed.")
-                return  # Dataset was not changed, no update needed
+        mower = self.find_mower(data)
+        device = self.get_device(mower["name"])
 
-            while not device.is_decoded:
-                pass  # Wait for last dataset to be handled
+        if device.raw_data == payload:
+            self._log.debug("Data was already present and not changed.")
+            return  # Dataset was not changed, no update needed
 
-            device.raw_data = payload
-            self._decode_data(device)
+        while not device.is_decoded:
+            pass  # Wait for last dataset to be handled
 
-            self._events.call(
-                LandroidEvent.DATA_RECEIVED, name=mower["name"], device=device
-            )
+        device.raw_data = payload
+        self._decode_data(device)
+
+        self._events.call(
+            LandroidEvent.DATA_RECEIVED, name=mower["name"], device=device
+        )
 
     def _decode_data(self, device: DeviceHandler) -> None:
         """Decode incoming JSON data."""
@@ -340,11 +344,14 @@ class WorxCloud(dict):
 
         # device.firmware["version"] = "{:.2f}".format(device.firmware["version"])
         if "dat" in data:
-            device.rssi = data["dat"]["rsi"]
-            device.status.update(data["dat"]["ls"])
-            device.error.update(data["dat"]["le"])
+            if "rsi" in data["dat"]:
+                device.rssi = data["dat"]["rsi"]
+            if "ls" in data["dat"]:
+                device.status.update(data["dat"]["ls"])
+            if "le" in data["dat"]:
+                device.error.update(data["dat"]["le"])
 
-            device.zone.index = data["dat"]["lz"]
+            device.zone.index = data["dat"]["lz"] if "lz" in data["dat"] else 0
 
             device.locked = bool(data["dat"]["lk"])
 
@@ -379,8 +386,12 @@ class WorxCloud(dict):
                 device.rainsensor.remaining = int(data["dat"]["rain"]["cnt"])
 
         if "cfg" in data:
-            device.updated = data["cfg"]["dt"] + " " + data["cfg"]["tm"]
-            device.rainsensor.delay = int(data["cfg"]["rd"])
+            if "dt" in data["cfg"] and "tm" in data["cfg"]:
+                device.updated = data["cfg"]["dt"] + " " + data["cfg"]["tm"]
+            else:
+                device.updated = "Unknown"
+
+            device.rainsensor.delay = int(data["cfg"]["rd"]) if "rd" in data["cfg"] else 0
 
             # Fetch wheel torque
             if "tq" in data["cfg"]:
@@ -388,7 +399,7 @@ class WorxCloud(dict):
                 device.torque = data["cfg"]["tq"]
 
             # Fetch zone information
-            if "mz" in data["cfg"]:
+            if "mz" in data["cfg"] and "mzv" in data["cfg"]:
                 device.zone.starting_point = data["cfg"]["mz"]
                 device.zone.indicies = data["cfg"]["mzv"]
 
@@ -403,58 +414,63 @@ class WorxCloud(dict):
                 if "distm" in data["cfg"]["sc"]:
                     device.capabilities.add(DeviceCapability.PARTY_MODE)
 
-                device.partymode_enabled = bool(str(data["cfg"]["sc"]["m"]) == "2")
+                if "m" in data["cfg"]["sc"]:
+                    device.partymode_enabled = bool(str(data["cfg"]["sc"]["m"]) == "2")
+                    device.schedules["active"] = bool(
+                        str(data["cfg"]["sc"]["m"]) in ["1", "2"]
+                    )
+                else:
+                    device.partymode_enabled = False
+                    device.schedules["active"] = bool(str(data["cfg"]["sc"]["enabled"]) == "1") if "enabled" in data["cfg"]["sc"] else False
 
-                device.schedules["active"] = bool(
-                    str(data["cfg"]["sc"]["m"]) in ["1", "2"]
-                )
-                device.schedules["time_extension"] = data["cfg"]["sc"]["p"]
+                device.schedules["time_extension"] = data["cfg"]["sc"]["p"] if "p" in data["cfg"]["sc"] else 0
 
-                sch_type = ScheduleType.PRIMARY
-                device.schedules.update({TYPE_TO_STRING[sch_type]: Weekdays()})
+                if "d" in data["cfg"]["sc"]:
+                    sch_type = ScheduleType.PRIMARY
+                    device.schedules.update({TYPE_TO_STRING[sch_type]: Weekdays()})
 
-                for day in range(0, len(data["cfg"]["sc"]["d"])):
-                    device.schedules[TYPE_TO_STRING[sch_type]][DAY_MAP[day]][
-                        "start"
-                    ] = data["cfg"]["sc"]["d"][day][0]
-                    device.schedules[TYPE_TO_STRING[sch_type]][DAY_MAP[day]][
-                        "duration"
-                    ] = data["cfg"]["sc"]["d"][day][1]
-                    device.schedules[TYPE_TO_STRING[sch_type]][DAY_MAP[day]][
-                        "boundary"
-                    ] = bool(data["cfg"]["sc"]["d"][day][2])
-
-                    time_start = datetime.strptime(
+                    for day in range(0, len(data["cfg"]["sc"]["d"])):
                         device.schedules[TYPE_TO_STRING[sch_type]][DAY_MAP[day]][
                             "start"
-                        ],
-                        "%H:%M",
-                    )
-
-                    if isinstance(
+                        ] = data["cfg"]["sc"]["d"][day][0]
                         device.schedules[TYPE_TO_STRING[sch_type]][DAY_MAP[day]][
                             "duration"
-                        ],
-                        type(None),
-                    ):
+                        ] = data["cfg"]["sc"]["d"][day][1]
                         device.schedules[TYPE_TO_STRING[sch_type]][DAY_MAP[day]][
-                            "duration"
-                        ] = "0"
+                            "boundary"
+                        ] = bool(data["cfg"]["sc"]["d"][day][2])
 
-                    duration = int(
+                        time_start = datetime.strptime(
+                            device.schedules[TYPE_TO_STRING[sch_type]][DAY_MAP[day]][
+                                "start"
+                            ],
+                            "%H:%M",
+                        )
+
+                        if isinstance(
+                            device.schedules[TYPE_TO_STRING[sch_type]][DAY_MAP[day]][
+                                "duration"
+                            ],
+                            type(None),
+                        ):
+                            device.schedules[TYPE_TO_STRING[sch_type]][DAY_MAP[day]][
+                                "duration"
+                            ] = "0"
+
+                        duration = int(
+                            device.schedules[TYPE_TO_STRING[sch_type]][DAY_MAP[day]][
+                                "duration"
+                            ]
+                        )
+
+                        duration = duration * (
+                            1 + (int(device.schedules["time_extension"]) / 100)
+                        )
+                        end_time = time_start + timedelta(minutes=duration)
+
                         device.schedules[TYPE_TO_STRING[sch_type]][DAY_MAP[day]][
-                            "duration"
-                        ]
-                    )
-
-                    duration = duration * (
-                        1 + (int(device.schedules["time_extension"]) / 100)
-                    )
-                    end_time = time_start + timedelta(minutes=duration)
-
-                    device.schedules[TYPE_TO_STRING[sch_type]][DAY_MAP[day]][
-                        "end"
-                    ] = end_time.time().strftime("%H:%M")
+                            "end"
+                        ] = end_time.time().strftime("%H:%M")
 
                 # Fetch secondary schedule
                 if "dd" in data["cfg"]["sc"]:
@@ -513,6 +529,9 @@ class WorxCloud(dict):
                 if '4G' in data["cfg"]["modules"]:
                     device.capabilities.add(DeviceCapability.CELLULAR)
                     device.active_modules.cellular = bool(data["cfg"]["modules"]["4G"]["enabled"])
+                if 'HL' in data["cfg"]["modules"]:
+                    device.capabilities.add(DeviceCapability.HEADLIGHT)
+                    device.active_modules.cellular = bool(data["cfg"]["modules"]["HL"]["enabled"])
 
             device.schedules.update_progress_and_next(
                 tz=self._tz
@@ -538,15 +557,30 @@ class WorxCloud(dict):
 
             self._decode_data(device)
 
+    def find_mower(self, data: dict) -> dict:
+        """find a specific mower by serial number or MAC."""
+        if "sn" in data["cfg"]:
+            key = "serial_number"
+            needle = data["cfg"]["sn"]
+        elif "mac" in data["dat"]:
+            key = "mac_address"
+            needle = data["dat"]["mac"]
+        else:
+            raise MowerNotFoundError("No serial_number and mac available")
+
+        for mower in self._mowers:
+            if mower[key] == needle:
+                return mower
+
+        raise MowerNotFoundError(f"Mower with {key} {needle} was not found.")
+
     def get_mower(self, serial_number: str) -> dict:
-        """Get a specific mower."""
+        """Get a specific mower by serial number."""
         for mower in self._mowers:
             if mower["serial_number"] == serial_number:
                 return mower
 
-        raise MowerNotFoundError(
-            f"Mower with serialnumber {serial_number} was not found."
-        )
+        raise MowerNotFoundError(f"Mower with serialnumber {serial_number} was not found.")
 
     def get_activity_logs(self, device: DeviceHandler):
         logs = self._api.get_activity_logs(device.serial_number)

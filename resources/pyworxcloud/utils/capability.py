@@ -18,6 +18,7 @@ class DeviceCapability(IntEnum):
     ULTRASONIC = 16
     DIGITAL_FENCE = 32
     CELLULAR = 64
+    HEADLIGHT = 128
 
 
 CAPABILITY_TO_TEXT = {
@@ -27,7 +28,8 @@ CAPABILITY_TO_TEXT = {
     DeviceCapability.TORQUE: "Motor Torque",
     DeviceCapability.ULTRASONIC: "Anti Collision System",
     DeviceCapability.DIGITAL_FENCE: "Digital Fence",
-    DeviceCapability.CELLULAR: "Cellular"
+    DeviceCapability.CELLULAR: "Cellular",
+    DeviceCapability.HEADLIGHT: "Headlight"
 }
 
 
