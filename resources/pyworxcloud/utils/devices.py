@@ -55,7 +55,7 @@ class DeviceHandler(LDict):
         if mower is not None:
             try:
                 self.__json_data = mower["last_status"]["payload"]
-                self.mac_address = self.json_data["dat"]["mac"] if ["mac"] in self.json_data["dat"] else self.mac_address
+                self.mac_address = self.json_data["dat"]["mac"] if "mac" in self.json_data["dat"] else self.mac_address
             except:
                 _LOGGER.info("no last_status payload found for '%s', is your mower connected?", mower["name"])
                 pass
