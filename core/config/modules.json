@@ -20,7 +20,10 @@
             "subtype": "other",
             "isVisible": 1,
             "configuration": {
-                "action": "toggle_module"
+                "action": "toggle_module",
+                "module_name": "ULTRASONIC",
+                "module_key": "enabled",
+                "module_value": true
             },
             "template": {
                 "dashboard": "core::binarySwitch",
@@ -35,7 +38,10 @@
             "subtype": "other",
             "isVisible": 1,
             "configuration": {
-                "action": "toggle_module"
+                "action": "toggle_module",
+                "module_name": "ULTRASONIC",
+                "module_key": "enabled",
+                "module_value": false
             },
             "template": {
                 "dashboard": "core::binarySwitch",
@@ -65,7 +71,10 @@
             "subtype": "other",
             "isVisible": 1,
             "configuration": {
-                "action": "toggle_module"
+                "action": "toggle_module",
+                "module_name": "DIGITAL_FENCE",
+                "module_key": "fh",
+                "module_value": true
             },
             "template": {
                 "dashboard": "core::binarySwitch",
@@ -80,7 +89,10 @@
             "subtype": "other",
             "isVisible": 1,
             "configuration": {
-                "action": "toggle_module"
+                "action": "toggle_module",
+                "module_name": "DIGITAL_FENCE",
+                "module_key": "fh",
+                "module_value": false
             },
             "template": {
                 "dashboard": "core::binarySwitch",
@@ -108,7 +120,10 @@
             "subtype": "other",
             "isVisible": 1,
             "configuration": {
-                "action": "toggle_module"
+                "action": "toggle_module",
+                "module_name": "DIGITAL_FENCE",
+                "module_key": "cut",
+                "module_value": true
             },
             "template": {
                 "dashboard": "core::binarySwitch",
@@ -123,13 +138,67 @@
             "subtype": "other",
             "isVisible": 1,
             "configuration": {
-                "action": "toggle_module"
+                "action": "toggle_module",
+                "module_name": "DIGITAL_FENCE",
+                "module_key": "cut",
+                "module_value": false
             },
             "template": {
                 "dashboard": "core::binarySwitch",
                 "mobile": "core::binarySwitch"
             },
             "value": "modules_digital_fence_cut"
+        }
+    ],
+    "headlight": [
+        {
+            "logicalId": "modules_headlight",
+            "name": "Phares actif",
+            "type": "info",
+            "subtype": "binary",
+            "isVisible": 0,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            },
+            "initialValue": 0
+        },
+        {
+            "logicalId": "activate_module_hl",
+            "name": "Allumer phares",
+            "type": "action",
+            "subtype": "other",
+            "isVisible": 1,
+            "configuration": {
+                "action": "toggle_module",
+                "module_name": "HEADLIGHT",
+                "module_key": "enabled",
+                "module_value": true
+            },
+            "template": {
+                "dashboard": "core::binarySwitch",
+                "mobile": "core::binarySwitch"
+            },
+            "value": "modules_headlight"
+        },
+        {
+            "logicalId": "deactivate_module_hl",
+            "name": "Eteindre phares",
+            "type": "action",
+            "subtype": "other",
+            "isVisible": 1,
+            "configuration": {
+                "action": "toggle_module",
+                "module_name": "HEADLIGHT",
+                "module_key": "enabled",
+                "module_value": false
+            },
+            "template": {
+                "dashboard": "core::binarySwitch",
+                "mobile": "core::binarySwitch"
+            },
+            "value": "modules_headlight"
         }
     ],
     "cellular": [

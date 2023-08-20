@@ -49,6 +49,14 @@ function worxLandroidS_update() {
             $cmd->remove();
         }
 
+        $cmdsToRecreate = ['activate_module_us', 'deactivate_module_us', 'activate_module_digital_fence_fh', 'deactivate_module_digital_fence_fh', 'activate_module_digital_fence_cut', 'deactivate_module_digital_fence_cut'];
+        foreach ($cmdsToRecreate as $logicalId) {
+            $cmd = $eqLogic->getCmd('action', $logicalId);
+            if (is_object($cmd)) {
+                $cmd->remove();
+            }
+        }
+
         $eqLogic->createCommands();
     }
 }

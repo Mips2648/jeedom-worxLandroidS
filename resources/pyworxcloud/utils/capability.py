@@ -64,6 +64,8 @@ class Capability:
                     self.add(DeviceCapability.ULTRASONIC)
                 if "DF" in device_data["last_status"]["payload"]["cfg"]["modules"]:
                     self.add(DeviceCapability.DIGITAL_FENCE)
+                if "HL" in device_data["last_status"]["payload"]["cfg"]["modules"]:
+                    self.add(DeviceCapability.HEADLIGHT)
                 if "4G" in device_data["last_status"]["payload"]["cfg"]["modules"]:
                     self.add(DeviceCapability.CELLULAR)
         except TypeError:

@@ -359,6 +359,7 @@ class worxLandroidS extends eqLogic {
         $this->checkAndUpdateCmd('modules_ultrasonic', $data['active_modules']['ultrasonic']);
         $this->checkAndUpdateCmd('modules_digital_fence_fh', $data['active_modules']['digital_fence_fh']);
         $this->checkAndUpdateCmd('modules_digital_fence_cut', $data['active_modules']['digital_fence_cut']);
+        $this->checkAndUpdateCmd('modules_headlight', $data['active_modules']['headlight']);
         $this->checkAndUpdateCmd('modules_cellular', $data['active_modules']['cellular']);
 
         $this->checkAndUpdateCmd('schedules_active', $data['schedules']['active']);
@@ -971,22 +972,14 @@ class worxLandroidSCmd extends cmd {
                 $params['args'] = [false];
                 break;
             case 'activate_module_us':
-                $params['args'] = ['ULTRASONIC', 'enabled', true];
-                break;
             case 'deactivate_module_us':
-                $params['args'] = ['ULTRASONIC', 'enabled', false];
-                break;
             case 'activate_module_digital_fence_fh':
-                $params['args'] = ['DIGITAL_FENCE', 'fh', true];
-                break;
             case 'deactivate_module_digital_fence_fh':
-                $params['args'] = ['DIGITAL_FENCE', 'fh', false];
-                break;
             case 'activate_module_digital_fence_cut':
-                $params['args'] = ['DIGITAL_FENCE', 'cut', true];
-                break;
             case 'deactivate_module_digital_fence_cut':
-                $params['args'] = ['DIGITAL_FENCE', 'cut', false];
+            case 'activate_module_hl':
+            case 'deactivate_module_hl':
+                $params['args'] = [$this->getConfiguration('module_name'), $this->getConfiguration('module_key'), boolval($this->getConfiguration('module_value'))];
                 break;
             case 'cutedge':
                 $params['args'] = [true, 0];

@@ -531,7 +531,7 @@ class WorxCloud(dict):
                     device.active_modules.cellular = bool(data["cfg"]["modules"]["4G"]["enabled"])
                 if 'HL' in data["cfg"]["modules"]:
                     device.capabilities.add(DeviceCapability.HEADLIGHT)
-                    device.active_modules.cellular = bool(data["cfg"]["modules"]["HL"]["enabled"])
+                    device.active_modules.headlight = bool(data["cfg"]["modules"]["HL"]["enabled"])
 
             device.schedules.update_progress_and_next(
                 tz=self._tz

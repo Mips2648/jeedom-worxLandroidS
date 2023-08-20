@@ -14,24 +14,23 @@ class Modules(LDict):
         try:
             self["ultrasonic"] = bool(data["last_status"]["payload"]["cfg"]["modules"]["US"]["enabled"])
         except:
-            pass
-        else:
             self["ultrasonic"] = False
 
         try:
             self["digital_fence_fh"] = bool(data["last_status"]["payload"]["cfg"]["modules"]["DF"]["fh"])
             self["digital_fence_cut"] = bool(data["last_status"]["payload"]["cfg"]["modules"]["DF"]["cut"])
         except:
-            pass
-        else:
             self["digital_fence_fh"] = False
             self["digital_fence_cut"] = False
 
         try:
+            self["headlight"] = bool(data["last_status"]["payload"]["cfg"]["modules"]["HL"]["enabled"])
+        except:
+            self["headlight"] = False
+
+        try:
             self["cellular"] = bool(data["last_status"]["payload"]["cfg"]["modules"]["4G"]["enabled"])
         except:
-            pass
-        else:
             self["cellular"] = False
 
     @property
@@ -63,6 +62,16 @@ class Modules(LDict):
     def digital_fence_cut(self, enabled: bool) -> None:
         """Set digital_fence_cut information."""
         self["digital_fence_cut"] = enabled
+
+    @property
+    def headlight(self) -> bool:
+        """Return headlight."""
+        return self["headlight"]
+
+    @headlight.setter
+    def headlight(self, enabled: bool) -> None:
+        """Set headlight information."""
+        self["headlight"] = enabled
 
     @property
     def cellular(self) -> bool:
