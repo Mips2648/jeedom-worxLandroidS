@@ -70,17 +70,18 @@ class ScheduleInfo:
         """Get primary and secondary schedule for today or tomorrow."""
         day = DAY_MAP[int(date.strftime("%w"))]
 
-        primary = self.__schedule[TYPE_TO_STRING[ScheduleType.PRIMARY]][day]
-        if primary["duration"] == 0:
+        if TYPE_TO_STRING[ScheduleType.PRIMARY] in self.__schedule:
+            primary = self.__schedule[TYPE_TO_STRING[ScheduleType.PRIMARY]][day]
+            if primary["duration"] == 0:
+                return None, None, date
+        else:
             return None, None, date
 
-        secondary = (
-            self.__schedule[TYPE_TO_STRING[ScheduleType.SECONDARY]][day]
-            if TYPE_TO_STRING[ScheduleType.SECONDARY] in self.__schedule
-            else None
-        )
-
-        if (not isinstance(secondary, type(None))) and secondary["duration"] == 0:
+        if TYPE_TO_STRING[ScheduleType.SECONDARY] in self.__schedule:
+            secondary = self.__schedule[TYPE_TO_STRING[ScheduleType.SECONDARY]][day]
+            if secondary["duration"] == 0:
+                secondary = None
+        else:
             secondary = None
 
         return primary, secondary, date
