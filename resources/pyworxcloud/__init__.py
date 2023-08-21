@@ -562,11 +562,14 @@ class WorxCloud(dict):
         if "sn" in data["cfg"]:
             key = "serial_number"
             needle = data["cfg"]["sn"]
+        elif "uuid" in data["dat"]:
+            key = "uuid"
+            needle = data["dat"]["uuid"]
         elif "mac" in data["dat"]:
             key = "mac_address"
             needle = data["dat"]["mac"]
         else:
-            raise MowerNotFoundError("No serial_number and mac available")
+            raise MowerNotFoundError("No serial_number, uuid or mac available")
 
         for mower in self._mowers:
             if mower[key] == needle:

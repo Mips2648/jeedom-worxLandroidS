@@ -55,7 +55,6 @@ class DeviceHandler(LDict):
         if mower is not None:
             try:
                 self.__json_data = mower["last_status"]["payload"]
-                self.mac_address = self.json_data["dat"]["mac"] if "mac" in self.json_data["dat"] else self.mac_address
             except:
                 _LOGGER.info("no last_status payload found for '%s', is your mower connected?", mower["name"])
                 pass
@@ -126,6 +125,15 @@ class DeviceHandler(LDict):
         self.out_topic = data["mqtt_topics"]["command_out"]
 
         self.name = data["name"]
+
+        if self.json_data:
+            if "mac" in self.json_data["dat"]:
+                _LOGGER.debug("mac in dat")
+                if self.mac_address is None or self.mac_address == '':
+                    _LOGGER.debug("init mac_address from last_status")
+                    self.mac_address = self.json_data["dat"]["mac"]
+            else:
+                _LOGGER.debug("no mac in dat")
 
         for attr in UNWANTED_ATTRIBS:
             if hasattr(self, attr):
