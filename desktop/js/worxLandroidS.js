@@ -192,27 +192,29 @@ function printSchedulesPanel(schedule) {
     //schedules panel
     $('#table_schedules tbody').empty();
     let i = 0;
-    Object.entries(schedule['primary']).forEach(element => {
-        let tr = '<tr>';
-        tr += '<td>' + translateWeekday(element[0]) + '</td>';
-        tr += '<td><input id="primary_start' + i + '" class="form-control" type="time" value="' + element[1].start + '"></td>';
-        tr += '<td><input id="primary_end' + i + '" class="form-control" type="time" value="' + element[1].end + '"></td>';
-        tr += '<td>' + element[1].duration + ' min</td>';
-        tr += '<td><input id="edge' + i + '" class="form-control" type="checkbox" ' + (element[1].boundary ? 'checked' : '') + '></td>';
-        tr += '</tr>'
-        $('#table_schedules tbody').append(tr);
-        if (schedule['secondary']) {
+    if (schedule['primary']) {
+        Object.entries(schedule['primary']).forEach(element => {
             let tr = '<tr>';
-            tr += '<td></td>';
-            tr += '<td><input id="secondary_start' + i + '" class="form-control" type="time" value="' + schedule['secondary'][element[0]].start + '"></td>';
-            tr += '<td><input id="secondary_end' + i + '" class="form-control" type="time" value="' + schedule['secondary'][element[0]].end + '"></td>';
-            tr += '<td>' + schedule['secondary'][element[0]].duration + ' min</td>';
-            tr += '<td></td>';
+            tr += '<td>' + translateWeekday(element[0]) + '</td>';
+            tr += '<td><input id="primary_start' + i + '" class="form-control" type="time" value="' + element[1].start + '"></td>';
+            tr += '<td><input id="primary_end' + i + '" class="form-control" type="time" value="' + element[1].end + '"></td>';
+            tr += '<td>' + element[1].duration + ' min</td>';
+            tr += '<td><input id="edge' + i + '" class="form-control" type="checkbox" ' + (element[1].boundary ? 'checked' : '') + '></td>';
             tr += '</tr>'
             $('#table_schedules tbody').append(tr);
-        }
-        i++;
-    });
+            if (schedule['secondary']) {
+                let tr = '<tr>';
+                tr += '<td></td>';
+                tr += '<td><input id="secondary_start' + i + '" class="form-control" type="time" value="' + schedule['secondary'][element[0]].start + '"></td>';
+                tr += '<td><input id="secondary_end' + i + '" class="form-control" type="time" value="' + schedule['secondary'][element[0]].end + '"></td>';
+                tr += '<td>' + schedule['secondary'][element[0]].duration + ' min</td>';
+                tr += '<td></td>';
+                tr += '</tr>'
+                $('#table_schedules tbody').append(tr);
+            }
+            i++;
+        });
+    }
 
     // general info panel
     if (schedule['active']) {
