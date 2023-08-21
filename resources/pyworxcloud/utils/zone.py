@@ -17,8 +17,6 @@ class Zone(LDict):
             self["starting_point"] = data["last_status"]["payload"]["cfg"]["mz"]
             self["current"] = self["indicies"][self["index"]]
         except:
-            pass
-        else:
             self["index"] = 0
             self["indicies"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
             self["starting_point"] = [0, 0, 0, 0]
