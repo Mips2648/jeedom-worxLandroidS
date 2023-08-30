@@ -113,7 +113,7 @@ class LandroidCloudAPI:
         for mower in mowers:
             product = next(p for p in products if p["id"] == mower["product_id"])
 
-            mower["firmware_version"] = "{:.2f}".format(mower["firmware_version"])
+            # mower["firmware_version"] = "{:.2f}".format(mower["firmware_version"])
             mower["product"] = {
                 "code": product["code"],
                 "description": f"{product['default_name']}{product['meters']}",
