@@ -33,13 +33,15 @@ if (!isConnect()) {
 			</div>
 		</div>
 		<div class="form-group">
-			<label class="col-sm-4 control-label">{{mot de passe}}</label>
+			<label class="col-sm-4 control-label">{{Mot de passe}}</label>
 			<div class="col-sm-3">
-				<input class="configKey form-control" data-l1key="passwd" type="password" placeholder="{{saisir le mot de passe}}">
+				<div class="input-group">
+					<input class="configKey form-control roundedLeft inputPassword" data-l1key="passwd" type="text" placeholder="{{saisir le mot de passe}}">
+					<span class="input-group-btn">
+						<a class="btn btn-default form-control bt_showPass roundedRight"><i class="fas fa-eye"></i></a>
+					</span>
+				</div>
 			</div>
 		</div>
 	</fieldset>
 </form>
-<legend>
-	{{En cas d'arrêt prolongé, il est conseillé de désactiver le plugin ou d'arrêter cron et démon }}
-</legend>

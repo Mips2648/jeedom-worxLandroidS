@@ -4,8 +4,10 @@ from __future__ import annotations
 import calendar
 from datetime import datetime, timedelta
 from enum import IntEnum
+import logging
 from backports.zoneinfo import ZoneInfo
 
+from ..const import CONST_UNKNOWN
 from ..day_map import DAY_MAP
 from .landroid_class import LDict
 
@@ -18,6 +20,8 @@ class ScheduleType(IntEnum):
 
 
 TYPE_TO_STRING = {ScheduleType.PRIMARY: "primary", ScheduleType.SECONDARY: "secondary"}
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class WeekdaySettings(LDict):
@@ -66,17 +70,18 @@ class ScheduleInfo:
         """Get primary and secondary schedule for today or tomorrow."""
         day = DAY_MAP[int(date.strftime("%w"))]
 
-        primary = self.__schedule[TYPE_TO_STRING[ScheduleType.PRIMARY]][day]
-        if primary["duration"] == 0:
+        if TYPE_TO_STRING[ScheduleType.PRIMARY] in self.__schedule:
+            primary = self.__schedule[TYPE_TO_STRING[ScheduleType.PRIMARY]][day]
+            if primary["duration"] == 0:
+                return None, None, date
+        else:
             return None, None, date
 
-        secondary = (
-            self.__schedule[TYPE_TO_STRING[ScheduleType.SECONDARY]][day]
-            if TYPE_TO_STRING[ScheduleType.SECONDARY] in self.__schedule
-            else None
-        )
-
-        if (not isinstance(secondary, type(None))) and secondary["duration"] == 0:
+        if TYPE_TO_STRING[ScheduleType.SECONDARY] in self.__schedule:
+            secondary = self.__schedule[TYPE_TO_STRING[ScheduleType.SECONDARY]][day]
+            if secondary["duration"] == 0:
+                secondary = None
+        else:
             secondary = None
 
         return primary, secondary, date
@@ -164,28 +169,21 @@ class ScheduleInfo:
 class Schedule(LDict):
     """Represents a schedule."""
 
-    def __init__(
-        self,
-        variation: int = 0,
-        active: bool = True,
-        auto_schedule_settings: dict = {},
-        auto_schedule_enabled: bool | None = None,
-    ) -> dict:
-        """Initialize an empty primary or secondary schedule.
-
-        Args:
-            schedule_type (ScheduleType): Which ScheduleType to initialize.
-        """
+    def __init__(self, data) -> None:
+        """Initialize a schedule."""
         super().__init__()
 
-        self["daily_progress"] = None
-        self["next_schedule_start"] = None
-        self["time_extension"] = variation
-        self["active"] = active
-        self["auto_schedule"] = {
-            "settings": auto_schedule_settings,
-            "enabled": auto_schedule_enabled,
-        }
+        try:
+            self["daily_progress"] = None
+            self["next_schedule_start"] = None
+            self["time_extension"] = 0
+            self["active"] = True
+            self["auto_schedule"] = {
+                "settings": AutoScheduleSettings(data["auto_schedule_settings"]) if "auto_schedule_settings" in data else {},
+                "enabled": data["auto_schedule"] if "auto_schedule" in data else False,
+            }
+        except Exception as e:
+            _LOGGER.error('Exception during init Schedule: %s', e)
 
     def update_progress_and_next(self, tz: str | None = None) -> None:
         """Update progress and next scheduled start properties."""
@@ -193,3 +191,37 @@ class Schedule(LDict):
         info = ScheduleInfo(self, tz)
         self["daily_progress"] = info.calculate_progress()
         self["next_schedule_start"] = info.next_schedule()
+
+
+class AutoScheduleSettings(LDict):
+    """Handler for AutoScheduleSettings parameters."""
+
+    def __init__(self, data) -> None:
+        super().__init__()
+
+        from ..helpers.time_format import minute_to_hour
+
+        if data is None:
+            self["boost"] = 0
+            self["grass_type"] = CONST_UNKNOWN
+            self["irrigation"] = False
+            self["nutrition"] = None
+            self["soil_type"] = CONST_UNKNOWN
+            self["exclusion_scheduler"] = {}
+            return
+
+        try:
+            self["boost"] = data["boost"] if "boost" in data else 0
+            self["grass_type"] = data["grass_type"] if "grass_type" in data else CONST_UNKNOWN
+            self["irrigation"] = data["irrigation"] if "irrigation" in data else False
+            self["nutrition"] = data["nutrition"] if "nutrition" in data else None
+            self["soil_type"] = data["soil_type"] if "soil_type" in data else CONST_UNKNOWN
+            self["exclusion_scheduler"] = data["exclusion_scheduler"] if "exclusion_scheduler" in data else {}
+
+            if "days" in self["exclusion_scheduler"]:
+                for day in self["exclusion_scheduler"]["days"]:
+                    for slot in day["slots"]:
+                        slot["end_time"] = minute_to_hour(slot["start_time"] + slot["duration"])
+                        slot["start_time"] = minute_to_hour(slot["start_time"])
+        except Exception as e:
+            _LOGGER.error('Exception during init AutoScheduleSettings: %s', e)

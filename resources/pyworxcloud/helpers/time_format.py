@@ -104,3 +104,7 @@ def convert_to_time(
         if len(hits) == 1:
             newtime = string_to_time(hits[0], tz)
             callback(device, parent, key, newtime)
+
+
+def minute_to_hour(minute: int) -> str:
+    return f"{str(minute // 60).rjust(2, '0')}:{str(minute % 60).rjust(2, '0')}"

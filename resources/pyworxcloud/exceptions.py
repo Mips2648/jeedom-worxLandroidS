@@ -6,8 +6,8 @@ class NoPartymodeError(Exception):
     """Define an error when partymode is not supported."""
 
 
-class NoOneTimeScheduleError(Exception):
-    """Define an error when OTS is not supported."""
+class DeviceCapabilityError(Exception):
+    """Define an error when a capability is not supported."""
 
 
 class OfflineError(Exception):
@@ -39,7 +39,12 @@ class RateLimit(Exception):
         self.message = message
 
 
+class MQTTException(Exception):
+    """Defines a MQTT exception."""
+
 # Exception classes for URL requests
+
+
 class RequestError(Exception):
     """Define a bad request error (400)."""
 
@@ -74,3 +79,15 @@ class APIError(Exception):
 
 class MowerNotFoundError(Exception):
     """Error raised when a specific requested mower was not found in the result."""
+
+
+class NoConnectionError(Exception):
+    """Raised when the endpoint cannot be reached."""
+
+
+class ZoneNotDefined(Exception):
+    """Raised when the requested zone is not defined."""
+
+
+class ZoneNoProbability(Exception):
+    """Raised when the requested zone is has no probability set."""

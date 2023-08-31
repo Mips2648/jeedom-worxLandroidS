@@ -15,7 +15,6 @@ UNWANTED_ATTRIBS = [
     "features",
     "iot_registered",
     "pending_radio_link_validation",
-    "purchased_at",
     "push_notifications",
     "push_notifications_level",
     "created_at",

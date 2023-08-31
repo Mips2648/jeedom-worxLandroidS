@@ -50,13 +50,16 @@ class LandroidCloudAPI:
             "username": self.username,
             "password": self.password
         }
-        resp = POST(url, request_body, HEADERS())
-        self._logger.debug("get token:%s", str(resp))
-        self.access_token = resp["access_token"]
-        self.refresh_token = resp["refresh_token"]
-        self.expires_in = resp["expires_in"]
-        now = int(time.time())
-        self._token_expire = now + int(resp["expires_in"])
+        try:
+            resp = POST(url, request_body, HEADERS())
+            self._logger.debug("get token:%s", str(resp))
+            self.access_token = resp["access_token"]
+            self.refresh_token = resp["refresh_token"]
+            self.expires_in = int(resp["expires_in"])
+            now = int(time.time())
+            self._token_expire = now + self.expires_in
+        except Exception as e:
+            self._logger.warning("Failed to get token:%s", e)
 
     def update_token(self) -> None:
         """Refresh the tokens."""
@@ -105,12 +108,34 @@ class LandroidCloudAPI:
             f"https://{self.cloud.ENDPOINT}/api/v2/product-items?status=1",
             HEADERS(self.access_token),
         )
+        products = self.get_products()
+
         for mower in mowers:
-            mower["firmware_version"] = "{:.2f}".format(mower["firmware_version"])
+            product = next(p for p in products if p["id"] == mower["product_id"])
+
+            # mower["firmware_version"] = "{:.2f}".format(mower["firmware_version"])
+            mower["product"] = {
+                "code": product["code"],
+                "description": f"{product['default_name']}{product['meters']}",
+                "year": product["product_year"],
+                "cutting_width": product["cutting_width"]
+            }
 
         return mowers
 
-    @property
+    def get_products(self):
+        products = GET(
+            f"https://{self.cloud.ENDPOINT}/api/v2/products",
+            HEADERS(self.access_token),)
+        return products
+
+    def get_activity_logs(self, serial_number: str):
+        logs = GET(
+            f"https://{self.cloud.ENDPOINT}/api/v2/product-items/{serial_number}/activity-log",
+            HEADERS(self.access_token),)
+        return logs
+
+    @ property
     def data(self) -> str:
         """Return the latest dataset of information and states from the API."""
         return self.api_data

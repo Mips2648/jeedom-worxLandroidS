@@ -15,6 +15,10 @@ class DeviceCapability(IntEnum):
     ONE_TIME_SCHEDULE = 2
     PARTY_MODE = 4
     TORQUE = 8
+    ULTRASONIC = 16
+    DIGITAL_FENCE = 32
+    CELLULAR = 64
+    HEADLIGHT = 128
 
 
 CAPABILITY_TO_TEXT = {
@@ -22,6 +26,10 @@ CAPABILITY_TO_TEXT = {
     DeviceCapability.ONE_TIME_SCHEDULE: "One-Time-Schedule",
     DeviceCapability.PARTY_MODE: "Party Mode",
     DeviceCapability.TORQUE: "Motor Torque",
+    DeviceCapability.ULTRASONIC: "Anti Collision System",
+    DeviceCapability.DIGITAL_FENCE: "Digital Fence",
+    DeviceCapability.CELLULAR: "Cellular",
+    DeviceCapability.HEADLIGHT: "Headlight"
 }
 
 
@@ -33,8 +41,6 @@ class Capability:
         # super().__init__()
         self.__int__: int = 0
         self.ready: bool = False
-
-        _LOGGER.debug("Capability data: %s", device_data)
 
         try:
             if "sc" in device_data["last_status"]["payload"]["cfg"]:
@@ -49,6 +55,19 @@ class Capability:
         try:
             if "tq" in device_data["last_status"]["payload"]["cfg"]:
                 self.add(DeviceCapability.TORQUE)
+        except TypeError:
+            pass
+
+        try:
+            if "modules" in device_data["last_status"]["payload"]["cfg"]:
+                if "US" in device_data["last_status"]["payload"]["cfg"]["modules"]:
+                    self.add(DeviceCapability.ULTRASONIC)
+                if "DF" in device_data["last_status"]["payload"]["cfg"]["modules"]:
+                    self.add(DeviceCapability.DIGITAL_FENCE)
+                if "HL" in device_data["last_status"]["payload"]["cfg"]["modules"]:
+                    self.add(DeviceCapability.HEADLIGHT)
+                if "4G" in device_data["last_status"]["payload"]["cfg"]["modules"]:
+                    self.add(DeviceCapability.CELLULAR)
         except TypeError:
             pass
 

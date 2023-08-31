@@ -66,10 +66,16 @@ class worxLandroidS:
         self._listen_task.cancel()
         self._cloud.disconnect()
 
-    def _on_message(self, name, device: DeviceHandler):
-        tmpDevice = (vars(device)).copy()
+    def _get_device_to_send(self, device: DeviceHandler):
+        device_to_send = (vars(device)).copy()
         for key in ['_api', '_mower', '_tz', '_DeviceHandler__is_decoded', '_DeviceHandler__raw_data', '_DeviceHandler__json_data']:
-            tmpDevice.pop(key, '')
+            device_to_send.pop(key, '')
+        if _LOGGER.level > logging.DEBUG:
+            device_to_send.pop('last_status', '')
+        return device_to_send
+
+    def _on_message(self, name, device: DeviceHandler):
+        tmpDevice = self._get_device_to_send(device)
         _LOGGER.debug("on message %s, %s", name, str(tmpDevice))
         tmp = {}
         tmp["uuid"] = device.uuid
@@ -88,7 +94,18 @@ class worxLandroidS:
                 if message['action'] == 'stop':
                     self.close()
                 elif message['action'] == 'synchronize':
+                    self._cloud.fetch()
                     await self._send_devices()
+                elif message['action'] == 'get_activity_logs':
+                    device = self._cloud.get_device_by_serial_number(message['serial_number'])
+
+                    logs = self._cloud.get_activity_logs(device)
+
+                    tmp = {
+                        "activity_logs": device.uuid,
+                        "data": [l.__dict__ for l in logs.values()]
+                    }
+                    await self.__send_async(tmp)
                 else:
                     await self._executeAction(message)
             except Exception as e:
@@ -97,7 +114,7 @@ class worxLandroidS:
     async def _auto_reconnect(self):
         try:
             while True:
-                await asyncio.sleep(self._cloud.get_token_expires_in() * 0.8)
+                await asyncio.sleep(self._cloud.get_token_expires_in() * 0.9)
                 success = self._cloud.renew_connection()
                 retry = 0
                 while not success and retry < 12:
@@ -113,7 +130,7 @@ class worxLandroidS:
 
     async def _send_devices(self):
         tmp = {}
-        tmp["devices"] = self._cloud._mowers
+        tmp["devices"] = [self._get_device_to_send(d) for d in self._cloud.devices.values()]
         await self.__send_async(tmp)
 
     async def _update_all(self):
@@ -132,7 +149,10 @@ class worxLandroidS:
             else:
                 worx_method(message['serial_number'])
         except Exception as e:
-            _LOGGER.error('Error during execute action: %s', e)
+            exception_type, exception_object, exception_traceback = sys.exc_info()
+            filename = exception_traceback.tb_frame.f_code.co_filename
+            line_number = exception_traceback.tb_lineno
+            _LOGGER.error('Error during execute action: %s(%s) in %s on line %s', e, exception_type, filename, line_number)
 
     def __methodNotFound(*_):
         _LOGGER.error('unknown method')
@@ -184,7 +204,7 @@ class worxLandroidS:
 
 
 def handler(signum=None, frame=None):
-    _LOGGER.debug("Signal %i caught, exiting..." % int(signum))
+    _LOGGER.debug("Signal %i caught, exiting...", int(signum))
     worx.close()
 
 
@@ -192,7 +212,7 @@ def shutdown():
     _LOGGER.info("Shuting down")
 
     try:
-        _LOGGER.debug("Removing PID file " + str(_pidfile))
+        _LOGGER.debug("Removing PID file %s", _pidfile)
         os.remove(_pidfile)
     except:
         pass
@@ -207,7 +227,6 @@ def shutdown():
 _log_level = "error"
 _pidfile = '/tmp/worxLandroidSd.pid'
 _apikey = ''
-_LOGGER = logging.getLogger(__name__)
 
 parser = argparse.ArgumentParser(description='worxLandroidS Daemon for Jeedom plugin')
 parser.add_argument("--loglevel", help="Log Level for the daemon", type=str)
@@ -224,8 +243,9 @@ _log_level = args.loglevel
 _pidfile = args.pid
 _apikey = args.apikey
 
-# jeedom_utils.set_log_level(_log_level)
-_LOGGER.setLevel(jeedom_utils.convert_log_level(_log_level))
+jeedom_utils.init_logger(_log_level)
+_LOGGER = logging.getLogger(__name__)
+
 logging.getLogger('pyworxcloud').setLevel(jeedom_utils.convert_log_level(_log_level))
 
 signal.signal(signal.SIGINT, handler)
@@ -236,12 +256,15 @@ try:
     config = Config(**vars(args))
 
     _LOGGER.info('Log level: %s', _log_level)
-    _LOGGER.debug('Socket port : %s', config.socketport)
-    _LOGGER.debug('PID file : '+str(_pidfile))
+    _LOGGER.debug('Socket port: %s', config.socketport)
+    _LOGGER.debug('PID file: %s', _pidfile)
     jeedom_utils.write_pid(str(_pidfile))
 
     worx = worxLandroidS(config)
     asyncio.get_event_loop().run_until_complete(worx.main())
 except Exception as e:
-    _LOGGER.error('Fatal error: %s', e)
+    exception_type, exception_object, exception_traceback = sys.exc_info()
+    filename = exception_traceback.tb_frame.f_code.co_filename
+    line_number = exception_traceback.tb_lineno
+    _LOGGER.error('Fatal error: %s(%s) in %s on line %s', e, exception_type, filename, line_number)
 shutdown()

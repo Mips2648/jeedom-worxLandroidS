@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import logging
 from typing import Any
 
 from ..const import UNWANTED_ATTRIBS
@@ -19,15 +20,24 @@ from .schedules import Schedule
 from .state import States, StateType
 from .warranty import Warranty
 from .zone import Zone
+from .modules import Modules
 
+_LOGGER = logging.getLogger(__name__)
 
 # class DeviceHandler(LDict, Actions):
+
+
 class DeviceHandler(LDict):
     """DeviceHandler for Landroid Cloud devices."""
 
     __is_decoded: bool = True
     __raw_data: str = None
     __json_data: str = None
+
+    uuid: str
+    serial_number: str
+    name: str
+    mac_address: str
 
     def __init__(
         self,
@@ -41,6 +51,13 @@ class DeviceHandler(LDict):
         self._api = api
         self._mower = mower
         self._tz = tz
+
+        if mower is not None:
+            try:
+                self.__json_data = mower["last_status"]["payload"]
+            except:
+                _LOGGER.info("no last_status payload found for '%s', is your mower connected?", mower["name"])
+                pass
 
         if not isinstance(mower, type(None)) and not isinstance(api, type(None)):
             self.__mapinfo(api, mower)
@@ -89,6 +106,7 @@ class DeviceHandler(LDict):
         if not "time_zone" in data:
             data["time_zone"] = "UTC"
 
+        _LOGGER.debug("Start mapping...")
         self.battery = Battery(data)
         self.blades = Blades(data)
         self.chassis = ProductInfo(InfoType.MOWER, api, data["product_id"])
@@ -97,22 +115,25 @@ class DeviceHandler(LDict):
         self.capabilities = Capability(data)
         self.rainsensor = Rainsensor()
         self.status = States()
-        self.zone = Zone()
+        self.zone = Zone(data)
         self.warranty = Warranty(data)
         self.firmware = Firmware(data)
-        self.schedules = Schedule()
+        self.schedules = Schedule(data)
+        self.lawn = Lawn(data)
+        self.active_modules = Modules(data)
         self.in_topic = data["mqtt_topics"]["command_in"]
         self.out_topic = data["mqtt_topics"]["command_out"]
 
-        if data in ["lawn_perimeter", "lawn_size"]:
-            self.lawn = Lawn(data["lawn_perimeter"], data["lawn_size"])
-
-        if data in ["auto_schedule_settings", "auto_schedule"]:
-            self.schedules["auto_schedule"]["settings"] = data["auto_schedule_settings"]
-            self.schedules["auto_schedule"]["enabled"] = data["auto_schedule"]
-
         self.name = data["name"]
-        self.model = "Model info not available in API"  # f"{self.chassis.default_name}{self.chassis.meters}"
+
+        if self.json_data:
+            if "mac" in self.json_data["dat"]:
+                _LOGGER.debug("mac in dat")
+                if self.mac_address is None or self.mac_address == '':
+                    _LOGGER.debug("init mac_address from last_status")
+                    self.mac_address = self.json_data["dat"]["mac"]
+            else:
+                _LOGGER.debug("no mac in dat")
 
         for attr in UNWANTED_ATTRIBS:
             if hasattr(self, attr):

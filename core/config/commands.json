@@ -49,19 +49,6 @@
             }
         },
         {
-            "logicalId": "mower_work_time",
-            "name": "Temps de travail tondeuse",
-            "type": "info",
-            "subtype": "numeric",
-            "isVisible": 1,
-            "isHistorized": 0,
-            "unite": "min",
-            "template": {
-                "dashboard": "line",
-                "mobile": "line"
-            }
-        },
-        {
             "logicalId": "battery_temperature",
             "name": "Température batterie",
             "type": "info",
@@ -102,7 +89,8 @@
             "template": {
                 "dashboard": "line",
                 "mobile": "line"
-            }
+            },
+            "initialValue": 0
         },
         {
             "logicalId": "battery_charging",
@@ -207,7 +195,7 @@
             "name": "Tangage",
             "type": "info",
             "subtype": "numeric",
-            "isVisible": 0,
+            "isVisible": 1,
             "isHistorized": 0,
             "template": {
                 "dashboard": "line",
@@ -220,7 +208,7 @@
             "name": "Roulis",
             "type": "info",
             "subtype": "numeric",
-            "isVisible": 0,
+            "isVisible": 1,
             "isHistorized": 0,
             "template": {
                 "dashboard": "line",
@@ -233,7 +221,7 @@
             "name": "Direction",
             "type": "info",
             "subtype": "numeric",
-            "isVisible": 0,
+            "isVisible": 1,
             "isHistorized": 0,
             "template": {
                 "dashboard": "line",
@@ -295,6 +283,19 @@
                 "mobile": "line"
             },
             "initialValue": 0
+        },
+        {
+            "logicalId": "statistics_worktime_total",
+            "name": "Temps de travail tondeuse",
+            "type": "info",
+            "subtype": "numeric",
+            "isVisible": 1,
+            "isHistorized": 0,
+            "unite": "min",
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            }
         },
         {
             "logicalId": "updated",
@@ -563,13 +564,115 @@
             "name": "Zone actuelle",
             "type": "info",
             "subtype": "numeric",
-            "isVisible": 1,
+            "isVisible": 0,
             "isHistorized": 0,
             "template": {
                 "dashboard": "line",
                 "mobile": "line"
             },
             "initialValue": 0
+        },
+        {
+            "logicalId": "zone_next_start",
+            "name": "Zone prochain départ",
+            "type": "info",
+            "subtype": "numeric",
+            "isVisible": 0,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            },
+            "initialValue": 0
+        },
+        {
+            "logicalId": "zone_starting_point_0",
+            "name": "Départ zone 1",
+            "type": "info",
+            "subtype": "numeric",
+            "unite": "m",
+            "isVisible": 0,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            },
+            "initialValue": 0
+        },
+        {
+            "logicalId": "zone_starting_point_1",
+            "name": "Départ zone 2",
+            "type": "info",
+            "subtype": "numeric",
+            "unite": "m",
+            "isVisible": 0,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            },
+            "initialValue": 0
+        },
+        {
+            "logicalId": "zone_starting_point_2",
+            "name": "Départ zone 3",
+            "type": "info",
+            "subtype": "numeric",
+            "unite": "m",
+            "isVisible": 0,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            },
+            "initialValue": 0
+        },
+        {
+            "logicalId": "zone_starting_point_3",
+            "name": "Départ zone 4",
+            "type": "info",
+            "subtype": "numeric",
+            "unite": "m",
+            "isVisible": 0,
+            "isHistorized": 0,
+            "template": {
+                "dashboard": "line",
+                "mobile": "line"
+            },
+            "initialValue": 0
+        },
+        {
+            "logicalId": "set_mowing_zone",
+            "name": "Zone de travail",
+            "type": "action",
+            "subtype": "select",
+            "configuration": {
+                "listValue": "0|Zone 1;1|Zone 2;2|Zone 3;3|Zone 4"
+            },
+            "isVisible": 1,
+            "value": "zone_next_start"
+        },
+        {
+            "logicalId": "set_zones_starting_point",
+            "name": "Définir point de départ zones",
+            "type": "action",
+            "subtype": "message",
+            "isVisible": 0,
+            "display": {
+                "title_disable": 1,
+                "message_placeholder": "ex: 1,12,50,90"
+            }
+        },
+        {
+            "logicalId": "set_zones_vector",
+            "name": "Définir répartition des zones",
+            "type": "action",
+            "subtype": "message",
+            "isVisible": 0,
+            "display": {
+                "title_disable": 1,
+                "message_placeholder": "ex: 30,30,20,20"
+            }
         }
     ]
 }

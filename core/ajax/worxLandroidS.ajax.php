@@ -28,9 +28,7 @@ try {
         worxLandroidS::synchronize();
         ajax::success();
     } elseif (init('action') == 'createCommands') {
-        /**
-         * @var worxLandroidS
-         */
+        /** @var worxLandroidS */
         $eqLogic = eqLogic::byId(init('id'));
         if (!is_object($eqLogic)) {
             throw new Exception(__('worxLandroidS eqLogic non trouvé : ', __FILE__) . init('id'));
@@ -42,10 +40,18 @@ try {
         } catch (\Throwable $th) {
             throw new Exception(__('Erreur lors de la création des commandes: ', __FILE__) . $th->getMessage());
         }
+    } elseif (init('action') == 'getActivityLogs') {
+        /** @var worxLandroidS */
+        $eqLogic = eqLogic::byId(init('id'));
+        if (!is_object($eqLogic)) {
+            throw new Exception(__('worxLandroidS eqLogic non trouvé : ', __FILE__) . init('id'));
+        }
+        $eqLogic->get_activity_logs();
+        ajax::success();
     }
 
-    throw new Exception(__('{{Aucune methode correspondante à}} : ', __FILE__) . init('action'));
+    throw new Exception(__('Aucune methode correspondante à: ', __FILE__) . init('action'));
     /*     * *********Catch exeption*************** */
 } catch (Exception $e) {
-    ajax::error(displayExeption($e), $e->getCode());
+    ajax::error(displayException($e), $e->getCode());
 }

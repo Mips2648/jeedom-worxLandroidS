@@ -7,14 +7,20 @@ from .landroid_class import LDict
 class Zone(LDict):
     """Class for handling zone data."""
 
-    def __init__(self) -> dict:
+    def __init__(self, data) -> dict:
         """Initialize zone object."""
         super().__init__()
 
-        self["current"] = None
-        self["index"] = None
-        self["indicies"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        self["starting_point"] = [0, 0, 0, 0]
+        try:
+            self["index"] = data["last_status"]["payload"]["dat"]["lz"]
+            self["indicies"] = data["last_status"]["payload"]["cfg"]["mzv"]
+            self["starting_point"] = data["last_status"]["payload"]["cfg"]["mz"]
+            self["current"] = self["indicies"][self["index"]]
+        except:
+            self["index"] = 0
+            self["indicies"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            self["starting_point"] = [0, 0, 0, 0]
+            self["current"] = 0
 
     @property
     def current(self) -> int:

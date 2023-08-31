@@ -38,9 +38,9 @@ class jeedom_utils():
         return LEVELS.get(level, logging.NOTSET)
 
     @staticmethod
-    def set_log_level(level='error'):
-        _LOGGER = logging.getLogger(__name__)
-        _LOGGER.setLevel(jeedom_utils.convert_log_level(level))
+    def init_logger(level='error'):
+        FORMAT = '[%(asctime)-15s][%(levelname)s] : %(message)s'
+        logging.basicConfig(level=jeedom_utils.convert_log_level(level), format=FORMAT, datefmt="%Y-%m-%d %H:%M:%S")
 
     @staticmethod
     def stripped(str):
@@ -73,7 +73,7 @@ class jeedom_utils():
     @staticmethod
     def write_pid(path):
         pid = str(os.getpid())
-        logging.debug("Writing PID " + pid + " to " + str(path))
+        logging.debug("Writing PID %s to %s", pid, path)
         open(path, 'w').write("%s\n" % pid)
 
 # ------------------------------------------------------------------------------
@@ -85,12 +85,12 @@ JEEDOM_SOCKET_MESSAGE = Queue()
 class jeedom_socket_handler(StreamRequestHandler):
     def handle(self):
         global JEEDOM_SOCKET_MESSAGE
-        logging.debug("Client connected to [%s:%d]" % self.client_address)
+        logging.debug("Client connected to [%s:%d]", self.client_address[0], self.client_address[1])
         lg = self.rfile.readline()
         JEEDOM_SOCKET_MESSAGE.put(lg)
-        logging.debug("Message read from socket: " + str(lg.strip()))
+        logging.debug("Message read from socket: %s", lg.strip())
         self.netAdapterClientConnected = False
-        logging.debug("Client disconnected from [%s:%d]" % self.client_address)
+        logging.debug("Client disconnected from [%s:%d]", self.client_address[0], self.client_address[1])
 
 
 class jeedom_socket():
@@ -110,7 +110,7 @@ class jeedom_socket():
 
     def loopNetServer(self):
         logging.debug("LoopNetServer Thread started")
-        logging.debug("Listening on: [%s:%d]" % (self.address, self.port))
+        logging.debug("Listening on: [%s:%d]", self.address, self.port)
         self.netAdapter.serve_forever()
         logging.debug("LoopNetServer Thread stopped")
 

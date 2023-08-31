@@ -33,10 +33,10 @@ $eqLogics = eqLogic::byType($plugin->getId());
                 <br>
                 <span>{{Synchroniser}}</span>
             </div>
-            <div class="cursor logoSecondary" id="bt_healthworxLandroidS">
-                <i class="fas fa-medkit"></i>
+            <div class="cursor logoSecondary" id="bt_activityworxLandroidS">
+                <i class="fas fa-history"></i>
                 <br>
-                <span>{{Santé}}</span>
+                <span>{{Rapport d'activité}}</span>
             </div>
         </div>
 
@@ -61,6 +61,9 @@ $eqLogics = eqLogic::byType($plugin->getId());
                 echo '<br>';
                 echo '<span class="name">' . $eqLogic->getHumanName(true, true) . '</span>';
                 echo '<span class="hiddenAsCard displayTableRight hidden">';
+                echo '<span class="label label-info" title="{{Numéro de série}}">' . $eqLogic->getConfiguration('serial_number') . '</span>';
+                echo '<span class="label label-info" title="{{Adresse MAC}}">' . $eqLogic->getConfiguration('mac_address') . '</span>';
+                echo '<span class="label label-info" title="{{Version firmware}}">' . $eqLogic->getConfiguration('firmware_version') . '</span>';
                 echo ($eqLogic->getIsVisible() == 1) ? '<i class="fas fa-eye" title="{{Equipement visible}}"></i>' : '<i class="fas fa-eye-slash" title="{{Equipement non visible}}"></i>';
                 echo '</span>';
                 echo '</div>';
@@ -82,8 +85,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
             <li role="presentation"><a href="#" class="eqLogicAction" aria-controls="home" role="tab" data-toggle="tab" data-action="returnToThumbnailDisplay"><i class="fa fa-arrow-circle-left"></i></a></li>
             <li role="presentation" class="active"><a href="#eqlogictab" aria-controls="home" role="tab" data-toggle="tab"><i class="fas fa-tachometer-alt"></i> {{Equipement}}</a></li>
             <li role="presentation"><a href="#commandtab" aria-controls="home" role="tab" data-toggle="tab"><i class="fas fa-list"></i> {{Commandes}}</a></li>
-            <li role="presentation"><a href="#horaires" aria-controls="profile" role="tab" data-toggle="tab"><i class="fas divers-calendar2"></i> {{horaires}}</a></li>
-            <li role="presentation"><a href="#zones" aria-controls="profile" role="tab" data-toggle="tab"><i class="fas fa-grip-horizontal"></i></i> {{zones}}</a></li>
+            <li role="presentation"><a href="#gardentab" aria-controls="profile" role="tab" data-toggle="tab"><i class="fas fa-home"></i> {{Ma pelouse}}</a></li>
         </ul>
 
         <div class="tab-content">
@@ -160,12 +162,24 @@ $eqLogics = eqLogic::byType($plugin->getId());
                             <div class="form-group">
                                 <label class="col-sm-3 control-label"> {{Type Tondeuse}}</label>
                                 <div class="col-sm-3">
-                                    <span class="label label-info eqLogicAttr" data-l1key="configuration" data-l2key="mowerDescription"></span>
-                                    <span class="label label-info eqLogicAttr" data-l1key="configuration" data-l2key="MowerType"></span>
+                                    <span class="label label-info eqLogicAttr" data-l1key="configuration" data-l2key="product_code"></span>
+                                    <span class="label label-info eqLogicAttr" data-l1key="configuration" data-l2key="product_description"></span>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-3 control-label"> {{Adresse Mac}}</label>
+                                <label class="col-sm-3 control-label"> {{Année de production}}</label>
+                                <div class="col-sm-3">
+                                    <span class="label label-info eqLogicAttr" data-l1key="configuration" data-l2key="product_year"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label"> {{Largeur de coupe}}</label>
+                                <div class="col-sm-3">
+                                    <span class="label label-info eqLogicAttr" data-l1key="configuration" data-l2key="product_cutting_width"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label"> {{Adresse MAC}}</label>
                                 <div class="col-sm-3">
                                     <span class="label label-info eqLogicAttr" data-l1key="configuration" data-l2key="mac_address"></span>
                                 </div>
@@ -194,17 +208,17 @@ $eqLogics = eqLogic::byType($plugin->getId());
                                     <span class="label label-info eqLogicAttr" data-l1key="configuration" data-l2key="warranty_expires_at"></span>
                                 </div>
                             </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label"> {{Version firmware}}</label>
+                                <div class="col-sm-3">
+                                    <span class="label label-info eqLogicAttr" data-l1key="configuration" data-l2key="firmware_version"></span>
+                                </div>
+                            </div>
                         </div>
                     </fieldset>
                 </form>
             </div>
             <div role="tabpanel" class="tab-pane" id="commandtab">
-                <div class="input-group pull-right" style="display:inline-flex;margin-top:5px;">
-                    <span class="input-group-btn">
-                        <a class="btn btn-info btn-sm roundedLeft" id="bt_addworxLandroidSInfo"><i class="fas fa-plus-circle"></i> {{Ajouter une info}}
-                        </a><a class="btn btn-warning btn-sm roundedRight" id="bt_addworxLandroidSAction"><i class="fas fa-plus-circle"></i> {{Ajouter une action}}</a>
-                    </span>
-                </div>
                 <br />
                 <table id="table_cmd" class="table table-bordered table-condensed">
                     <thead>
@@ -224,144 +238,196 @@ $eqLogics = eqLogic::byType($plugin->getId());
                 </table>
             </div>
 
-            <div role="tabpanel" class="tab-pane" id="horaires">
-                <form class="form-horizontal">
-                    <fieldset>
-                        <div class="form-actions">
-                            <?php
-                            // $userMessage = $eqLogic->getCmd('action', 'userMessage');
-                            // $refrCmd = $eqLogic->getCmd('action', 'refreshValue');
-                            // if (is_object($userMessage) && is_object($refrCmd)) {
-                            //     $userMessageId = $userMessage->getId();
-                            //     $refrCmdId = $refrCmd->getId();
-                            //     echo '<a class="btn btn-success eqLogicAction cmdAction pull-left" data-action="save" onclick="updatePlanning(' . $userMessageId . ',' . $refrCmdId . ');">';
-                            //     echo '<i class="fa fa-check-circle"></i> {{Enregistrer horaires}}</a><div>{{la tondeuse doit être connectée}}</div>';
-                            // }
-                            ?>
-                        </div>
-                    </fieldset>
-                </form>
+            <div role="tabpanel" class="tab-pane" id="gardentab">
                 <br />
-                <table id="table_horaires" class="table table-bordered table-condensed">
-                    <thead>
-                        <tr>
-                            <th style="width: 70px;">{{Jour}}</th>
-                            <th style="width: 20px;">{{heure début}}</th>
-                            <th style="width: 20px;">{{durée}}</th>
-                            <th style="width: 20px;">{{bordure}}</th>
-                            <th style="width: 150px;">{{}}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        // $planningCmd         = $eqLogic->getCmd(null, 'completePlanning');
-                        // if (is_object($planningCmd)) {
-                        //     $planningCurrent     = $planningCmd->execCmd();
-
-                        //     $planning = explode('|', $planningCurrent);
-                        //     $jour            = array(
-                        //         "Dimanche",
-                        //         "Lundi",
-                        //         "Mardi",
-                        //         "Mercredi",
-                        //         "Jeudi",
-                        //         "Vendredi",
-                        //         "Samedi"
-                        //     );
-                        //     echo '<fieldset>';
-                        //     $count = 0;
-
-                        //     foreach ($planning as $value) {
-                        //         if ($count == 7) break;
-                        //         echo '<tr><td>' . $jour[$count] . '</td>';
-                        //         $detail = explode(',', $value);
-                        //         $countDist = 0;
-                        //         $checked = $detail[2] == 1 ? 'checked' : '';
-                        //         echo '<td><input id="startTime' . $count . '" class="form-control" type="time" value="' . $detail[0] . '"></td>';
-                        //         echo '<td><input id="duration' . $count . '" class="form-control" type="number" value="' . $detail[1] . '"></td>';
-                        //         echo '<td><input id="edge' . $count . '" class="form-control" type="checkbox" ' . $checked . '></td>';
-
-                        //         //echo '<td>'.$detail[1].'</td><td>'.$detail[2].'</td>';
-                        //         //echo '<tr><td><input id="area'.$count.'" class="form-control" type="number" name="distance" min="0" max="999" STYLE="margin:1px;" value="'.$area.'" required></td>';
-
-                        //         echo '</tr>';
-
-                        //         $count += 1;
-                        //     }
-                        //     echo '</fieldset>';
-                        // }
-                        ?>
-                    </tbody>
-                </table>
-            </div>
-
-
-            <div role="tabpanel" class="tab-pane" id="zones">
-                <form class="form-horizontal">
-                    <fieldset>
-                        <div class="form-actions">
-                            <?php
-                            // $userMessage = $eqLogic->getCmd('action', 'userMessage');
-                            // $refrCmd = $eqLogic->getCmd('action', 'refreshValue');
-                            // if (is_object($userMessage) && is_object($refrCmd)) {
-                            //     $userMessageId = $userMessage->getId();
-                            //     $refrCmdId = $refrCmd->getId();
-                            //     echo '<a class="btn btn-success eqLogicAction cmdAction pull-left" data-action="save" onclick="updateAreas(' . $userMessageId . ',' . $refrCmdId . ');">';
-                            //     echo '<i class="fa fa-check-circle"></i> {{Enregistrer zones}}</a><div>{{la tondeuse doit être connectée}}</div>';
-                            // }
-                            ?>
+                <div class="col-lg-6 tab-pane">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">
+                                <i class="fas fa-info"></i> {{Informations}}
+                            </h3>
                         </div>
-                    </fieldset>
-                </form>
-                <br />
-                <table id="table_zones" class="table table-bordered table-condensed">
-                    <thead>
-                        <tr>
-                            <th style="width: 70px;">{{distance(m) / répartition zones départ }}</th>
-                            <th style="width: 20px;">{{10}}</th>
-                            <th style="width: 20px;">{{20}}</th>
-                            <th style="width: 20px;">{{30}}</th>
-                            <th style="width: 20px;">{{40}}</th>
-                            <th style="width: 20px;">{{50}}</th>
-                            <th style="width: 20px;">{{60}}</th>
-                            <th style="width: 20px;">{{70}}</th>
-                            <th style="width: 20px;">{{80}}</th>
-                            <th style="width: 20px;">{{90}}</th>
-                            <th style="width: 20px;">{{100}}</th>
-                            <th style="width: 150px;">{{}}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        // $areaListCmd         = $eqLogic->getCmd(null, 'areaList');
-                        // $areaListDistCmd     = $eqLogic->getCmd(null, 'areaListDist');
-                        // if (is_object($areaListCmd) && is_object($areaListDistCmd)) {
-                        //     $areaListCurrent     = $areaListCmd->execCmd();
-                        //     $areaListDistCurrent = $areaListDistCmd->execCmd();
-                        //     $areaList = explode('|', $areaListCurrent);
-                        //     $areaListDist = explode('|', $areaListDistCurrent);
-                        //     echo '<fieldset>';
-                        //     $count = 0;
-                        //     foreach ($areaList as $area) {
+                        <div class="panel-body">
+                            <form class="form-horizontal">
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="col-sm-6 control-label"> {{Surface}}</label>
+                                        <div class="col-sm-6">
+                                            <span class="label label-info eqLogicAttr" data-l1key="configuration" data-l2key="lawn_size"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-6 control-label"> {{Périmètre}}</label>
+                                        <div class="col-sm-6">
+                                            <span class="label label-info eqLogicAttr" data-l1key="configuration" data-l2key="lawn_perimeter"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-6 control-label"> {{Délai pluie}}</label>
+                                        <div class="col-sm-6">
+                                            <span id="rain_delay"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
 
-                        //         echo '<tr><td><input id="area' . $count . '" class="form-control" type="number" name="distance" min="0" max="999" STYLE="margin:1px;" value="' . $area . '" required></td>';
+                <div class="col-lg-6 tab-pane" id="div_zonePanel">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">
+                                <i class="fas fa-grip-horizontal"></i> {{Multi-Zone}}
+                                <a class="btn btn-success btn-xs pull-right" id="bt_saveZone" style="top: -2px !important;"><i class="fas fa-check-circle icon-white"></i> {{Sauvegarder}}</a>
+                            </h3>
+                        </div>
+                        <div class="panel-body">
+                            <table id="table_zone" class="table table-bordered table-condensed">
+                                <thead>
+                                    <tr>
+                                        <th style="width:100px;">{{Zone}}</th>
+                                        <th style="width:150px;">{{Distance de départ}}</th>
 
-                        //         $countDist = 0;
-                        //         foreach ($areaListDist as $dist) {
-                        //             $checked = $dist == $count ? 'checked' : '';
-                        //             echo '<td><input id="dist' . $count . $countDist . '" type="radio"  name="areaDist' . $countDist . '" STYLE="margin:1px;"' .
-                        //                 ' value="distVal' . $count . $countDist . '" ' . $checked . ' >'
-                        //                 . '</td>';
-                        //             $countDist += 1;
-                        //         }
-                        //         echo '</tr>';
-                        //         echo '</fieldset>';
-                        //         $count += 1;
-                        //     }
-                        // }
-                        ?>
-                    </tbody>
-                </table>
+                                        <th>{{Répartition}}</th>
+                                        <th style="width:50px;"></th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    // $areaListCmd         = $eqLogic->getCmd(null, 'areaList');
+                                    // $areaListDistCmd     = $eqLogic->getCmd(null, 'areaListDist');
+                                    // if (is_object($areaListCmd) && is_object($areaListDistCmd)) {
+                                    //     $areaListCurrent     = $areaListCmd->execCmd();
+                                    //     $areaListDistCurrent = $areaListDistCmd->execCmd();
+                                    //     $areaList = explode('|', $areaListCurrent);
+                                    //     $areaListDist = explode('|', $areaListDistCurrent);
+                                    //     echo '<fieldset>';
+                                    //     $count = 0;
+                                    //     foreach ($areaList as $area) {
+
+                                    //         echo '<tr><td><input id="area' . $count . '" class="form-control" type="number" name="distance" min="0" max="999" STYLE="margin:1px;" value="' . $area . '" required></td>';
+
+                                    //         $countDist = 0;
+                                    //         foreach ($areaListDist as $dist) {
+                                    //             $checked = $dist == $count ? 'checked' : '';
+                                    //             echo '<td><input id="dist' . $count . $countDist . '" type="radio"  name="areaDist' . $countDist . '" STYLE="margin:1px;"' .
+                                    //                 ' value="distVal' . $count . $countDist . '" ' . $checked . ' >'
+                                    //                 . '</td>';
+                                    //             $countDist += 1;
+                                    //         }
+                                    //         echo '</tr>';
+                                    //         echo '</fieldset>';
+                                    //         $count += 1;
+                                    //     }
+                                    // }
+                                    ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 tab-pane" id="div_schedulesPanel">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">
+                                <i class="far fa-calendar-alt"></i> {{Programmation manuelle}}
+                                <a class="btn btn-success btn-xs pull-right" id="bt_saveSchedules" style="top: -2px !important;"><i class="fas fa-check-circle icon-white"></i> {{Sauvegarder}}</a>
+                            </h3>
+                        </div>
+                        <div class="panel-body">
+                            <form class="form-horizontal">
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="col-sm-6 control-label"> {{Statut}}</label>
+                                        <div class="col-sm-6">
+                                            <span id="schedule"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                            <table id="table_schedules" class="table table-bordered table-condensed">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 70px;">{{Jour}}</th>
+                                        <th style="width: 20px;">{{Début}}</th>
+                                        <th style="width: 20px;">{{Fin}}</th>
+                                        <th style="width: 20px;">{{Durée}}</th>
+                                        <th style="width: 20px;">{{Bord}}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 tab-pane" id="div_autoschedulesPanel">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">
+                                <i class="far fa-calendar-alt"></i> {{Auto-programmation}}
+                                <a class="btn btn-success btn-xs pull-right" id="bt_saveSchedules" style="top: -2px !important;"><i class="fas fa-check-circle icon-white"></i> {{Sauvegarder}}</a>
+                            </h3>
+                        </div>
+                        <div class="panel-body">
+
+                            <form class="form-horizontal">
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="col-sm-6 control-label"> {{Statut}}</label>
+                                        <div class="col-sm-6">
+                                            <span id="auto_schedule"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-6 control-label"> {{Espèces d'herbe}}</label>
+                                        <div class="col-sm-6">
+                                            <span class="label label-info" id="grass_type"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-6 control-label"> {{Type de sol}}</label>
+                                        <div class="col-sm-6">
+                                            <span class="label label-info" id="soil_type"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="col-sm-6 control-label"> {{Irrigation}}</label>
+                                        <div class="col-sm-6">
+                                            <span class="label label-info" id="irrigation"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-6 control-label"> {{Nutrition}}</label>
+                                        <div class="col-sm-6">
+                                            <span class="label label-info" id="nutrition"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                            <table id="table_exclusions" class="table table-bordered table-condensed">
+                                <caption><label><i class="far fa-clock"></i> {{Non-temps de travail}}</label></caption>
+                                <thead>
+                                    <tr>
+                                        <th style="width: 70px;">{{Jour}}</th>
+                                        <th style="width: 20px;">{{Début}}</th>
+                                        <th style="width: 20px;">{{Fin}}</th>
+                                        <th style="width: 20px;">{{Durée}}</th>
+                                        <th style="width: 20px;">{{Exclu}}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

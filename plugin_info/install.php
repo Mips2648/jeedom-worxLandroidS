@@ -19,25 +19,51 @@
 require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
 
 function worxLandroidS_install() {
+    $pluginId = 'worxLandroidS';
+    config::save('api', config::genKey(), $pluginId);
+    config::save("api::{$pluginId}::mode", 'localhost');
+    config::save("api::{$pluginId}::restricted", 1);
 }
 
 function worxLandroidS_update() {
-    $cron = cron::byClassAndFunction('worxLandroidS', 'daemon');
+    $pluginId = 'worxLandroidS';
+    config::save('api', config::genKey(), $pluginId);
+    config::save("api::{$pluginId}::mode", 'localhost');
+    config::save("api::{$pluginId}::restricted", 1);
+
+    $cron = cron::byClassAndFunction($pluginId, 'daemon');
     if (is_object($cron)) {
         $cron->stop();
         $cron->remove();
     }
-    config::remove('initCloud', 'worxLandroidS');
+    config::remove('initCloud', $pluginId);
+
+    /** @var worxLandroidS */
+    foreach (eqLogic::byType($pluginId) as $eqLogic) {
+        $cmd = $eqLogic->getCmd('action', 'setzone');
+        if (is_object($cmd)) {
+            $cmd->remove();
+        }
+        $cmd = $eqLogic->getCmd('info', 'mower_work_time');
+        if (is_object($cmd)) {
+            $cmd->remove();
+        }
+
+        $cmdsToRecreate = ['activate_module_us', 'deactivate_module_us', 'activate_module_digital_fence_fh', 'deactivate_module_digital_fence_fh', 'activate_module_digital_fence_cut', 'deactivate_module_digital_fence_cut'];
+        foreach ($cmdsToRecreate as $logicalId) {
+            $cmd = $eqLogic->getCmd('action', $logicalId);
+            if (is_object($cmd)) {
+                $cmd->remove();
+            }
+        }
+
+        $eqLogic->createCommands();
+    }
 }
 
 function worxLandroidS_remove() {
-    $cron = cron::byClassAndFunction('worxLandroidS', 'daemon');
-    if (is_object($cron)) {
-        $cron->stop();
-        $cron->remove();
-    }
-    log::add('worxLandroidS', 'info', 'Suppression extension');
-    $resource_path = realpath(dirname(__FILE__) . '/../resources');
-    passthru('sudo /bin/bash ' . $resource_path . '/remove.sh ' . $resource_path . ' > ' . log::getPathToLog('worxLandroidS_dep') . ' 2>&1 &');
-    return true;
+    $pluginId = 'worxLandroidS';
+    config::remove('api', $pluginId);
+    config::remove("api::{$pluginId}::mode");
+    config::remove("api::{$pluginId}::restricted");
 }
