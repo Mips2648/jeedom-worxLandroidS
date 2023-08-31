@@ -46,9 +46,8 @@ try {
         if (!is_object($eqLogic)) {
             throw new Exception(__('worxLandroidS eqLogic non trouvé : ', __FILE__) . init('id'));
         }
-        $logs = $eqLogic->get_activity_logs();
-        log::add('worxLandroidS', 'debug', 'getActivityLogs:' . json_encode($logs));
-        ajax::success($logs);
+        $eqLogic->get_activity_logs();
+        ajax::success();
     }
 
     throw new Exception(__('Aucune methode correspondante à: ', __FILE__) . init('action'));

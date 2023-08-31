@@ -56,13 +56,18 @@ function get_activity_logs(mower_id) {
                 return;
             }
             $('#table_activityworxLandroidS tbody').empty()
-            data.result.forEach(element => {
-                addActivityLog(element)
-            });
+            $('#div_worxLandroidSAlert').showAlert({ message: "Actualisation des données...", level: 'warning' });
 
         }
     });
 }
+
+$('body').off('worxLandroidS::activity_logs').on('worxLandroidS::activity_logs', function (_event, _data) {
+    $('#table_activityworxLandroidS tbody').empty()
+    _data.forEach(element => {
+        addActivityLog(element)
+    });
+});
 
 $('#sel_mower').on('change', function () {
     get_activity_logs(this.value());

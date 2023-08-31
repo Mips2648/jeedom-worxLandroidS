@@ -39,17 +39,19 @@ try {
         $eqLogic = eqLogic::byLogicalId($result['uuid'], 'worxLandroidS');
         if (!is_object($eqLogic)) {
             log::add('worxLandroidS', 'error', __('worxLandroidS eqLogic non trouvé : ', __FILE__) . $result['uuid']);
+        } else {
+            log::add('worxLandroidS', 'debug', "new message for '{$result['uuid']}': " . json_encode($result['data']));
+            $eqLogic->on_message($result['data']);
         }
-        log::add('worxLandroidS', 'debug', "new message for '{$result['uuid']}': " . json_encode($result['data']));
-        $eqLogic->on_message($result['data']);
     } elseif (isset($result['activity_logs'])) {
         /** @var worxLandroidS */
         $eqLogic = eqLogic::byLogicalId($result['activity_logs'], 'worxLandroidS');
         if (!is_object($eqLogic)) {
             log::add('worxLandroidS', 'error', __('worxLandroidS eqLogic non trouvé : ', __FILE__) . $result['uuid']);
+        } else {
+            log::add('worxLandroidS', 'debug', "activity_logs for '{$result['activity_logs']}': " . json_encode($result['data']));
+            worxLandroidS::on_activity_logs($result['data']);
         }
-        log::add('worxLandroidS', 'debug', "activity_logs for '{$result['activity_logs']}': " . json_encode($result['data']));
-        $eqLogic->save_activity_logs($result['data']);
     } else {
         log::add('worxLandroidS', 'debug', 'unknown message: ' . json_encode($result));
     }

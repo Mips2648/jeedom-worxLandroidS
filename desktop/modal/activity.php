@@ -28,11 +28,6 @@ include_file('desktop', 'activity', 'js', 'worxLandroidS');
 		/** @var eqLogic[] */
 		$eqLogics = worxLandroidS::byType('worxLandroidS', true);
 		foreach ($eqLogics as $eqLogic) {
-			$params = [
-				'action' => 'get_activity_logs',
-				'serial_number' => $eqLogic->getConfiguration('serial_number')
-			];
-			worxLandroidS::sendToDaemon($params);
 			echo '<option value="' . $eqLogic->getId() . '">' . $eqLogic->getName() . '</option>';
 		}
 		?>

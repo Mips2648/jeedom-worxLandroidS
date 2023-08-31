@@ -266,6 +266,12 @@ class worxLandroidS extends eqLogic {
                 $eqLogic->setConfiguration('warranty_expires_at', $device['warranty']['expires_at']);
                 $eqLogic->setConfiguration('registered_at', $device['registered_at']);
                 $eqLogic->setConfiguration('mac_address', implode(":", str_split($device['mac_address'], 2)));
+
+                event::add('jeedom::alert', array(
+                    'level' => 'success',
+                    'page' => 'worxLandroidS',
+                    'message' => __('Nouvelle tondeuse ajoutée:', __FILE__) . $eqLogic->getName(),
+                ));
             }
             $eqLogic->setConfiguration('firmware_version', $device['firmware']['version']);
             $eqLogic->setConfiguration('product_code', $device['product']['code']);
@@ -416,26 +422,21 @@ class worxLandroidS extends eqLogic {
         }
     }
 
-    public function save_activity_logs($data) {
+    public static function on_activity_logs($data) {
         foreach ($data as &$v) {
             unset($v['_payload']);
             $v['status']['description'] = self::getStatusDescription($v['status']['id']);
             $v['error']['description'] = self::getErrorDescription($v['error']['id']);
         }
 
-        $path = dirname(__FILE__) . '/../../data';
-        if (!is_dir($path)) {
-            mkdir($path, 0770, true);
-        }
-        $file = $path . '/activity_logs_' . $this->getId() . '.json';
-        file_put_contents($file, json_encode($data, JSON_FORCE_OBJECT));
+        event::add('worxLandroidS::activity_logs', array($data));
     }
 
     public function get_activity_logs() {
-        $path = dirname(__FILE__) . '/../../data';
-        $file = $path . '/activity_logs_' . $this->getId() . '.json';
-        $data = json_decode(file_get_contents($file), true);
-        return $data;
+        worxLandroidS::sendToDaemon([
+            'action' => 'get_activity_logs',
+            'serial_number' => $this->getConfiguration('serial_number')
+        ]);
     }
 
     public static function message($message) {
