@@ -4,7 +4,7 @@ from __future__ import annotations
 from .activity import Activity
 from .battery import Battery
 from .blades import Blades
-from .capability import Capability, DeviceCapability, CAPABILITY_TO_TEXT
+from .capability import Capability, DeviceCapability, CAPABILITY_TO_TEXT, MODULE_KEY
 from .devices import DeviceHandler
 from .location import Location
 from .mqtt import MQTT, Command
@@ -27,6 +27,7 @@ __all__ = [
     DeviceHandler,
     DeviceCapability,
     CAPABILITY_TO_TEXT,
+    MODULE_KEY,
     Location,
     MQTT,
     Orientation,
