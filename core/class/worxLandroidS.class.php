@@ -21,6 +21,8 @@ require_once dirname(__FILE__) . '/../../vendor/autoload.php';
 class worxLandroidS extends eqLogic {
     use MipsEqLogicTrait;
 
+    public static $_encryptConfigKey = array('email', 'passwd');
+
     public static $_widgetPossibility = array('custom' => array(
         'visibility' => true,
         'displayName' => true,
