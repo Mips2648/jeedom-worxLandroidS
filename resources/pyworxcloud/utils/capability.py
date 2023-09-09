@@ -32,6 +32,13 @@ CAPABILITY_TO_TEXT = {
     DeviceCapability.HEADLIGHT: "Headlight"
 }
 
+MODULE_KEY = {
+    DeviceCapability.ULTRASONIC: "US",
+    DeviceCapability.DIGITAL_FENCE: "DF",
+    DeviceCapability.CELLULAR: "4G",
+    DeviceCapability.HEADLIGHT: "HL"
+}
+
 
 class Capability:
     """Class for handling device capabilities."""

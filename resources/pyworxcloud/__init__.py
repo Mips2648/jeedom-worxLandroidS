@@ -33,7 +33,8 @@ from .utils import (
     ScheduleType,
     Statistic,
     Weekdays,
-    CAPABILITY_TO_TEXT
+    CAPABILITY_TO_TEXT,
+    MODULE_KEY
 )
 from .utils.mqtt import Command
 from .utils.schedules import TYPE_TO_STRING
@@ -903,7 +904,7 @@ class WorxCloud(dict):
         else:
             raise OfflineError("The device is currently offline, no action was sent.")
 
-    def toggle_module(self, serial_number: str, module: str, property: str, value: bool) -> None:
+    def toggle_module(self, serial_number: str, module: str, prop: str, value: bool) -> None:
         mower = self.get_mower(serial_number)
         if mower["online"]:
             device = self.get_device(mower["name"])
@@ -911,7 +912,7 @@ class WorxCloud(dict):
             capa = DeviceCapability[module]
             if not device.capabilities.check(capa):
                 raise DeviceCapabilityError(f"This device does not have {CAPABILITY_TO_TEXT[capa]} ({capa})")
-            payload = {"modules": {module: {property: 1}}} if value else {"modules": {module: {property: 0}}}
+            payload = {"modules": {MODULE_KEY[capa]: {prop: 1}}} if value else {"modules": {MODULE_KEY[capa]: {prop: 0}}}
             _LOGGER.debug("module payload: %s", payload)
             self.mqtt.publish(
                 serial_number,
