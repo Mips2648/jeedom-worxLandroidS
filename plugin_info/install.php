@@ -16,7 +16,7 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
+require_once __DIR__ . '/../../../core/php/core.inc.php';
 
 function worxLandroidS_install() {
     $pluginId = 'worxLandroidS';
@@ -31,12 +31,7 @@ function worxLandroidS_update() {
     config::save("api::{$pluginId}::mode", 'localhost');
     config::save("api::{$pluginId}::restricted", 1);
 
-    $cron = cron::byClassAndFunction($pluginId, 'daemon');
-    if (is_object($cron)) {
-        $cron->stop();
-        $cron->remove();
-    }
-    config::remove('initCloud', $pluginId);
+    unlink(__DIR__ . '/packages.json');
 
     /** @var worxLandroidS */
     foreach (eqLogic::byType($pluginId) as $eqLogic) {

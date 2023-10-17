@@ -16,7 +16,7 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 try {
-    require_once dirname(__FILE__) . "/../../../../core/php/core.inc.php";
+    require_once __DIR__ . "/../../../../core/php/core.inc.php";
 
     if (!jeedom::apiAccess(init('apikey'), 'worxLandroidS')) {
         echo __('Vous n\'etes pas autorisé à effectuer cette action', __FILE__);
@@ -31,29 +31,34 @@ try {
     $result = json_decode(file_get_contents("php://input"), true);
     if (!is_array($result)) {
         die();
-    } elseif (isset($result['devices'])) {
+    }
+    if (isset($result['devices'])) {
         log::add('worxLandroidS', 'debug', 'devices received:' . json_encode($result['devices']));
         worxLandroidS::create_or_update_devices($result['devices']);
-    } elseif (isset($result['uuid'])) {
-        /** @var worxLandroidS */
-        $eqLogic = eqLogic::byLogicalId($result['uuid'], 'worxLandroidS');
-        if (!is_object($eqLogic)) {
-            log::add('worxLandroidS', 'error', __('worxLandroidS eqLogic non trouvé : ', __FILE__) . $result['uuid']);
-        } else {
-            log::add('worxLandroidS', 'debug', "new message for '{$result['uuid']}': " . json_encode($result['data']));
-            $eqLogic->on_message($result['data']);
+    }
+    if (isset($result['update'])) {
+        foreach ($result['update'] as $uuid => $data) {
+            /** @var worxLandroidS */
+            $eqLogic = eqLogic::byLogicalId($uuid, 'worxLandroidS');
+            if (!is_object($eqLogic)) {
+                log::add('worxLandroidS', 'error', __('worxLandroidS eqLogic non trouvé : ', __FILE__) . $uuid);
+            } else {
+                log::add('worxLandroidS', 'debug', "new message for '{$uuid}': " . json_encode($data));
+                $eqLogic->on_message($data);
+            }
         }
-    } elseif (isset($result['activity_logs'])) {
-        /** @var worxLandroidS */
-        $eqLogic = eqLogic::byLogicalId($result['activity_logs'], 'worxLandroidS');
-        if (!is_object($eqLogic)) {
-            log::add('worxLandroidS', 'error', __('worxLandroidS eqLogic non trouvé : ', __FILE__) . $result['uuid']);
-        } else {
-            log::add('worxLandroidS', 'debug', "activity_logs for '{$result['activity_logs']}': " . json_encode($result['data']));
-            worxLandroidS::on_activity_logs($result['data']);
+    }
+    if (isset($result['activity_logs'])) {
+        foreach ($result['activity_logs'] as $uuid => $data) {
+            /** @var worxLandroidS */
+            $eqLogic = eqLogic::byLogicalId($uuid, 'worxLandroidS');
+            if (!is_object($eqLogic)) {
+                log::add('worxLandroidS', 'error', __('worxLandroidS eqLogic non trouvé : ', __FILE__) . $uuid);
+            } else {
+                log::add('worxLandroidS', 'debug', "activity_logs for '{$uuid}': " . json_encode($data));
+                worxLandroidS::on_activity_logs($data);
+            }
         }
-    } else {
-        log::add('worxLandroidS', 'debug', 'unknown message: ' . json_encode($result));
     }
 
     echo 'OK';

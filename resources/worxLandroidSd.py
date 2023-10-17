@@ -23,6 +23,7 @@ class worxLandroidS:
         self._config = config
         self._jeedom_publisher = None
         self._listen_task = None
+        self._send_task = None
         self._auto_reconnect_task = None
         self._loop = None
         self._logger = logging.getLogger(__name__)
@@ -44,7 +45,7 @@ class worxLandroidS:
         except Exception as e:
             _LOGGER.error('Exception during authentication: %s', e)
         else:
-            await self.add_signal_handler()
+            self._send_task = self._jeedom_publisher.create_send_task()
 
             self._worxcloud.connect()
             self._worxcloud.set_callback(LandroidEvent.DATA_RECEIVED, self._on_message)
@@ -53,9 +54,11 @@ class worxLandroidS:
 
             self._listen_task = Listener.create_listen_task(self._config.socket_host, self._config.socket_port, self._on_socket_message)
             self._auto_reconnect_task = asyncio.create_task(self._auto_reconnect())
+
+            await self.add_signal_handler()
             await asyncio.sleep(1) # allow  all tasks to start
             self._logger.info("Ready")
-            await asyncio.gather(self._auto_reconnect_task, self._listen_task)
+            await asyncio.gather(self._auto_reconnect_task, self._listen_task, self._send_task)
 
     async def add_signal_handler(self):
         self._loop.add_signal_handler(signal.SIGINT, functools.partial(self._ask_exit, signal.SIGINT))
@@ -69,6 +72,7 @@ class worxLandroidS:
         self._auto_reconnect_task.cancel()
         self._listen_task.cancel()
         self._worxcloud.disconnect()
+        self._send_task.cancel()
 
     def _get_device_to_send(self, device: DeviceHandler):
         device_to_send = (vars(device)).copy()
@@ -81,10 +85,7 @@ class worxLandroidS:
     def _on_message(self, name, device: DeviceHandler):
         tmpDevice = self._get_device_to_send(device)
         _LOGGER.debug("on message %s, %s", name, str(tmpDevice))
-        tmp = {}
-        tmp["uuid"] = device.uuid
-        tmp["data"] = tmpDevice
-        self._loop.create_task(self.__send_async(tmp))
+        self._loop.create_task(self.__format_and_send('update::' + device.uuid, tmpDevice))
 
 
     async def _on_socket_message(self, message):
@@ -102,11 +103,8 @@ class worxLandroidS:
 
                 logs = self._worxcloud.get_activity_logs(device)
 
-                tmp = {
-                    "activity_logs": device.uuid,
-                    "data": [l.__dict__ for l in logs.values()]
-                }
-                await self.__send_async(tmp)
+                payload = [l.__dict__ for l in logs.values()]
+                await self.__format_and_send('activity_logs::' + device.uuid, payload)
             else:
                 await self._executeAction(message)
         except Exception as e:
@@ -130,9 +128,7 @@ class worxLandroidS:
             _LOGGER.info("stop auto refresh token")
 
     async def _send_devices(self):
-        tmp = {}
-        tmp["devices"] = [self._get_device_to_send(d) for d in self._worxcloud.devices.values()]
-        await self.__send_async(tmp)
+        await self.__format_and_send('devices', [self._get_device_to_send(d) for d in self._worxcloud.devices.values()])
 
     async def _update_all(self):
         for device in self._worxcloud.devices.values():
@@ -169,9 +165,9 @@ class worxLandroidS:
             _LOGGER.warning('error encoding %s : %s', str(obj), e)
         return ''
 
-    async def __send_async(self, data):
+    async def __format_and_send(self, key, data):
         payload = json.loads(json.dumps(data, default=lambda d: self.__encoder(d)))
-        await self._jeedom_publisher.send_to_jeedom(payload)
+        await self._jeedom_publisher.add_change(key, payload)
 
 # ----------------------------------------------------------------------------
 
