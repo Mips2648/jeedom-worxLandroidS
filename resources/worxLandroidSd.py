@@ -6,10 +6,11 @@ import os
 import signal
 import json
 import asyncio
-import aiohttp
+import functools
 
 from config import Config
-from jeedom.jeedom import jeedom_utils, jeedom_socket, JEEDOM_SOCKET_MESSAGE
+from jeedom.utils import Utils
+from jeedom.aio_connector import Listener, Publisher
 
 from pyworxcloud import WorxCloud
 from pyworxcloud.clouds import CloudType
@@ -17,58 +18,61 @@ from pyworxcloud.exceptions import AuthorizationError
 from pyworxcloud.events import LandroidEvent
 from pyworxcloud.utils.devices import DeviceHandler
 
-
 class worxLandroidS:
     def __init__(self, config: Config) -> None:
         self._config = config
+        self._jeedom_publisher = None
         self._listen_task = None
         self._auto_reconnect_task = None
-        self._jeedom_session = None
         self._loop = None
-        self._jeedomSocket = jeedom_socket(port=self._config.socketport, address='localhost')
+        self._logger = logging.getLogger(__name__)
 
-        self._cloud = None
+        self._worxcloud = None
 
     async def main(self):
-        self._jeedom_session = aiohttp.ClientSession()
-        if not await self.__test_callback():
-            await self._jeedom_session.close()
+        self._jeedom_publisher = Publisher(self._config.callback_url, self._config.api_key, self._config.cycle)
+        if not await self._jeedom_publisher.test_callback():
             return
 
-        self._cloud = WorxCloud(self._config.email, self._config.password, CloudType.WORX)
-        auth = False
+        self._loop = asyncio.get_running_loop()
+
+        self._worxcloud = WorxCloud(self._config.email, self._config.password, CloudType.WORX)
         try:
-            auth = self._cloud.authenticate()
+            self._worxcloud.authenticate()
         except AuthorizationError as e:
             _LOGGER.error('AuthorizationError: %s', e)
         except Exception as e:
             _LOGGER.error('Exception during authentication: %s', e)
+        else:
+            await self.add_signal_handler()
 
-        if not auth:
-            await self._jeedom_session.close()
-            return
+            self._worxcloud.connect()
+            self._worxcloud.set_callback(LandroidEvent.DATA_RECEIVED, self._on_message)
+            await self._send_devices()
+            await self._update_all()
 
-        self._cloud.connect()
-        self._cloud.set_callback(LandroidEvent.DATA_RECEIVED, self._on_message)
-        await self._send_devices()
-        await self._update_all()
+            self._listen_task = Listener.create_listen_task(self._config.socket_host, self._config.socket_port, self._on_socket_message)
+            self._auto_reconnect_task = asyncio.create_task(self._auto_reconnect())
+            await asyncio.sleep(1) # allow  all tasks to start
+            self._logger.info("Ready")
+            await asyncio.gather(self._auto_reconnect_task, self._listen_task)
 
-        self._loop = asyncio.get_event_loop()
+    async def add_signal_handler(self):
+        self._loop.add_signal_handler(signal.SIGINT, functools.partial(self._ask_exit, signal.SIGINT))
+        self._loop.add_signal_handler(signal.SIGTERM, functools.partial(self._ask_exit, signal.SIGTERM))
 
-        self._listen_task = asyncio.create_task(self._listen())
-        self._auto_reconnect_task = asyncio.create_task(self._auto_reconnect())
-        await asyncio.gather(self._auto_reconnect_task, self._listen_task)
-
-        await self._jeedom_session.close()
+    def _ask_exit(self, sig):
+        self._logger.info("Signal %i caught, exiting...", sig)
+        self.close()
 
     def close(self):
         self._auto_reconnect_task.cancel()
         self._listen_task.cancel()
-        self._cloud.disconnect()
+        self._worxcloud.disconnect()
 
     def _get_device_to_send(self, device: DeviceHandler):
         device_to_send = (vars(device)).copy()
-        for key in ['_api', '_mower', '_tz', '_DeviceHandler__is_decoded', '_DeviceHandler__raw_data', '_DeviceHandler__json_data']:
+        for key in ['_api', '_mower', '_tz', '_DeviceHandler__is_decoded', '_DeviceHandler__raw_data', '_DeviceHandler__json_data', 'capabilities']:
             device_to_send.pop(key, '')
         if _LOGGER.level > logging.DEBUG:
             device_to_send.pop('last_status', '')
@@ -82,45 +86,42 @@ class worxLandroidS:
         tmp["data"] = tmpDevice
         self._loop.create_task(self.__send_async(tmp))
 
-    async def _read_socket(self):
-        global JEEDOM_SOCKET_MESSAGE
-        if not JEEDOM_SOCKET_MESSAGE.empty():
-            _LOGGER.debug("Message received in socket JEEDOM_SOCKET_MESSAGE")
-            message = json.loads(JEEDOM_SOCKET_MESSAGE.get().decode('utf-8'))
-            if message['apikey'] != _apikey:
-                _LOGGER.error('Invalid apikey from socket : %s', str(message))
-                return
-            try:
-                if message['action'] == 'stop':
-                    self.close()
-                elif message['action'] == 'synchronize':
-                    self._cloud.fetch()
-                    await self._send_devices()
-                elif message['action'] == 'get_activity_logs':
-                    device = self._cloud.get_device_by_serial_number(message['serial_number'])
 
-                    logs = self._cloud.get_activity_logs(device)
+    async def _on_socket_message(self, message):
+        if message['apikey'] != self._config.api_key:
+            _LOGGER.error('Invalid apikey from socket : %s', str(message))
+            return
+        try:
+            if message['action'] == 'stop':
+                self.close()
+            elif message['action'] == 'synchronize':
+                self._worxcloud.fetch()
+                await self._send_devices()
+            elif message['action'] == 'get_activity_logs':
+                device = self._worxcloud.get_device_by_serial_number(message['serial_number'])
 
-                    tmp = {
-                        "activity_logs": device.uuid,
-                        "data": [l.__dict__ for l in logs.values()]
-                    }
-                    await self.__send_async(tmp)
-                else:
-                    await self._executeAction(message)
-            except Exception as e:
-                _LOGGER.error('Send command to daemon error: %s', e)
+                logs = self._worxcloud.get_activity_logs(device)
+
+                tmp = {
+                    "activity_logs": device.uuid,
+                    "data": [l.__dict__ for l in logs.values()]
+                }
+                await self.__send_async(tmp)
+            else:
+                await self._executeAction(message)
+        except Exception as e:
+            _LOGGER.error('Send command to daemon error: %s', e)
 
     async def _auto_reconnect(self):
         try:
             while True:
-                await asyncio.sleep(self._cloud.get_token_expires_in() * 0.9)
-                success = self._cloud.renew_connection()
+                await asyncio.sleep(self._worxcloud.get_token_expires_in() * 0.9)
+                success = self._worxcloud.renew_connection()
                 retry = 0
                 while not success and retry < 12:
                     await asyncio.sleep(60)
                     retry += 1
-                    success = self._cloud.renew_connection()
+                    success = self._worxcloud.renew_connection()
                 if not success:
                     raise Exception("Impossible to renew token, issue with cloud server")
                 else:
@@ -130,18 +131,18 @@ class worxLandroidS:
 
     async def _send_devices(self):
         tmp = {}
-        tmp["devices"] = [self._get_device_to_send(d) for d in self._cloud.devices.values()]
+        tmp["devices"] = [self._get_device_to_send(d) for d in self._worxcloud.devices.values()]
         await self.__send_async(tmp)
 
     async def _update_all(self):
-        for device in self._cloud.devices.values():
+        for device in self._worxcloud.devices.values():
             # _LOGGER.debug("update device %s", vars(device))
-            self._cloud.update(device.serial_number)
+            self._worxcloud.update(device.serial_number)
 
     async def _executeAction(self, message):
         action: str = message['action']
         _LOGGER.info('Execution of action %s', action)
-        worx_method = getattr(self._cloud, action, self.__methodNotFound)
+        worx_method = getattr(self._worxcloud, action, self.__methodNotFound)
 
         try:
             if 'args' in message:
@@ -157,30 +158,6 @@ class worxLandroidS:
     def __methodNotFound(*_):
         _LOGGER.error('unknown method')
 
-    async def _listen(self):
-        _LOGGER.info("Start listening")
-        self._jeedomSocket.open()
-        try:
-            while 1:
-                await asyncio.sleep(0.05)
-                await self._read_socket()
-        except KeyboardInterrupt:
-            _LOGGER.info("End listening")
-            shutdown()
-        except asyncio.CancelledError:
-            _LOGGER.info("listening cancelled")
-
-    async def __test_callback(self):
-        try:
-            async with self._jeedom_session.get(self._config.callbackUrl + '?test=1&apikey=' + self._config.apiKey) as resp:
-                if resp.status != 200:
-                    _LOGGER.error("Please check your network configuration page: %s-%s", resp.status, resp.reason)
-                    return False
-        except Exception as e:
-            _LOGGER.error('Callback error: %s. Please check your network configuration page', e)
-            return False
-        return True
-
     def __encoder(self, obj):
         try:
             if isinstance(obj, (datetime.date, datetime.datetime)):
@@ -193,27 +170,16 @@ class worxLandroidS:
         return ''
 
     async def __send_async(self, data):
-
-        _LOGGER.debug('Send to jeedom :  %s', data)
         payload = json.loads(json.dumps(data, default=lambda d: self.__encoder(d)))
-        async with self._jeedom_session.post(self._config.callbackUrl + '?apikey=' + self._config.apiKey, json=payload) as resp:
-            if resp.status != 200:
-                _LOGGER.error('Error on send request to jeedom, return %s-%s', resp.status, resp.reason)
+        await self._jeedom_publisher.send_to_jeedom(payload)
 
 # ----------------------------------------------------------------------------
 
-
-def handler(signum=None, frame=None):
-    _LOGGER.debug("Signal %i caught, exiting...", int(signum))
-    worx.close()
-
-
 def shutdown():
     _LOGGER.info("Shuting down")
-
     try:
-        _LOGGER.debug("Removing PID file %s", _pidfile)
-        os.remove(_pidfile)
+        _LOGGER.debug("Removing PID file %s", config.pid_filename)
+        os.remove(config.pid_filename)
     except:
         pass
 
@@ -222,11 +188,6 @@ def shutdown():
     os._exit(0)
 
 # ----------------------------------------------------------------------------
-
-
-_log_level = "error"
-_pidfile = '/tmp/worxLandroidSd.pid'
-_apikey = ''
 
 parser = argparse.ArgumentParser(description='worxLandroidS Daemon for Jeedom plugin')
 parser.add_argument("--loglevel", help="Log Level for the daemon", type=str)
@@ -238,30 +199,20 @@ parser.add_argument("--apikey", help="Plugin API Key", type=str)
 parser.add_argument("--pid", help="daemon pid", type=str)
 
 args = parser.parse_args()
+config = Config(**vars(args))
 
-_log_level = args.loglevel
-_pidfile = args.pid
-_apikey = args.apikey
-
-jeedom_utils.init_logger(_log_level)
+Utils.init_logger(config.log_level)
 _LOGGER = logging.getLogger(__name__)
-
-logging.getLogger('pyworxcloud').setLevel(jeedom_utils.convert_log_level(_log_level))
-
-signal.signal(signal.SIGINT, handler)
-signal.signal(signal.SIGTERM, handler)
+logging.getLogger('asyncio').setLevel(logging.WARNING)
+logging.getLogger('pyworxcloud').setLevel(Utils.convert_log_level(config.log_level))
 
 try:
     _LOGGER.info('Starting daemon')
-    config = Config(**vars(args))
-
-    _LOGGER.info('Log level: %s', _log_level)
-    _LOGGER.debug('Socket port: %s', config.socketport)
-    _LOGGER.debug('PID file: %s', _pidfile)
-    jeedom_utils.write_pid(str(_pidfile))
+    _LOGGER.info('Log level: %s', config.log_level)
+    Utils.write_pid(str(config.pid_filename))
 
     worx = worxLandroidS(config)
-    asyncio.get_event_loop().run_until_complete(worx.main())
+    asyncio.run(worx.main())
 except Exception as e:
     exception_type, exception_object, exception_traceback = sys.exc_info()
     filename = exception_traceback.tb_frame.f_code.co_filename
