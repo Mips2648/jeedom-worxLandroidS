@@ -16,10 +16,12 @@
 * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
 */
 require_once __DIR__  . '/../../../../core/php/core.inc.php';
-require_once dirname(__FILE__) . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
 
 class worxLandroidS extends eqLogic {
     use MipsEqLogicTrait;
+
+    const PYTHON_PATH = __DIR__ . '/../../resources/venv/bin/python3';
 
     public static $_encryptConfigKey = array('email', 'passwd');
 
@@ -167,6 +169,29 @@ class worxLandroidS extends eqLogic {
     //     }
     // }
 
+    public static function dependancy_install() {
+        log::remove(__CLASS__ . '_update');
+        return array('script' => __DIR__ . '/../../resources/install_#stype#.sh ' . jeedom::getTmpFolder(__CLASS__) . '/dependency', 'log' => log::getPathToLog(__CLASS__ . '_update'));
+    }
+
+    public static function dependancy_info() {
+        $return = array();
+        $return['log'] = log::getPathToLog(__CLASS__ . '_update');
+        $return['progress_file'] = jeedom::getTmpFolder(__CLASS__) . '/dependency';
+        if (file_exists(jeedom::getTmpFolder(__CLASS__) . '/dependency')) {
+            $return['state'] = 'in_progress';
+        } else {
+            if (exec(system::getCmdSudo() . system::get('cmd_check') . '-Ec "python3\-dev|python3\-venv"') < 2) {
+                $return['state'] = 'nok';
+            } elseif (exec(system::getCmdSudo() . self::PYTHON_PATH . ' -m pip list | grep -Ewc "wheel|paho\-mqtt|aiohttp|backports\.zoneinfo"') < 4) {
+                $return['state'] = 'nok';
+            } else {
+                $return['state'] = 'ok';
+            }
+        }
+        return $return;
+    }
+
     public static function deamon_info() {
         $return = array();
         $return['log'] = __CLASS__;
@@ -203,7 +228,7 @@ class worxLandroidS extends eqLogic {
             throw new Exception(__('Veuillez vérifier la configuration', __FILE__));
         }
 
-        $path = realpath(dirname(__FILE__) . '/../../resources');
+        $path = realpath(__DIR__ . '/../../resources');
         $cmd = "/usr/bin/python3 {$path}/worxLandroidSd.py";
         $cmd .= ' --loglevel ' . log::convertLogLevel(log::getLogLevel(__CLASS__));
         $cmd .= ' --socketport ' . self::getSocketPort();

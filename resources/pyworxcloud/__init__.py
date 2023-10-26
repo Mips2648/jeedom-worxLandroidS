@@ -389,6 +389,8 @@ class WorxCloud(dict):
         if "cfg" in data:
             if "dt" in data["cfg"] and "tm" in data["cfg"]:
                 device.updated = data["cfg"]["dt"] + " " + data["cfg"]["tm"]
+            elif "tm" in data["cfg"]:
+                device.updated = data["dat"]["tm"]
             else:
                 device.updated = "Unknown"
 

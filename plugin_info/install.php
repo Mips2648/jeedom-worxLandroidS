@@ -16,7 +16,7 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
+require_once __DIR__ . '/../../../core/php/core.inc.php';
 
 function worxLandroidS_install() {
     $pluginId = 'worxLandroidS';
@@ -31,12 +31,7 @@ function worxLandroidS_update() {
     config::save("api::{$pluginId}::mode", 'localhost');
     config::save("api::{$pluginId}::restricted", 1);
 
-    $cron = cron::byClassAndFunction($pluginId, 'daemon');
-    if (is_object($cron)) {
-        $cron->stop();
-        $cron->remove();
-    }
-    config::remove('initCloud', $pluginId);
+    unlink(__DIR__ . '/packages.json');
 
     /** @var worxLandroidS */
     foreach (eqLogic::byType($pluginId) as $eqLogic) {
@@ -58,6 +53,18 @@ function worxLandroidS_update() {
         }
 
         $eqLogic->createCommands();
+    }
+
+    $dependencyInfo = worxLandroidS::dependancy_info();
+    if (!isset($dependencyInfo['state'])) {
+        message::add($pluginId, __('Veuilez vérifier les dépendances', __FILE__));
+    } elseif ($dependencyInfo['state'] == 'nok') {
+        try {
+            $plugin = plugin::byId($pluginId);
+            $plugin->dependancy_install();
+        } catch (\Throwable $th) {
+            message::add($pluginId, __('Cette mise à jour nécessite de réinstaller les dépendances même si elles sont marquées comme OK', __FILE__));
+        }
     }
 }
 
