@@ -1,10 +1,18 @@
 """Time formatting helpers."""
 from __future__ import annotations
 
+import sys
+
 import re
 from datetime import datetime
 from typing import Any
-from backports.zoneinfo import ZoneInfo
+
+
+if sys.version_info < (3, 9, 0):
+    from backports.zoneinfo import ZoneInfo
+else:
+    from zoneinfo import ZoneInfo
+
 
 from ..utils.schedules import Schedule
 
