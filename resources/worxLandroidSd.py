@@ -172,7 +172,7 @@ class worxLandroidS:
 # ----------------------------------------------------------------------------
 
 def shutdown():
-    _LOGGER.info("Shuting down")
+    _LOGGER.info("Shutdown")
     try:
         _LOGGER.debug("Removing PID file %s", config.pid_filename)
         os.remove(config.pid_filename)

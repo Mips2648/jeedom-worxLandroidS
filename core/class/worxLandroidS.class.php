@@ -183,7 +183,7 @@ class worxLandroidS extends eqLogic {
         } else {
             if (exec(system::getCmdSudo() . system::get('cmd_check') . '-Ec "python3\-dev|python3\-venv"') < 2) {
                 $return['state'] = 'nok';
-            } elseif (exec(system::getCmdSudo() . self::PYTHON_PATH . ' -m pip list | grep -Ewc "wheel|paho\-mqtt|aiohttp|backports\.zoneinfo"') < 4) {
+            } elseif (exec(system::getCmdSudo() . self::PYTHON_PATH . ' -m pip list | grep -Ewc "wheel|paho\-mqtt|aiohttp|requests|backports\.zoneinfo"') < 5) {
                 $return['state'] = 'nok';
             } else {
                 $return['state'] = 'ok';
@@ -229,7 +229,7 @@ class worxLandroidS extends eqLogic {
         }
 
         $path = realpath(__DIR__ . '/../../resources');
-        $cmd = "/usr/bin/python3 {$path}/worxLandroidSd.py";
+        $cmd = self::PYTHON_PATH . " {$path}/worxLandroidSd.py";
         $cmd .= ' --loglevel ' . log::convertLogLevel(log::getLogLevel(__CLASS__));
         $cmd .= ' --socketport ' . self::getSocketPort();
         $cmd .= ' --callback ' . network::getNetworkAccess('internal', 'proto:127.0.0.1:port:comp') . '/plugins/worxLandroidS/core/php/jeeworxLandroidS.php';
