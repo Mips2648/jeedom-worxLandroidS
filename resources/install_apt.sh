@@ -1,58 +1,33 @@
-PROGRESS_FILE=/tmp/jeedom/worxLandroidS/dependency
-if [ ! -z $1 ]; then
-	PROGRESS_FILE=$1
-fi
+######################### INCLUSION LIB ##########################
+BASEDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+wget https://raw.githubusercontent.com/Mips2648/dependance.lib/master/dependance.lib -O $BASEDIR/dependance.lib &>/dev/null
+PLUGIN=$(basename "$(realpath $BASEDIR/..)")
+LANG_DEP=en
+. ${BASEDIR}/dependance.lib
+##################################################################
 
-BASE_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-VENV_DIR=$BASE_DIR/venv
+VENV_DIR=$BASEDIR/venv
+cd $BASEDIR
 
-function log(){
-	if [ -n "$1" ]
-	then
-		echo "$(date +'[%F %T]') $1";
-	else
-		while read IN               # If it is output from command then loop it
-		do
-			echo "$(date +'[%F %T]') $IN";
-		done
-	fi
-}
+pre
+step 5 "Clean apt"
+try apt-get clean
+step 10 "Update apt"
+try apt-get update
 
-cd $BASE_DIR
+step 20 "Install apt packages"
+tryOrStop apt-get install -y python3 python3-pip python3-dev python3-venv
 
-touch ${PROGRESS_FILE}
-echo 0 > ${PROGRESS_FILE}
-log "*************************************"
-log "*   Launch install of dependencies  *"
-log "*************************************"
-echo 5 > ${PROGRESS_FILE}
-apt-get clean | log
-echo 10 > ${PROGRESS_FILE}
-apt-get update | log
-echo 20 > ${PROGRESS_FILE}
+step 50 "Creating python 3 virtual environment"
+tryOrStop python3 -m venv $VENV_DIR
 
-log "*****************************"
-log "Install modules using apt-get"
-log "*****************************"
-apt-get install -y python3 python3-requests python3-pip python3-dev python3-venv | log
-echo 50 > ${PROGRESS_FILE}
+step 60 "Setting up virtual environment"
+tryOrStop $VENV_DIR/bin/python3 -m pip install --no-cache-dir --upgrade pip wheel
 
-log "*************************************"
-log "Creating python 3 virtual environment"
-log "*************************************"
-python3 -m venv $VENV_DIR | log
-echo 60 > ${PROGRESS_FILE}
-log "Done"
+step 70 "Install the required python packages"
+tryOrStop $VENV_DIR/bin/python3 -m pip install --no-cache-dir -r requirements.txt
 
-log "*************************************"
-log "Install the required python libraries"
-log "*************************************"
-$VENV_DIR/bin/python3 -m pip install --no-cache-dir --upgrade pip wheel | log
-echo 70 > ${PROGRESS_FILE}
-$VENV_DIR/bin/python3 -m pip install --no-cache-dir -r requirements.txt | log
+step 90 "Summary of installed packages"
+$VENV_DIR/bin/python3 -m pip freeze
 
-echo 100 > ${PROGRESS_FILE}
-log "***************************"
-log "*      Install ended      *"
-log "***************************"
-rm ${PROGRESS_FILE}
+post

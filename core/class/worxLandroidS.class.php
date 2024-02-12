@@ -171,19 +171,22 @@ class worxLandroidS extends eqLogic {
 
     public static function dependancy_install() {
         log::remove(__CLASS__ . '_update');
-        return array('script' => __DIR__ . '/../../resources/install_#stype#.sh ' . jeedom::getTmpFolder(__CLASS__) . '/dependency', 'log' => log::getPathToLog(__CLASS__ . '_update'));
+        return array('script' => __DIR__ . '/../../resources/install_#stype#.sh', 'log' => log::getPathToLog(__CLASS__ . '_update'));
     }
 
     public static function dependancy_info() {
         $return = array();
         $return['log'] = log::getPathToLog(__CLASS__ . '_update');
-        $return['progress_file'] = jeedom::getTmpFolder(__CLASS__) . '/dependency';
-        if (file_exists(jeedom::getTmpFolder(__CLASS__) . '/dependency')) {
+        $return['progress_file'] = jeedom::getTmpFolder(__CLASS__) . '/dependance';
+        if (file_exists(jeedom::getTmpFolder(__CLASS__) . '/dependance')) {
             $return['state'] = 'in_progress';
         } else {
+            $requirements = realpath(__DIR__ . '/../../resources/requirements.txt');
+            $packages_installed = exec(self::PYTHON_PATH . ' -m pip freeze | awk \'!x {v[$1] = $2; next} NF>1 && $1 in v {$0 = $1"=="v[$1]} {print}\' FS=\'==\' - x=1 FS=\'>=\' ' . $requirements . ' | grep -Ec "=="');
+            $packages_needed = exec('sed -n \'$=\' ' . $requirements);
             if (exec(system::getCmdSudo() . system::get('cmd_check') . '-Ec "python3\-dev|python3\-venv"') < 2) {
                 $return['state'] = 'nok';
-            } elseif (exec(system::getCmdSudo() . self::PYTHON_PATH . ' -m pip list | grep -Ewc "wheel|paho\-mqtt|aiohttp|requests|backports\.zoneinfo"') < 5) {
+            } elseif ($packages_installed != $packages_needed) {
                 $return['state'] = 'nok';
             } else {
                 $return['state'] = 'ok';
