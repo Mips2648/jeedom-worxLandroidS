@@ -12,6 +12,7 @@ from uuid import uuid4
 
 import paho.mqtt.client as mqtt
 from paho.mqtt.client import connack_string, error_string
+from paho.mqtt.reasoncodes import ReasonCode
 
 from ..events import EventHandler, LandroidEvent
 from ..exceptions import MQTTException
@@ -107,6 +108,7 @@ class MQTT(LDict):
         self._uuid = uuid4()
 
         self.client = mqtt.Client(
+            callback_api_version=mqtt.CallbackAPIVersion.VERSION2,
             client_id=f"{brandprefix}/USER/{user_id}/bot/{self._uuid}",
             clean_session=False,
             userdata=None,
@@ -139,8 +141,7 @@ class MQTT(LDict):
         self,
         client: mqtt.Client | None,
         userdata: Any | None,
-        message: Any | None,
-        properties: Any | None = None,  # pylint: disable=unused-argument
+        message: Any | None
     ) -> None:
         """MQTT callback method definition."""
         msg = message.payload.decode("utf-8")
@@ -163,13 +164,13 @@ class MQTT(LDict):
         client: mqtt.Client | None,
         userdata: Any | None,
         flags: Any | None,
-        rc: int | None,
-        properties: Any | None = None,  # pylint: disable=unused-argument,invalid-name
+        reason_code: ReasonCode | None,
+        properties: Any | None = None
     ) -> None:
         """MQTT callback method."""
         logger = self._log.getChild("Conn_State")
-        logger.debug(connack_string(rc))
-        if rc == 0:
+        logger.debug(connack_string(reason_code))
+        if reason_code == 0:
             self._disconnected = False
             logger.debug("MQTT connected")
             self._events.call(
@@ -187,13 +188,14 @@ class MQTT(LDict):
         self,
         client: mqtt.Client | None,
         userdata: Any | None,
-        rc: int | None,
-        properties: Any | None = None,  # pylint: disable=unused-argument,invalid-name
+        flags: Any | None,
+        reason_code: ReasonCode | None,
+        properties: Any | None = None
     ) -> None:
         """MQTT callback method."""
         logger = self._log.getChild("Conn_State")
-        if rc > 0:
-            if rc == 7:
+        if reason_code > 0:
+            if reason_code == 7:
                 logger.info("Refreshing access token and reconnecting")
                 self._api.update_token()
                 accesstokenparts = (
@@ -209,8 +211,8 @@ class MQTT(LDict):
             else:
                 logger.warning(
                     "Unexpected MQTT disconnect (%s: %s) - retrying",
-                    rc,
-                    connack_string(rc),
+                    reason_code,
+                    connack_string(reason_code),
                 )
                 self.client.reconnect()
 
