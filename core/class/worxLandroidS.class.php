@@ -282,6 +282,12 @@ class worxLandroidS extends eqLogic {
         sleep(1);
     }
 
+    public static function backupExclude() {
+        return [
+            'resources/venv'
+        ];
+    }
+
     public static function create_or_update_devices($devices) {
         foreach ($devices as $device) {
             /** @var worxLandroidS */
