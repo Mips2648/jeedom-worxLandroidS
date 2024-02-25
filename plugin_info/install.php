@@ -55,9 +55,6 @@ function worxLandroidS_update() {
         $eqLogic->createCommands();
     }
 
-    $plugin = plugin::byId($pluginId);
-    $plugin->dependancy_install();
-
     $dependencyInfo = worxLandroidS::dependancy_info();
     if (!isset($dependencyInfo['state'])) {
         message::add($pluginId, __('Veuilez vérifier les dépendances', __FILE__));
