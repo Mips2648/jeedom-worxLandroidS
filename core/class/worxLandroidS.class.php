@@ -42,26 +42,6 @@ class worxLandroidS extends eqLogic {
     }
 
 
-    //         } else {
-    //             log::add(__CLASS__, 'info', 'Connexion OK');
-    //             // get users parameters
-    //             $url       = "https://api.worxlandroid.com/api/v2/users/me";
-    //             $api_token = $json['access_token'];
-    //             $token     = $json['api_token'];
-
-    //             $content = "application/json";
-    //             $ch      = curl_init($url);
-    //             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
-    //             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    //             curl_setopt($ch, CURLOPT_HEADER, FALSE);
-    //             curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-    //                 "Content-Type: application/json",
-    //                 'Authorization: Bearer ' . $api_token
-    //             ));
-
-    //             $result_users = curl_exec($ch);
-    //             log::add(__CLASS__, 'info', 'Connexion result :' . $result_users);
-    //             $json_users = json_decode($result_users, true);
 
     //             // get certificate
     //             $url = "https://api.worxlandroid.com:443/api/v2/users/certificate";
@@ -485,8 +465,6 @@ class worxLandroidS extends eqLogic {
         $split_topic = explode('/', $nodeid);
         $mac_address = $split_topic[1];
 
-        /** @var worxLandroidS */
-        $elogic = eqlogic::byLogicalId($mac_address, __CLASS__, false);
 
         /*
           cfg->lg language: string;
@@ -559,32 +537,6 @@ class worxLandroidS extends eqLogic {
         //         $elogic->newInfo('completePlanning', $completePlanning, 'string', 1, '');
         //     }
         // }
-
-
-        // mise a jour des infos virtuelles séparées par des virgules
-        $cmd = worxLandroidSCmd::byEqLogicIdCmdName($elogic->getId(), 'virtualInfo');
-        $name = $cmd->getConfiguration('request', '');
-        $cmdlist = explode(',', $name);
-        $value = '';
-        foreach ($cmdlist as $cmdname) {
-            if (strstr($cmdname, '#')) {
-                $value .= ',' . strval(jeedom::evaluateExpression($cmdname)); // name = command number
-            } else {
-                $cmdlogic = worxLandroidSCmd::byEqLogicIdCmdName($elogic->getId(), $cmdname);
-                if (empty($value)) {
-                    $value = $cmdlogic->getConfiguration('topic', '');
-                } else {
-                    $value .= ',' . $cmdlogic->getConfiguration('topic', '');
-                }
-            }
-        }
-
-        $cmd->setConfiguration('topic', $value);
-        $cmd->save();
-        $elogic->checkAndUpdateCmd($cmd, $value);
-
-        $elogic->save();
-        $elogic->refreshWidget();
     }
 
 
@@ -855,16 +807,6 @@ class worxLandroidS extends eqLogic {
             } else {
                 $replace['#' . $cmd->getLogicalId() . '_history#'] = '';
             }
-
-            // if ($cmd->getLogicalId() == 'virtualInfo') {
-            //     if ($cmd->getTemplate('dashboard', '') == '') {
-            //         $cmd->setTemplate('dashboard', 'badge');
-            //     }
-            //     if (substr_compare($cmd->getName(), 'Planning', 0, 8) != 0) {
-            //         $cmd_html .= $cmd->toHtml($_version, '');
-            //     }
-            // }
-
         }
         $cmdaction_html = '';
         foreach ($this->getCmd('action') as $cmd) {
@@ -971,16 +913,9 @@ class worxLandroidS extends eqLogic {
         $worxImg_template     = getTemplate('core', $version, strval($code), __CLASS__);
         $replace['#worxImg#'] .= template_replace($replaceImg, $worxImg_template);
         // fin nouveau template
-        if ($cmd->getLogicalId() == 'virtualInfo') {
-            $replace['#widget#'] = $cmd_html; // FIXME $cmd_html assigned to #widget# & #cmd# ?
-        }
-        $replace['#cmd#'] = $cmd_html; // FIXME $cmd_html assigned to #widget# & #cmd# ?
+        $replace['#cmd#'] = $cmd_html;
 
-        // if ($automaticWidget == true) {
         return $this->postToHtml($_version, template_replace($replace, getTemplate('core', $version, 'worxMain', __CLASS__)));
-        // } else {
-        //     return $this->postToHtml($_version, template_replace($replace, getTemplate('core', $version, 'worxMainOwn', __CLASS__)));
-        // }
     }
 }
 
@@ -1078,43 +1013,5 @@ class worxLandroidSCmd extends cmd {
         }
 
         worxLandroidS::sendToDaemon($params);
-
-        // if ($this->getLogicalId() == 'newBlades') {
-        //     $elogic = $this->getEqLogic();
-        //     $cmdin = worxLandroidSCmd::byEqLogicIdCmdName($elogic->getId(), 'totalBladeTime');
-        //     $value = $cmdin->execCmd();
-        //     $elogic->newInfo('lastBladesChangeTime', $value, 'numeric', 0);
-        //     return true;
-        // } else {
-
-        //     switch ($this->getType()) {
-        //         case 'action':
-        //             $request = $this->getConfiguration('request', '1');
-        //             $topic   = $this->getConfiguration('topic');
-        //             switch ($this->getSubType()) {
-        //                 case 'slider':
-        //                     $request = str_replace('#slider#', $_options['slider'], $request);
-        //                     break;
-        //                 case 'color':
-        //                     $request = str_replace('#color#', $_options['color'], $request);
-        //                     break;
-        //                 case 'message':
-        //                     $request = str_replace('#title#', $_options['title'], $request);
-        //                     $request = str_replace('#message#', $_options['message'], $request);
-        //                     break;
-        //             }
-
-        //             $request = str_replace('\\', '', jeedom::evaluateExpression($request));
-        //             if ($this->getName() == 'set_schedule') {
-        //                 $request = $_options['message'];
-        //             }
-        //             $request = cmd::cmdToValue($request);
-        //             // save schedule if setting to 0 - and retrieve from saved value (new values must be set from smartphone
-
-        //             $eqlogic = $this->getEqLogic();
-        //             log::add(__CLASS__, 'debug', 'Eqlogicname: ' . $eqlogic->getName());
-        //             worxLandroidS::publishMosquitto($this->getId(), $topic, $request, $this->getConfiguration('retain', '0'));
-        //     }
-        // }
     }
 }
