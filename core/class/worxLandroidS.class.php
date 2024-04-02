@@ -160,16 +160,27 @@ class worxLandroidS extends eqLogic {
         $return['progress_file'] = jeedom::getTmpFolder(__CLASS__) . '/dependance';
         if (file_exists(jeedom::getTmpFolder(__CLASS__) . '/dependance')) {
             $return['state'] = 'in_progress';
+        } elseif (!file_exists(self::PYTHON_PATH)) {
+            $return['state'] = 'nok';
         } else {
-            $requirements = realpath(__DIR__ . '/../../resources/requirements.txt');
-            $packages_installed = exec(self::PYTHON_PATH . ' -m pip freeze | awk \'!x {v[$1] = $2; next} NF>1 && $1 in v {$0 = $1"=="v[$1]} {print}\' FS=\'==\' - x=1 FS=\'>=\' ' . $requirements . ' | grep -Ec "=="');
-            $packages_needed = exec('sed -n \'$=\' ' . $requirements);
-            if (exec(system::getCmdSudo() . system::get('cmd_check') . '-Ec "python3\-dev|python3\-venv"') < 2) {
-                $return['state'] = 'nok';
-            } elseif ($packages_installed != $packages_needed) {
-                $return['state'] = 'nok';
-            } else {
-                $return['state'] = 'ok';
+            exec(self::PYTHON_PATH . ' -m pip freeze', $packages_installed);
+            $packages = join("||", $packages_installed);
+            exec('cat ' . __DIR__ . '/../../resources/requirements.txt', $packages_needed);
+            $return['state'] = 'ok';
+            foreach ($packages_needed as $line) {
+                if (preg_match('/([^\s]+)[\s]*([>=~]=)[\s]*([\d+\.?]+)$/', $line, $need) === 1) {
+                    if (preg_match('/' . $need[1] . '==([\d+\.?]+)/', $packages, $install) === 1) {
+                        if ($need[2] == '==' && $need[3] != $install[1]) {
+                            $return['state'] = 'nok';
+                            break;
+                        } elseif (version_compare($need[3], $install[1], '>')) {
+                            $return['state'] = 'nok';
+                        }
+                    } else {
+                        $return['state'] = 'nok';
+                        break;
+                    }
+                }
             }
         }
         return $return;
