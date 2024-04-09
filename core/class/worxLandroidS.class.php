@@ -158,30 +158,13 @@ class worxLandroidS extends eqLogic {
         $return = array();
         $return['log'] = log::getPathToLog(__CLASS__ . '_update');
         $return['progress_file'] = jeedom::getTmpFolder(__CLASS__) . '/dependance';
+        $return['state'] = 'ok';
         if (file_exists(jeedom::getTmpFolder(__CLASS__) . '/dependance')) {
             $return['state'] = 'in_progress';
         } elseif (!file_exists(self::PYTHON_PATH)) {
             $return['state'] = 'nok';
-        } else {
-            exec(self::PYTHON_PATH . ' -m pip freeze', $packages_installed);
-            $packages = join("||", $packages_installed);
-            exec('cat ' . __DIR__ . '/../../resources/requirements.txt', $packages_needed);
-            $return['state'] = 'ok';
-            foreach ($packages_needed as $line) {
-                if (preg_match('/([^\s]+)[\s]*([>=~]=)[\s]*([\d+\.?]+)$/', $line, $need) === 1) {
-                    if (preg_match('/' . $need[1] . '==([\d+\.?]+)/', $packages, $install) === 1) {
-                        if ($need[2] == '==' && $need[3] != $install[1]) {
-                            $return['state'] = 'nok';
-                            break;
-                        } elseif (version_compare($need[3], $install[1], '>')) {
-                            $return['state'] = 'nok';
-                        }
-                    } else {
-                        $return['state'] = 'nok';
-                        break;
-                    }
-                }
-            }
+        } elseif (!self::pythonRequirementsInstalled(self::PYTHON_PATH, __DIR__ . '/../../resources/requirements.txt')) {
+            $return['state'] = 'nok';
         }
         return $return;
     }
