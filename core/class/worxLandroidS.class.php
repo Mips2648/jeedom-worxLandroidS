@@ -904,8 +904,8 @@ class worxLandroidS extends eqLogic {
         // nouveau template
         $replaceImg['#worxImg#'] = '';
         $replaceImg['#theme#'] = $replace['#theme#'];
-        $worxImg_template     = getTemplate('core', $version, strval($code), __CLASS__);
-        $replace['#worxImg#'] .= template_replace($replaceImg, $worxImg_template);
+        $worxImg_template = getTemplate('core', $version, strval($code), __CLASS__);
+        $replace['#worxImg#'] = template_replace($replaceImg, $worxImg_template);
         // fin nouveau template
         $replace['#cmd#'] = $cmd_html;
 
