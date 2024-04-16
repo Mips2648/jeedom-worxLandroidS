@@ -29,19 +29,19 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => 'e99970173a682c741436cad2b09e61230352454e',
+    'reference' => '6e577e8f63cfdf665e2d4d8654f962125d1a40c6',
     'name' => 'mips/jeedom-worxlandroids',
   ),
   'versions' => 
   array (
     'mips/jeedom-tools' => 
     array (
-      'pretty_version' => 'v0.22',
-      'version' => '0.22.0.0',
+      'pretty_version' => 'v0.23',
+      'version' => '0.23.0.0',
       'aliases' => 
       array (
       ),
-      'reference' => '7399a5da77b442e423b7915095ea88f69b410780',
+      'reference' => 'cc1805a0953ce58415f9e828cd2defacc1bf362d',
     ),
     'mips/jeedom-worxlandroids' => 
     array (
@@ -50,7 +50,7 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => 'e99970173a682c741436cad2b09e61230352454e',
+      'reference' => '6e577e8f63cfdf665e2d4d8654f962125d1a40c6',
     ),
   ),
 );
