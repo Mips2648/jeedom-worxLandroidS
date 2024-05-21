@@ -1,17 +1,11 @@
 """Defines schedule classes."""
 from __future__ import annotations
 
-import sys
-
 import calendar
 from datetime import datetime, timedelta
 from enum import IntEnum
 import logging
-
-if sys.version_info < (3, 9, 0):
-    from backports.zoneinfo import ZoneInfo
-else:
-    from zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfo
 
 from ..const import CONST_UNKNOWN
 from ..day_map import DAY_MAP
