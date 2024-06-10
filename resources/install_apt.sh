@@ -1,33 +1,14 @@
 ######################### INCLUSION LIB ##########################
-BASEDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-wget https://raw.githubusercontent.com/Mips2648/dependance.lib/master/dependance.lib -O $BASEDIR/dependance.lib &>/dev/null
-PLUGIN=$(basename "$(realpath $BASEDIR/..)")
+BASE_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+wget https://raw.githubusercontent.com/Mips2648/dependance.lib/master/dependance.lib --no-cache -O ${BASE_DIR}/dependance.lib &>/dev/null
+PLUGIN=$(basename "$(realpath ${BASE_DIR}/..)")
 LANG_DEP=en
-. ${BASEDIR}/dependance.lib
+. ${BASE_DIR}/dependance.lib
+##################################################################
+wget https://raw.githubusercontent.com/Mips2648/dependance.lib/master/pyenv.lib --no-cache -O ${BASE_DIR}/pyenv.lib &>/dev/null
+. ${BASE_DIR}/pyenv.lib
 ##################################################################
 
-VENV_DIR=$BASEDIR/venv
-cd $BASEDIR
+TARGET_PYTHON_VERSION="3.9"
 
-pre
-step 5 "Clean apt"
-try apt-get clean
-step 10 "Update apt"
-try apt-get update
-
-step 20 "Install apt packages"
-tryOrStop apt-get install -y python3 python3-pip python3-dev python3-venv
-
-step 50 "Creating python 3 virtual environment"
-tryOrStop python3 -m venv $VENV_DIR
-
-step 60 "Setting up virtual environment"
-tryOrStop $VENV_DIR/bin/python3 -m pip install --no-cache-dir --upgrade pip wheel
-
-step 70 "Install the required python packages"
-tryOrStop $VENV_DIR/bin/python3 -m pip install --no-cache-dir -r requirements.txt
-
-step 90 "Summary of installed packages"
-$VENV_DIR/bin/python3 -m pip freeze
-
-post
+launchInstall
