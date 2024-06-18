@@ -8,6 +8,7 @@
 	"category": "devicecommunication",
 	"hasDependency": true,
 	"hasOwnDeamon": true,
+	"maxDependancyInstallTime": 60,
 	"changelog": "https://mips2648.github.io/jeedom-plugins-docs/worxLandroidS/#language#/changelog",
 	"documentation": "https://mips2648.github.io/jeedom-plugins-docs/worxLandroidS/#language#/",
 	"changelog_beta": "https://mips2648.github.io/jeedom-plugins-docs/worxLandroidS/#language#/changelog",
