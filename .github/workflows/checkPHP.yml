@@ -14,6 +14,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4.1.6
       - name: PHP Syntax Checker (Lint)
-        uses: StephaneBour/actions-php-lint@8.2
+        uses: StephaneBour/actions-php-lint@8.3
         with:
           dir: '.'
