@@ -559,8 +559,28 @@ class worxLandroidS extends eqLogic {
             19 => "battery trunk open timeout",
             20 => "wire sync",
             21 => "msg num",
+            100 => __('charging station docking error', __FILE__),
+            101 => __('hbi error', __FILE__),
+            102 => __('ota error', __FILE__),
+            103 => __('map error', __FILE__),
+            104 => __('excessive slope', __FILE__),
+            105 => __('unreachable zone', __FILE__),
+            106 => __('unreachable charging station', __FILE__),
+            108 => __('insufficient sensor data', __FILE__),
+            109 => __('training start disallowed', __FILE__),
+            110 => __('Erreur caméra', __FILE__),
+            111 => __('mapping exploration required', __FILE__),
+            112 => __('mapping exploration failed', __FILE__),
+            113 => __('rfid reader error', __FILE__),
+            114 => __('headlight error', __FILE__),
+            115 => __('missing charging station', __FILE__),
+            116 => __('blade height adjustment blocked', __FILE__)
         ];
-        return $desc[$code];
+        if (array_key_exists($code, $desc)) {
+            return $desc[$code];
+        } else {
+            return $desc[-1];
+        }
     }
 
     public static function getStatusDescription($code) {
@@ -577,16 +597,26 @@ class worxLandroidS extends eqLogic {
             8 => __("Soulevée", __FILE__),
             9 => __("Bloquée", __FILE__),
             10 => __("Lames bloquées", __FILE__),
-            11 => 'Debug',
+            11 => __('Debug', __FILE__),
+            12 => __("remote control", __FILE__),
+            13 => __("digital fence escape", __FILE__),
             12 => __("Contrôle à distance", __FILE__),
             30 => __("Retour à la base", __FILE__),
             31 => __("Création de zones", __FILE__),
             32 => __("Coupe la bordure", __FILE__),
             33 => __("Départ vers zone de tonte", __FILE__),
             34 => __("Pause", __FILE__),
+            103 => __("Recherche de la zone", __FILE__),
+            104 => __("Recherche de la base", __FILE__),
+            110 => __("border crossing", __FILE__),
+            111 => __("Découverte de la pelouse", __FILE__),
 
         ];
-        return $desc[$code];
+        if (array_key_exists($code, $desc)) {
+            return $desc[$code];
+        } else {
+            return $desc[-1];
+        }
     }
 
     public static function getSavedDaySchedule($_id, $i) {
