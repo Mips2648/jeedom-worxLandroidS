@@ -79,13 +79,13 @@ class worxLandroidS extends eqLogic {
         $pswd = config::byKey('passwd', __CLASS__);
         if ($email == '') {
             $return['launchable'] = 'nok';
-            $return['launchable_message'] = __('L\'adresse email n\'est pas configuré', __FILE__);
+            $return['launchable_message'] = __("L'adresse email n'est pas configuré", __FILE__);
         } elseif ($pswd == '') {
             $return['launchable'] = 'nok';
-            $return['launchable_message'] = __('Le mot de passe n\'est pas configuré', __FILE__);
+            $return['launchable_message'] = __("Le mot de passe n'est pas configuré", __FILE__);
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $return['launchable'] = 'nok';
-            $return['launchable_message'] = __('L\'adresse email n\'est pas valide', __FILE__);
+            $return['launchable_message'] = __("L'adresse email n'est pas valide", __FILE__);
         }
         return $return;
     }
@@ -435,8 +435,8 @@ class worxLandroidS extends eqLogic {
             3 => __('Câble non trouvé', __FILE__),
             4 => __('En dehors des limites', __FILE__),
             5 => __('Délai pluie', __FILE__),
-            6 => "close door to mow",
-            7 => "close door to go home",
+            6 => "Fermez le capot pour tondre",
+            7 => "Fermez le capot pour retourner sur la base",
             8 => __('Moteur lames bloqué', __FILE__),
             9 => __('Moteur roues bloqué', __FILE__),
             10 => __('Timeout après blocage', __FILE__),
@@ -446,27 +446,27 @@ class worxLandroidS extends eqLogic {
             14 => __('Erreur charge batterie', __FILE__),
             15 => __('Délai recherche base dépassé', __FILE__),
             16 => __('Verrouillée', __FILE__),
-            17 => "battery temperature error",
-            18 => "dummy model",
-            19 => "battery trunk open timeout",
-            20 => "wire sync",
+            17 => __('Erreur de température de la batterie', __FILE__),
+            18 => __('Modèle factice', __FILE__),
+            19 => __('Délai d\'ouverture du coffre de la batterie dépassé', __FILE__),
+            20 => __('Recherche du câble', __FILE__),
             21 => "msg num",
-            100 => __('charging station docking error', __FILE__),
-            101 => __('hbi error', __FILE__),
-            102 => __('ota error', __FILE__),
-            103 => __('map error', __FILE__),
-            104 => __('excessive slope', __FILE__),
-            105 => __('unreachable zone', __FILE__),
-            106 => __('unreachable charging station', __FILE__),
-            108 => __('insufficient sensor data', __FILE__),
-            109 => __('training start disallowed', __FILE__),
+            100 => __('Erreur d\'amarrage à la station de recharge', __FILE__),
+            101 => __('Erreur hbi', __FILE__),
+            102 => __('Erreur OTA', __FILE__),
+            103 => __('Erreur carte', __FILE__),
+            104 => __('Pente excessive', __FILE__),
+            105 => __('Zone inaccessible', __FILE__),
+            106 => __('Station de recharge inaccessible', __FILE__),
+            108 => __('Données des capteurs insuffisantes', __FILE__),
+            109 => __('Démarrage entrainement refusé', __FILE__),
             110 => __('Erreur caméra', __FILE__),
-            111 => __('mapping exploration required', __FILE__),
-            112 => __('mapping exploration failed', __FILE__),
-            113 => __('rfid reader error', __FILE__),
-            114 => __('headlight error', __FILE__),
-            115 => __('missing charging station', __FILE__),
-            116 => __('blade height adjustment blocked', __FILE__)
+            111 => __('Exploration cartographique requise', __FILE__),
+            112 => __('L\'exploration de la cartographie a échoué', __FILE__),
+            113 => __('Erreur du lecteur rfid', __FILE__),
+            114 => __('Erreur de phare', __FILE__),
+            115 => __('Station de recharge manquante', __FILE__),
+            116 => __('Réglage de la hauteur de la lame bloqué', __FILE__)
         ];
         if (array_key_exists($code, $desc)) {
             return $desc[$code];
@@ -491,7 +491,7 @@ class worxLandroidS extends eqLogic {
             10 => __("Lames bloquées", __FILE__),
             11 => __('Debug', __FILE__),
             12 => __("Contrôle à distance", __FILE__),
-            13 => __("digital fence escape", __FILE__),
+            13 => __("Sortie de clôture numérique", __FILE__),
             30 => __("Retour à la base", __FILE__),
             31 => __("Création de zones", __FILE__),
             32 => __("Coupe la bordure", __FILE__),
@@ -499,7 +499,7 @@ class worxLandroidS extends eqLogic {
             34 => __("Pause", __FILE__),
             103 => __("Recherche de la zone", __FILE__),
             104 => __("Recherche de la base", __FILE__),
-            110 => __("border crossing", __FILE__),
+            110 => __("Traversée de limite", __FILE__),
             111 => __("Découverte de la pelouse", __FILE__),
 
         ];

@@ -47,24 +47,7 @@
         "Séquence de démarrage": "Startsequenz",
         "Timeout après blocage": "Timeout nach Blockierung",
         "Verrouillée": "Gesperrt",
-        "Veuillez vérifier la configuration": "Bitte überprüfen Sie die Konfiguration",
-        "blade height adjustment blocked": "blade height adjustment blocked",
-        "border crossing": "grenzüberschreitung",
-        "charging station docking error": "charging station docking error",
-        "digital fence escape": "digital fence escape",
-        "excessive slope": "übermäßige Steigung",
-        "hbi error": "hbi Fehler",
-        "headlight error": "kopflampenfehler",
-        "insufficient sensor data": "unzureichende Sensordaten",
-        "map error": "mapfehler",
-        "mapping exploration failed": "mapping exploration failed",
-        "mapping exploration required": "mapping exploration required",
-        "missing charging station": "missing charging station",
-        "ota error": "ota Fehler",
-        "rfid reader error": "rfid reader error",
-        "training start disallowed": "training start disallowed",
-        "unreachable charging station": "unreachable charging station",
-        "unreachable zone": "unreachable zone"
+        "Veuillez vérifier la configuration": "Bitte überprüfen Sie die Konfiguration"
     },
     "plugins\/worxLandroidS\/core\/config\/commands.json": {
         "Activer la planification": "Planung aktivieren",
@@ -133,7 +116,6 @@
         "Désactiver Off Limits Zones interdites": "Deaktivieren Aus Grenzen Verbotene Zonen",
         "Eteindre phares": "Scheinwerfer ausschalten",
         "Find My Landroid actif": "Find My Landroid aktiv",
-        "Off Limits Shortcut": "Off Limits Shortcut",
         "Off Limits Zones interdites": "Off Limits Verbotene Zonen",
         "Phares actifs": "Aktive Scheinwerfer"
     },
