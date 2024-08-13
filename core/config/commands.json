@@ -2,7 +2,7 @@
     "common": [
         {
             "logicalId": "online",
-            "name": "En ligne",
+            "name": "{{En ligne}}",
             "type": "info",
             "subtype": "binary",
             "isVisible": 1,
@@ -14,7 +14,7 @@
         },
         {
             "logicalId": "pin_code",
-            "name": "Code PIN",
+            "name": "{{Code PIN}}",
             "type": "info",
             "subtype": "string",
             "isVisible": 0,
@@ -26,7 +26,7 @@
         },
         {
             "logicalId": "gps_latitude",
-            "name": "Latitude",
+            "name": "{{Latitude}}",
             "type": "info",
             "subtype": "string",
             "isVisible": 1,
@@ -38,7 +38,7 @@
         },
         {
             "logicalId": "gps_longitude",
-            "name": "Longitude",
+            "name": "{{Longitude}}",
             "type": "info",
             "subtype": "string",
             "isVisible": 1,
@@ -50,7 +50,7 @@
         },
         {
             "logicalId": "battery_temperature",
-            "name": "Température batterie",
+            "name": "{{Température batterie}}",
             "type": "info",
             "subtype": "numeric",
             "isVisible": 1,
@@ -63,7 +63,7 @@
         },
         {
             "logicalId": "battery_voltage",
-            "name": "Tension batterie",
+            "name": "{{Tension batterie}}",
             "type": "info",
             "subtype": "numeric",
             "isVisible": 1,
@@ -76,7 +76,7 @@
         },
         {
             "logicalId": "battery_percent",
-            "name": "Batterie",
+            "name": "{{Batterie}}",
             "type": "info",
             "subtype": "numeric",
             "isVisible": 1,
@@ -94,7 +94,7 @@
         },
         {
             "logicalId": "battery_charging",
-            "name": "En charge",
+            "name": "{{En charge}}",
             "type": "info",
             "subtype": "binary",
             "isVisible": 1,
@@ -106,7 +106,7 @@
         },
         {
             "logicalId": "battery_cycles_total",
-            "name": "Cycles de charge",
+            "name": "{{Cycles de charge}}",
             "type": "info",
             "subtype": "numeric",
             "isVisible": 0,
@@ -118,7 +118,7 @@
         },
         {
             "logicalId": "blades_total_on",
-            "name": "Temps de travail des lames totales",
+            "name": "{{Temps de travail des lames totales}}",
             "type": "info",
             "subtype": "numeric",
             "unite": "min",
@@ -131,7 +131,7 @@
         },
         {
             "logicalId": "blades_current_on",
-            "name": "Temps de travail des lames actuelles",
+            "name": "{{Temps de travail des lames actuelles}}",
             "type": "info",
             "subtype": "numeric",
             "unite": "min",
@@ -144,7 +144,7 @@
         },
         {
             "logicalId": "status_id",
-            "name": "Code statut",
+            "name": "{{Code statut}}",
             "type": "info",
             "subtype": "numeric",
             "isVisible": 0,
@@ -156,7 +156,7 @@
         },
         {
             "logicalId": "status_description",
-            "name": "Statut",
+            "name": "{{Statut}}",
             "type": "info",
             "subtype": "string",
             "isVisible": 1,
@@ -168,7 +168,7 @@
         },
         {
             "logicalId": "error_id",
-            "name": "Code erreur",
+            "name": "{{Code erreur}}",
             "type": "info",
             "subtype": "numeric",
             "isVisible": 0,
@@ -180,7 +180,7 @@
         },
         {
             "logicalId": "error_description",
-            "name": "Description erreur",
+            "name": "{{Description erreur}}",
             "type": "info",
             "subtype": "string",
             "isVisible": 1,
@@ -192,7 +192,7 @@
         },
         {
             "logicalId": "orientation_pitch",
-            "name": "Tangage",
+            "name": "{{Tangage}}",
             "type": "info",
             "subtype": "numeric",
             "isVisible": 1,
@@ -205,7 +205,7 @@
         },
         {
             "logicalId": "orientation_roll",
-            "name": "Roulis",
+            "name": "{{Roulis}}",
             "type": "info",
             "subtype": "numeric",
             "isVisible": 1,
@@ -218,7 +218,7 @@
         },
         {
             "logicalId": "orientation_yaw",
-            "name": "Direction",
+            "name": "{{Direction}}",
             "type": "info",
             "subtype": "numeric",
             "isVisible": 1,
@@ -231,7 +231,7 @@
         },
         {
             "logicalId": "rainsensor_delay",
-            "name": "Délai pluie",
+            "name": "{{Délai pluie}}",
             "type": "info",
             "subtype": "numeric",
             "unite": "min",
@@ -245,7 +245,7 @@
         },
         {
             "logicalId": "rainsensor_triggered",
-            "name": "Délai pluie activé",
+            "name": "{{Délai pluie activé}}",
             "type": "info",
             "subtype": "binary",
             "isVisible": 0,
@@ -258,7 +258,7 @@
         },
         {
             "logicalId": "rainsensor_remaining",
-            "name": "Délai pluie restant",
+            "name": "{{Délai pluie restant}}",
             "type": "info",
             "subtype": "numeric",
             "unite": "min",
@@ -272,7 +272,7 @@
         },
         {
             "logicalId": "statistics_distance",
-            "name": "Distance",
+            "name": "{{Distance}}",
             "type": "info",
             "subtype": "numeric",
             "unite": "m",
@@ -286,7 +286,7 @@
         },
         {
             "logicalId": "statistics_worktime_total",
-            "name": "Temps de travail tondeuse",
+            "name": "{{Temps de travail tondeuse}}",
             "type": "info",
             "subtype": "numeric",
             "isVisible": 1,
@@ -299,7 +299,7 @@
         },
         {
             "logicalId": "updated",
-            "name": "Dernière mise à jour",
+            "name": "{{Dernière mise à jour}}",
             "type": "info",
             "subtype": "string",
             "isVisible": 1,
@@ -311,7 +311,7 @@
         },
         {
             "logicalId": "rssi",
-            "name": "rssi",
+            "name": "{{rssi}}",
             "type": "info",
             "subtype": "numeric",
             "isVisible": 1,
@@ -324,56 +324,56 @@
         },
         {
             "logicalId": "refresh",
-            "name": "Rafraichir",
+            "name": "{{Rafraichir}}",
             "type": "action",
             "subtype": "other",
             "isVisible": 1
         },
         {
             "logicalId": "update",
-            "name": "update",
+            "name": "{{update}}",
             "type": "action",
             "subtype": "other",
             "isVisible": 1
         },
         {
             "logicalId": "start",
-            "name": "Démarrer",
+            "name": "{{Démarrer}}",
             "type": "action",
             "subtype": "other",
             "isVisible": 1
         },
         {
             "logicalId": "home",
-            "name": "Retour à la base",
+            "name": "{{Retour à la base}}",
             "type": "action",
             "subtype": "other",
             "isVisible": 1
         },
         {
             "logicalId": "safehome",
-            "name": "Arrêter les lames et retour à la base",
+            "name": "{{Arrêter les lames et retour à la base}}",
             "type": "action",
             "subtype": "other",
             "isVisible": 1
         },
         {
             "logicalId": "pause",
-            "name": "Pause",
+            "name": "{{Pause}}",
             "type": "action",
             "subtype": "other",
             "isVisible": 1
         },
         {
             "logicalId": "zonetraining",
-            "name": "Zone training",
+            "name": "{{Zone training}}",
             "type": "action",
             "subtype": "other",
             "isVisible": 1
         },
         {
             "logicalId": "setraindelay",
-            "name": "Définir le délai pluie",
+            "name": "{{Définir le délai pluie}}",
             "type": "action",
             "subtype": "slider",
             "isVisible": 1,
@@ -397,7 +397,7 @@
         },
         {
             "logicalId": "locked",
-            "name": "Verrouillée",
+            "name": "{{Verrouillée}}",
             "type": "info",
             "subtype": "binary",
             "isVisible": 1,
@@ -409,7 +409,7 @@
         },
         {
             "logicalId": "lock",
-            "name": "Verrouiller",
+            "name": "{{Verrouiller}}",
             "type": "action",
             "subtype": "other",
             "isVisible": 1,
@@ -420,7 +420,7 @@
         },
         {
             "logicalId": "unlock",
-            "name": "Déverrouiller",
+            "name": "{{Déverrouiller}}",
             "type": "action",
             "subtype": "other",
             "isVisible": 1,
@@ -433,7 +433,7 @@
     "ots": [
         {
             "logicalId": "cutedge",
-            "name": "Routine de bord",
+            "name": "{{Routine de bord}}",
             "type": "action",
             "subtype": "other",
             "isVisible": 1,
@@ -443,7 +443,7 @@
         },
         {
             "logicalId": "onetimeschedule",
-            "name": "Horaire unique",
+            "name": "{{Horaire unique}}",
             "type": "action",
             "subtype": "message",
             "isVisible": 1,
@@ -459,7 +459,7 @@
     "partymode": [
         {
             "logicalId": "partymode_enabled",
-            "name": "Mode festif",
+            "name": "{{Mode festif}}",
             "type": "info",
             "subtype": "binary",
             "isVisible": 0,
@@ -471,7 +471,7 @@
         },
         {
             "logicalId": "setpartymode",
-            "name": "Activer mode festif",
+            "name": "{{Activer mode festif}}",
             "type": "action",
             "subtype": "other",
             "isVisible": 1,
@@ -486,7 +486,7 @@
         },
         {
             "logicalId": "unsetpartymode",
-            "name": "Désactiver mode festif",
+            "name": "{{Désactiver mode festif}}",
             "type": "action",
             "subtype": "other",
             "isVisible": 1,
@@ -503,7 +503,7 @@
     "schedules": [
         {
             "logicalId": "schedules_daily_progress",
-            "name": "Programme journalier",
+            "name": "{{Programme journalier}}",
             "type": "info",
             "subtype": "numeric",
             "unite": "%",
@@ -516,7 +516,7 @@
         },
         {
             "logicalId": "schedules_active",
-            "name": "Planification active",
+            "name": "{{Planification active}}",
             "type": "info",
             "subtype": "binary",
             "isVisible": 0,
@@ -529,7 +529,7 @@
         },
         {
             "logicalId": "activateschedules",
-            "name": "Activer la planification",
+            "name": "{{Activer la planification}}",
             "type": "action",
             "subtype": "other",
             "isVisible": 1,
@@ -544,7 +544,7 @@
         },
         {
             "logicalId": "deactivateschedules",
-            "name": "Désactiver la planification",
+            "name": "{{Désactiver la planification}}",
             "type": "action",
             "subtype": "other",
             "isVisible": 1,
@@ -561,7 +561,7 @@
     "zone": [
         {
             "logicalId": "zone_current",
-            "name": "Zone actuelle",
+            "name": "{{Zone actuelle}}",
             "type": "info",
             "subtype": "numeric",
             "isVisible": 0,
@@ -574,7 +574,7 @@
         },
         {
             "logicalId": "zone_next_start",
-            "name": "Zone prochain départ",
+            "name": "{{Zone prochain départ}}",
             "type": "info",
             "subtype": "numeric",
             "isVisible": 0,
@@ -587,7 +587,7 @@
         },
         {
             "logicalId": "zone_starting_point_0",
-            "name": "Départ zone 1",
+            "name": "{{Départ zone 1}}",
             "type": "info",
             "subtype": "numeric",
             "unite": "m",
@@ -601,7 +601,7 @@
         },
         {
             "logicalId": "zone_starting_point_1",
-            "name": "Départ zone 2",
+            "name": "{{Départ zone 2}}",
             "type": "info",
             "subtype": "numeric",
             "unite": "m",
@@ -615,7 +615,7 @@
         },
         {
             "logicalId": "zone_starting_point_2",
-            "name": "Départ zone 3",
+            "name": "{{Départ zone 3}}",
             "type": "info",
             "subtype": "numeric",
             "unite": "m",
@@ -629,7 +629,7 @@
         },
         {
             "logicalId": "zone_starting_point_3",
-            "name": "Départ zone 4",
+            "name": "{{Départ zone 4}}",
             "type": "info",
             "subtype": "numeric",
             "unite": "m",
@@ -643,7 +643,7 @@
         },
         {
             "logicalId": "set_mowing_zone",
-            "name": "Zone de travail",
+            "name": "{{Zone de travail}}",
             "type": "action",
             "subtype": "select",
             "configuration": {
@@ -654,7 +654,7 @@
         },
         {
             "logicalId": "set_zones_starting_point",
-            "name": "Définir point de départ zones",
+            "name": "{{Définir point de départ zones}}",
             "type": "action",
             "subtype": "message",
             "isVisible": 0,
@@ -665,7 +665,7 @@
         },
         {
             "logicalId": "set_zones_vector",
-            "name": "Définir répartition des zones",
+            "name": "{{Définir répartition des zones}}",
             "type": "action",
             "subtype": "message",
             "isVisible": 0,

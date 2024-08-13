@@ -6,19 +6,19 @@
     'aliases' => 
     array (
     ),
-    'reference' => 'c291df9013fdc6c9d4471b71629c67e30ceeb21a',
+    'reference' => '0418019407e77d5d37829c1f66b887168f6ff824',
     'name' => 'mips/jeedom-worxlandroids',
   ),
   'versions' => 
   array (
     'mips/jeedom-tools' => 
     array (
-      'pretty_version' => 'v0.24',
-      'version' => '0.24.0.0',
+      'pretty_version' => 'v1.0',
+      'version' => '1.0.0.0',
       'aliases' => 
       array (
       ),
-      'reference' => 'bb5ab54a136f78cff1c396b896d0bb938516f292',
+      'reference' => '047aa5ca7831394566a6974ea7ccc882c04025c8',
     ),
     'mips/jeedom-worxlandroids' => 
     array (
@@ -27,7 +27,7 @@
       'aliases' => 
       array (
       ),
-      'reference' => 'c291df9013fdc6c9d4471b71629c67e30ceeb21a',
+      'reference' => '0418019407e77d5d37829c1f66b887168f6ff824',
     ),
   ),
 );

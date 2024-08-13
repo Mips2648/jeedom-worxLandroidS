@@ -2,10 +2,16 @@ name: translate
 
 # Controls when the workflow will run
 on:
+  workflow_dispatch:
   push:
     branches:
       - beta
 
 jobs:
   auto-translate:
-    uses: Mips2648/jeedom-translations/.github/workflows/translate_plugin.yml@main
+    runs-on: ubuntu-latest
+    steps:
+      - uses: Mips2648/plugins-translations@main
+        with:
+          deepl_api_key: ${{ secrets.DEEPL_API_KEY }}
+          target_languages: "en_US,es_ES,de_DE,it_IT,pt_PT"
