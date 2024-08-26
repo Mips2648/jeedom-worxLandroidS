@@ -411,10 +411,10 @@ class WorxCloud(dict):
 
             # Fetch main schedule
             if "sc" in data["cfg"]:
-                if "ots" in data["cfg"]["sc"]:
+                if "ots" in data["cfg"]["sc"] or "once" in  data["cfg"]["sc"]:
                     device.capabilities.add(DeviceCapability.ONE_TIME_SCHEDULE)
                     device.capabilities.add(DeviceCapability.EDGE_CUT)
-                if "distm" in data["cfg"]["sc"]:
+                if "distm" in data["cfg"]["sc"] or "enabled" in data["cfg"]["sc"] or "enabled" in data["cfg"]["sc"]:
                     device.capabilities.add(DeviceCapability.PARTY_MODE)
 
                 if "m" in data["cfg"]["sc"]:
