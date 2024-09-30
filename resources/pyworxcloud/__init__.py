@@ -425,7 +425,7 @@ class WorxCloud(dict):
                 device.schedules["active"] = (
                     bool(str(data["cfg"]["sc"]["m"]) in ["1", "2"])
                     if device.protocol == 0
-                    else bool(str(data["cfg"]["sc"]["enabled"]) == "0")
+                    else bool(str(data["cfg"]["sc"]["enabled"]) == "1")
                 )
 
                 device.schedules["time_extension"] = (
