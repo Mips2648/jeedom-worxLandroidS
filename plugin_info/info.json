@@ -3,7 +3,10 @@
 	"name": "worxLandroidS",
 	"licence": "AGPL",
 	"author": "Mips",
-	"require": "4.2",
+	"require": "4.4",
+	"os": {
+		"min": 11
+	},
 	"description": {
 		"fr_FR": "Plugin Jeedom pour Robots tondeuses Worx Landroid modèles S/M/L version cloud",
 		"en_US": "Jeedom plugin for Worx Landroid robot lawnmowers models S/M/L cloud version",
