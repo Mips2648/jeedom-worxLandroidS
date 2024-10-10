@@ -18,15 +18,17 @@
 
 require_once __DIR__ . '/../../../core/php/core.inc.php';
 
-function InstallComposerDependencies(string $pluginId) {
+function InstallComposerDependencies() {
+    $pluginId = basename(realpath(__DIR__ . '/..'));
     log::add($pluginId, 'info', 'Install composer dependencies');
     $cmd = 'cd ' . __DIR__ . '/../;export COMPOSER_ALLOW_SUPERUSER=1;export COMPOSER_HOME="/tmp/composer";' . system::getCmdSudo() . 'composer install --no-ansi --no-dev --no-interaction --no-plugins --no-progress --no-scripts --optimize-autoloader;' . system::getCmdSudo() . ' chown -R www-data:www-data *';
     shell_exec($cmd);
 }
 
 function worxLandroidS_install() {
-    $pluginId = 'worxLandroidS';
-    InstallComposerDependencies($pluginId);
+    InstallComposerDependencies();
+
+    $pluginId = basename(realpath(__DIR__ . '/..'));
 
     config::save('api', config::genKey(), $pluginId);
     config::save("api::{$pluginId}::mode", 'localhost');
@@ -34,8 +36,9 @@ function worxLandroidS_install() {
 }
 
 function worxLandroidS_update() {
-    $pluginId = 'worxLandroidS';
-    InstallComposerDependencies($pluginId);
+    InstallComposerDependencies();
+
+    $pluginId = basename(realpath(__DIR__ . '/..'));
 
     config::save('api', config::genKey(), $pluginId);
     config::save("api::{$pluginId}::mode", 'localhost');
@@ -79,7 +82,7 @@ function worxLandroidS_update() {
 }
 
 function worxLandroidS_remove() {
-    $pluginId = 'worxLandroidS';
+    $pluginId = basename(realpath(__DIR__ . '/..'));
     config::remove('api', $pluginId);
     config::remove("api::{$pluginId}::mode");
     config::remove("api::{$pluginId}::restricted");
