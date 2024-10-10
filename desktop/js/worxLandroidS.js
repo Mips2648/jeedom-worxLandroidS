@@ -219,12 +219,12 @@ function printSchedulesPanel(schedule) {
     // general info panel
     if (schedule['active']) {
         labelClass = 'label-success';
-        text = '<i class="fas fa-check"> Actif</i>'
+        text = '<i class="fas fa-check"> {{Actif}}</i>'
         $("#div_schedulesPanel :input").prop('disabled', false);
         $("#div_schedulesPanel a").show()
     } else {
         labelClass = 'label-danger';
-        text = '<i class="fas fa-times"> Inactif</i>'
+        text = '<i class="fas fa-times"> {{Inactif}}</i>'
         $("#div_schedulesPanel :input").prop('disabled', true);
         $("#div_schedulesPanel a").hide()
     }
@@ -266,24 +266,24 @@ function printAutoSchedulePanel(auto_schedule) {
     }
 
     const MAP_soil_type = {
-        'clay': 'Argile',
-        'silt': 'Limon',
-        'sand': 'Sable',
-        'ignore': 'Inconnu',
-        'unknown': 'Inconnu'
+        'clay': '{{Argile}}',
+        'silt': '{{Limon}}',
+        'sand': '{{Sable}}',
+        'ignore': '{{Inconnu}}',
+        'unknown': '{{Inconnu}}'
     };
 
     const MAP_grass_type = {
-        'mixed_species': 'Espèces mixtes',
-        'unknown': 'Inconnu'
+        'mixed_species': '{{Espèces mixtes}}',
+        'unknown': '{{Inconnu}}'
     };
 
     if (auto_schedule['enabled']) {
         labelClass = 'label-success';
-        text = '<i class="fas fa-check"> Actif</i>'
+        text = '<i class="fas fa-check"> {{Actif}}</i>'
     } else {
         labelClass = 'label-danger';
-        text = '<i class="fas fa-times"> Inactif</i>'
+        text = '<i class="fas fa-times"> {{Inactif}}</i>'
     }
     $('#auto_schedule').html('<label class="label ' + labelClass + '">' + text + '</label>')
 
@@ -291,8 +291,8 @@ function printAutoSchedulePanel(auto_schedule) {
 
     $('#grass_type').text(MAP_grass_type[settings['grass_type']] ?? settings['grass_type']);
     $('#soil_type').text(MAP_soil_type[settings['soil_type']] ?? settings['soil_type']);
-    $('#irrigation').html(settings['irrigation'] ? '<i class="fas fa-check"> Actif</i>' : '<i class="fas fa-times"> Inactif</i>');
-    $('#nutrition').html(settings['nutrition'] ?? '<i class="fas fa-times"> Inactif</i>');
+    $('#irrigation').html(settings['irrigation'] ? '<i class="fas fa-check"> {{Actif}}</i>' : '<i class="fas fa-times"> {{Inactif}}</i>');
+    $('#nutrition').html(settings['nutrition'] ?? '<i class="fas fa-times"> {{Inactif}}</i>');
 
     $('#table_exclusions tbody').empty();
 
@@ -341,10 +341,10 @@ function printEqLogic(_eqLogic) {
 
     if (_eqLogic.configuration.rain_delay_active === 1) {
         labelClass = 'label-success';
-        text = '<i class="fas fa-check"> Actif</i>'
+        text = '<i class="fas fa-check"> {{Actif}}</i>'
     } else {
         labelClass = 'label-danger';
-        text = '<i class="fas fa-times"> Inactif</i>'
+        text = '<i class="fas fa-times"> {{Inactif}}</i>'
     }
     $('#rain_delay').html('<label class="label ' + labelClass + '">' + text + '</label>')
 

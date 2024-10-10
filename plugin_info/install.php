@@ -18,8 +18,16 @@
 
 require_once __DIR__ . '/../../../core/php/core.inc.php';
 
+function InstallComposerDependencies(string $pluginId) {
+    log::add($pluginId, 'info', 'Install composer dependencies');
+    $cmd = 'cd ' . __DIR__ . '/../;export COMPOSER_ALLOW_SUPERUSER=1;export COMPOSER_HOME="/tmp/composer";' . system::getCmdSudo() . 'composer install --no-ansi --no-dev --no-interaction --no-plugins --no-progress --no-scripts --optimize-autoloader;' . system::getCmdSudo() . ' chown -R www-data:www-data *';
+    shell_exec($cmd);
+}
+
 function worxLandroidS_install() {
     $pluginId = 'worxLandroidS';
+    InstallComposerDependencies($pluginId);
+
     config::save('api', config::genKey(), $pluginId);
     config::save("api::{$pluginId}::mode", 'localhost');
     config::save("api::{$pluginId}::restricted", 1);
@@ -27,6 +35,8 @@ function worxLandroidS_install() {
 
 function worxLandroidS_update() {
     $pluginId = 'worxLandroidS';
+    InstallComposerDependencies($pluginId);
+
     config::save('api', config::genKey(), $pluginId);
     config::save("api::{$pluginId}::mode", 'localhost');
     config::save("api::{$pluginId}::restricted", 1);

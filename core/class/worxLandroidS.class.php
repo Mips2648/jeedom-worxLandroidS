@@ -41,114 +41,6 @@ class worxLandroidS extends eqLogic {
         return config::byKey('socketport', __CLASS__, 55073);
     }
 
-
-
-    //             // get certificate
-    //             $url = "https://api.worxlandroid.com:443/api/v2/users/certificate";
-    //             //$api_token = $json['api_token'];
-    //             //$token = $json['api_token'];
-
-    //             $content = "application/json";
-    //             $ch      = curl_init($url);
-    //             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
-    //             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    //             curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-    //                 'mqtt_endpoint:' . $json_users['mqtt_endpoint'],
-    //                 "Content-Type: application/json",
-    //                 'Authorization: Bearer ' . $api_token
-    //             ));
-
-    //             $result = curl_exec($ch);
-    //             log::add(__CLASS__, 'info', 'Connexion result :' . $result);
-
-    //             $json2 = json_decode($result, true);
-
-
-    //             if (is_null($json2)) {
-    //             } else {
-    //                 $pkcs12 = base64_decode($json2['pkcs12']);
-    //                 openssl_pkcs12_read($pkcs12, $certs, "");
-    //                 file_put_contents($CERTFILE, $certs['cert']);
-    //                 file_put_contents($PKEYFILE, $certs['pkey']);
-
-    //                 // get product item (mac address)
-    //                 $url = "https://api.worxlandroid.com:443/api/v2/product-items";
-
-    //                 $content = "application/json";
-    //                 $ch      = curl_init($url);
-    //                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
-    //                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    //                 curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-    //                     'Authorization: Bearer ' . $api_token
-    //                 ));
-
-    //                 $result = curl_exec($ch);
-    //                 log::add(__CLASS__, 'info', 'get product-items:' . $result);
-
-    //                 $json3 = json_decode($result, true);
-    //                 config::save('api_token', $api_token, __CLASS__); //$json_users['id'],__CLASS__);
-
-    //                 config::save('mqtt_client_id', 'android-uuid/v1', __CLASS__); //$json_users['id'],__CLASS__);
-    //                 config::save('mqtt_endpoint', $json_users['mqtt_endpoint'], __CLASS__);
-
-    //                 if (is_null($json3)) {
-    //                 } else {
-    //                     // get boards => id => code
-    //                     $url = "https://api.worxlandroid.com:443/api/v2/boards";
-    //                     curl_setopt($ch, CURLOPT_URL, $url);
-
-    //                     $boards_result = curl_exec($ch);
-    //                     log::add(__CLASS__, 'info', 'get boards:' . $boards_result);
-    //                     $boards = json_decode($boards_result, true);
-
-    //                     // get products => product_id => board_id
-    //                     $url = "https://api.worxlandroid.com:443/api/v2/products";
-    //                     curl_setopt($ch, CURLOPT_URL, $url);
-    //                     $products = json_decode(curl_exec($ch), true);
-    //                     foreach ($json3 as $key => $product) {
-    //                         $typetondeuse     = 'DB510';
-    //                         $found_key        = array_search($product['product_id'], array_column($products, 'id'));
-    //                         $board_id         = $products[$found_key]['board_id'];
-    //                         $mowerDescription = $products[$found_key]['code'];
-    //                         log::add(__CLASS__, 'info', 'board_id: ' . $board_id . ' / product id:' . $product['product_id']);
-    //                         $found_key    = array_search($board_id, array_column($boards, 'id'));
-    //                         // $typetondeuse = $boards[$found_key]['code'];
-    //                         $typetondeuse = reset(explode('/', $product['mqtt_topics']['command_in'], 2));
-    //                         log::add(__CLASS__, 'info', 'typetondeuse:' . $typetondeuse);
-    //                         $doubleSchedule = $boards[$found_key]['features']['scheduler_two_slots'];
-
-    //                         log::add(__CLASS__, 'info', 'mac_address ' . $product['mac_address'] . $typetondeuse);
-    //                         // create Equipement if not already created
-    //                         $elogic = self::byLogicalId($product['mac_address'], __CLASS__);
-    //                         if (!is_object($elogic)) {
-
-    //                             $elogic_prev = self::byLogicalId($typetondeuse . '/' . $product['mac_address'] . '/commandOut', __CLASS__);
-    //                             if (is_object($elogic_prev)) {
-    //                                 // created equipement in previous plugin release*
-    //                                 message::add(__CLASS__, 'Veuillez supprimer la tondeuse ajoutée précédemment: ' . $elogic_prev->getName(), null, null);
-    //                                 log::add(__CLASS__, 'info', 'Suppress existing first : mac_address ' . $product['mac_address'] . $typetondeuse . $product['product_id']);
-    //                             } else {
-
-    //                                 log::add(__CLASS__, 'info', 'mac_address ' . $product['mac_address'] . $typetondeuse . $product['product_id']);
-    //                                 worxLandroidS::create_equipement($product, $typetondeuse, $mowerDescription, $doubleSchedule);
-    //                                 // message par défault pour éviter code 500 à la première initialisation
-    //                                 // message par défault pour éviter code 500 à la première initialisation
-    //                                 $default_message = file_get_contents($default_message_file, true);
-    //                                 $topic = $product['product_id'] . '/' . $product['mac_address'] . '/dummy';
-    //                                 $message = json_decode($default_message, true);
-    //                                 $message->topic = $topic; //$product['product_id'].'/'.$product['mac_address'].'/dummy';
-    //                                 log::add(__CLASS__, 'info', 'default msg:' . $message->payload . '/topic:' . $message->topic);
-    //                                 worxLandroidS::message($message);
-    //                             }
-    //                         }
-    //                     }
-    //                     config::save('initCloud', 0, __CLASS__);
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
-
     public static function dependancy_install() {
         log::remove(__CLASS__ . '_update');
         return array('script' => __DIR__ . '/../../resources/install_#stype#.sh', 'log' => log::getPathToLog(__CLASS__ . '_update'));
@@ -187,13 +79,13 @@ class worxLandroidS extends eqLogic {
         $pswd = config::byKey('passwd', __CLASS__);
         if ($email == '') {
             $return['launchable'] = 'nok';
-            $return['launchable_message'] = __('L\'adresse email n\'est pas configuré', __FILE__);
+            $return['launchable_message'] = __("L'adresse email n'est pas configuré", __FILE__);
         } elseif ($pswd == '') {
             $return['launchable'] = 'nok';
-            $return['launchable_message'] = __('Le mot de passe n\'est pas configuré', __FILE__);
+            $return['launchable_message'] = __("Le mot de passe n'est pas configuré", __FILE__);
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $return['launchable'] = 'nok';
-            $return['launchable_message'] = __('L\'adresse email n\'est pas valide', __FILE__);
+            $return['launchable_message'] = __("L'adresse email n'est pas valide", __FILE__);
         }
         return $return;
     }
@@ -543,8 +435,8 @@ class worxLandroidS extends eqLogic {
             3 => __('Câble non trouvé', __FILE__),
             4 => __('En dehors des limites', __FILE__),
             5 => __('Délai pluie', __FILE__),
-            6 => "close door to mow",
-            7 => "close door to go home",
+            6 => __("Fermez le capot pour tondre", __FILE__),
+            7 => __("Fermez le capot pour retourner sur la base", __FILE__),
             8 => __('Moteur lames bloqué', __FILE__),
             9 => __('Moteur roues bloqué', __FILE__),
             10 => __('Timeout après blocage', __FILE__),
@@ -554,13 +446,33 @@ class worxLandroidS extends eqLogic {
             14 => __('Erreur charge batterie', __FILE__),
             15 => __('Délai recherche base dépassé', __FILE__),
             16 => __('Verrouillée', __FILE__),
-            17 => "battery temperature error",
-            18 => "dummy model",
-            19 => "battery trunk open timeout",
-            20 => "wire sync",
+            17 => __('Erreur de température de la batterie', __FILE__),
+            18 => __('Modèle factice', __FILE__),
+            19 => __('Délai d\'ouverture du coffre de la batterie dépassé', __FILE__),
+            20 => __('Recherche du câble', __FILE__),
             21 => "msg num",
+            100 => __('Erreur d\'amarrage à la station de recharge', __FILE__),
+            101 => __('Erreur hbi', __FILE__),
+            102 => __('Erreur OTA', __FILE__),
+            103 => __('Erreur carte', __FILE__),
+            104 => __('Pente excessive', __FILE__),
+            105 => __('Zone inaccessible', __FILE__),
+            106 => __('Station de recharge inaccessible', __FILE__),
+            108 => __('Données des capteurs insuffisantes', __FILE__),
+            109 => __('Démarrage entrainement refusé', __FILE__),
+            110 => __('Erreur caméra', __FILE__),
+            111 => __('Exploration cartographique requise', __FILE__),
+            112 => __('L\'exploration cartographique a échoué', __FILE__),
+            113 => __('Erreur du lecteur rfid', __FILE__),
+            114 => __('Erreur de phare', __FILE__),
+            115 => __('Station de recharge manquante', __FILE__),
+            116 => __('Réglage de la hauteur de la lame bloqué', __FILE__)
         ];
-        return $desc[$code];
+        if (array_key_exists($code, $desc)) {
+            return $desc[$code];
+        } else {
+            return $desc[-1];
+        }
     }
 
     public static function getStatusDescription($code) {
@@ -577,16 +489,25 @@ class worxLandroidS extends eqLogic {
             8 => __("Soulevée", __FILE__),
             9 => __("Bloquée", __FILE__),
             10 => __("Lames bloquées", __FILE__),
-            11 => 'Debug',
+            11 => __('Debug', __FILE__),
             12 => __("Contrôle à distance", __FILE__),
+            13 => __("Sortie de clôture numérique", __FILE__),
             30 => __("Retour à la base", __FILE__),
             31 => __("Création de zones", __FILE__),
             32 => __("Coupe la bordure", __FILE__),
             33 => __("Départ vers zone de tonte", __FILE__),
             34 => __("Pause", __FILE__),
+            103 => __("Recherche de la zone", __FILE__),
+            104 => __("Recherche de la base", __FILE__),
+            110 => __("Traversée de limite", __FILE__),
+            111 => __("Découverte de la pelouse", __FILE__),
 
         ];
-        return $desc[$code];
+        if (array_key_exists($code, $desc)) {
+            return $desc[$code];
+        } else {
+            return $desc[-1];
+        }
     }
 
     public static function getSavedDaySchedule($_id, $i) {

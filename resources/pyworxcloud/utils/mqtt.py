@@ -229,37 +229,42 @@ class MQTT(LDict):
         self.client.loop_stop()
         self.client.disconnect()
 
-    def ping(self, serial_number: str, topic: str) -> None:
+    def ping(self, serial_number: str, topic: str, protocol: int = 0) -> None:
         """Ping (update) the mower."""
-        cmd = self.format_message(serial_number, {"cmd": Command.FORCE_REFRESH})
+        cmd = self.format_message(serial_number, {"cmd": Command.FORCE_REFRESH}, protocol)
         self._log.debug("Sending '%s' on topic '%s'", cmd, topic)
         self.client.publish(topic, cmd, QOS_FLAG)
 
-    def command(self, serial_number: str, topic: str, action: Command) -> None:
+    def command(self, serial_number: str, topic: str, action: Command, protocol: int = 0) -> None:
         """Send a specific command to the mower."""
-        cmd = self.format_message(serial_number, {"cmd": action})
+        cmd = self.format_message(serial_number, {"cmd": action}, protocol)
         self._log.debug("Sending '%s' on topic '%s'", cmd, topic)
         self.client.publish(topic, cmd, QOS_FLAG)
 
-    def publish(self, serial_number: str, topic: str, message: dict) -> None:
+    def publish(self, serial_number: str, topic: str, message: dict, protocol: int = 0) -> None:
         """Publish message to the mower."""
         self._log.debug("Publishing message '%s'", message)
-        self.client.publish(
-            topic, self.format_message(serial_number, message), QOS_FLAG
-        )
+        self.client.publish(topic, self.format_message(serial_number, message, protocol), QOS_FLAG)
 
-    def format_message(self, serial_number: str, message: dict) -> str:
+    def format_message(self, serial_number: str, message: dict, protocol: int) -> str:
         """
         Format a message.
         Message is expected to be a dict like this: {"cmd": 1}
         """
         now = datetime.now()
-        msg = {
-            "id": random.randint(1024, 65535),
-            "sn": serial_number,
-            "tm": now.strftime("%H:%M:%S"),
-            "dt": now.strftime("%d/%m/%Y"),
-        }
+        if protocol == 0:
+            msg = {
+                "id": random.randint(1024, 65535),
+                "sn": serial_number,
+                "tm": now.strftime("%H:%M:%S"),
+                "dt": now.strftime("%d/%m/%Y"),
+            }
+        elif protocol == 1:
+            msg = {
+                "id": random.randint(1024, 65535),
+                "uuid": serial_number,
+                "tm": now.strftime('%Y-%m-%dT%H:%M:%SZ'),
+            }
 
         msg.update(message)
         self._log.debug("Formatting message '%s' to '%s'", message, msg)
