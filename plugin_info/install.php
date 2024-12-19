@@ -25,9 +25,11 @@ function InstallComposerDependencies() {
     shell_exec($cmd);
 }
 
-function worxLandroidS_install() {
+function worxLandroidS_post_plugin_install() {
     InstallComposerDependencies();
+}
 
+function worxLandroidS_install() {
     $pluginId = basename(realpath(__DIR__ . '/..'));
 
     config::save('api', config::genKey(), $pluginId);
@@ -36,8 +38,6 @@ function worxLandroidS_install() {
 }
 
 function worxLandroidS_update() {
-    InstallComposerDependencies();
-
     $pluginId = basename(realpath(__DIR__ . '/..'));
 
     config::save('api', config::genKey(), $pluginId);
