@@ -4,14 +4,31 @@ import sys
 import json
 import asyncio
 
-from config import WorxConfig
 from jeedomdaemon.base_daemon import BaseDaemon
+from jeedomdaemon.base_config import BaseConfig
 
 from pyworxcloud import WorxCloud
 from pyworxcloud.clouds import CloudType
 from pyworxcloud.exceptions import AuthorizationError
 from pyworxcloud.events import LandroidEvent
 from pyworxcloud.utils.devices import DeviceHandler
+
+
+class WorxConfig(BaseConfig):
+    def __init__(self):
+        super().__init__()
+
+        self.add_argument("--email", type=str)
+        self.add_argument("--pswd", type=str)
+
+    @property
+    def email(self):
+        return str(self._args.email)
+
+    @property
+    def password(self):
+        return str(self._args.pswd)
+
 
 class worxLandroidS(BaseDaemon):
     def __init__(self) -> None:
@@ -58,7 +75,6 @@ class worxLandroidS(BaseDaemon):
         self._logger.debug("on worx message %s, %s", name, tmpDevice)
         self._loop.create_task(self.__format_and_send('update::' + device.uuid, tmpDevice))
 
-
     async def on_socket_message(self, message: list):
         if message['action'] == 'stop':
             await self.stop()
@@ -70,7 +86,7 @@ class worxLandroidS(BaseDaemon):
 
             logs = self._worxcloud.get_activity_logs(device)
 
-            payload = [l.__dict__ for l in logs.values()]
+            payload = [log.__dict__ for log in logs.values()]
             await self.__format_and_send('activity_logs::' + device.uuid, payload)
         else:
             await self._executeAction(message)
@@ -134,5 +150,6 @@ class worxLandroidS(BaseDaemon):
     async def __format_and_send(self, key, data):
         payload = json.loads(json.dumps(data, default=lambda d: self.__encoder(d)))
         await self.add_change(key, payload)
+
 
 worxLandroidS().run()
