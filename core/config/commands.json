@@ -327,14 +327,10 @@
             "name": "{{Rafraichir}}",
             "type": "action",
             "subtype": "other",
-            "isVisible": 1
-        },
-        {
-            "logicalId": "update",
-            "name": "{{update}}",
-            "type": "action",
-            "subtype": "other",
-            "isVisible": 1
+            "isVisible": 1,
+            "configuration": {
+                "action": "update"
+            }
         },
         {
             "logicalId": "start",
