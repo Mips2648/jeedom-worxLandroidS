@@ -124,8 +124,7 @@
         "Zone de travail": "Área de trabajo",
         "Zone prochain départ": "Próxima zona de salida",
         "Zone training": "Formación por zonas",
-        "rssi": "rssi",
-        "update": "actualizar"
+        "rssi": "rssi"
     },
     "plugins\/worxLandroidS\/core\/config\/modules.json": {
         "ACS actif": "ACS activo",
