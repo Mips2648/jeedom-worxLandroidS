@@ -227,9 +227,7 @@ class WorxCloud(dict):
         self.mqtt.disconnect()
         self._log.info("Disconnected")
 
-    def connect(
-        self,
-    ) -> bool:
+    def connect(self) -> bool:
         """Connect to the cloud service endpoint
 
         Args:
@@ -276,7 +274,7 @@ class WorxCloud(dict):
 
     def renew_connection(self) -> bool:
         try:
-            self._log.info("Renew connection")
+            self._log.debug("Renew connection")
             self._api.update_token()
         except Exception as e:
             self._log.warning("Exception during refresh token:%s", e)
@@ -586,7 +584,8 @@ class WorxCloud(dict):
     def fetch(self) -> None:
         """Fetch base API information."""
         self._mowers = self._api.get_mowers()
-        self._log.info("Found %s mower(s)", len(self._mowers))
+        mower_names = ", ".join([mower["name"] for mower in self._mowers])
+        self._log.info("Found %s mower(s): %s", len(self._mowers), mower_names)
         for mower in self._mowers:
             _LOGGER.debug("Mower '%s' data: %s", mower["name"], mower)
             device = DeviceHandler(self._api, mower)
