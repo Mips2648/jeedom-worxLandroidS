@@ -93,16 +93,19 @@ class worxLandroidS(BaseDaemon):
 
     async def __auto_reconnect(self):
         try:
+            self._logger.info("auto refresh token started")
             while True:
+                self._logger.debug("next token refresh in %s seconds", self._worxcloud.get_token_expires_in() * 0.9)
                 await asyncio.sleep(self._worxcloud.get_token_expires_in() * 0.9)
                 success = self._worxcloud.renew_connection()
                 retry = 0
-                while not success and retry < 12:
+                while not success and retry < 10:
                     await asyncio.sleep(60)
                     retry += 1
                     success = self._worxcloud.renew_connection()
                 if not success:
-                    raise Exception("Impossible to renew token, issue with cloud server")
+                    self._logger.error("Impossible to renew token, issue with cloud server. Stopping daemon.")
+                    asyncio.create_task(self.stop())
                 else:
                     await self._update_all()
         except asyncio.CancelledError:
