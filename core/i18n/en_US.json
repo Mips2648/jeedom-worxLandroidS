@@ -59,11 +59,11 @@
         "Retour à la base": "Back to base",
         "Réglage de la hauteur de la lame bloqué": "Blade height adjustment locked",
         "Sortie de clôture numérique": "Digital fence output",
-        "Soulevée": "Lift",
+        "Soulevée": "Lifted",
         "Station de recharge inaccessible": "Inaccessible charging station",
         "Station de recharge manquante": "Missing charging station",
         "Suit le câble": "Follow the cable",
-        "Sur la base": "Based on",
+        "Sur la base": "On base",
         "Séquence de démarrage": "Start-up sequence",
         "Timeout après blocage": "Timeout after blocking",
         "Traversée de limite": "Boundary crossing",
@@ -171,7 +171,7 @@
         "Unité": "Unit"
     },
     "plugins\/worxLandroidS\/desktop\/modal\/activity.php": {
-        "Chargement": "Loading",
+        "Chargement": "Charging",
         "Date\/heure": "Date\/time",
         "Erreur": "Error",
         "Statut": "Status",

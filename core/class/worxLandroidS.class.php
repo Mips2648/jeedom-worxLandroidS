@@ -329,9 +329,8 @@ class worxLandroidS extends eqLogic {
             unset($v['_payload']);
             $v['status']['description'] = self::getStatusDescription($v['status']['id']);
             $v['error']['description'] = self::getErrorDescription($v['error']['id']);
+            event::add('worxLandroidS::activity_logs', array($v));
         }
-
-        event::add('worxLandroidS::activity_logs', array($data));
     }
 
     public function get_activity_logs() {
@@ -786,7 +785,7 @@ class worxLandroidS extends eqLogic {
             $replace['#errorColor#'] = 'orange';
         }
         switch ($replace['#error_id#']) {
-                // affichage icone pluie
+            // affichage icone pluie
             case '0':
                 $replace['#errorIcon#'] = 'jeedomapp-sun';
                 break;

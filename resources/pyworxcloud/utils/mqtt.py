@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import random
 import ssl
+import time
 import urllib.parse
 from datetime import datetime
 from logging import Logger
@@ -197,6 +198,7 @@ class MQTT(LDict):
         if reason_code > 0:
             if reason_code == 7:
                 logger.info("Refreshing access token and reconnecting")
+                time.sleep(1)  # Wait a bit before refreshing token
                 self._api.update_token()
                 accesstokenparts = (
                     self._api.access_token.replace("_", "/")
@@ -214,7 +216,17 @@ class MQTT(LDict):
                     reason_code,
                     connack_string(reason_code),
                 )
-                self.client.reconnect()
+
+                max_retries = 3
+                for i in range(1, max_retries + 1):
+                    try:
+                        time.sleep(3 * i)
+                        logger.debug("Reconnecting attempt %s", i)
+                        self.client.reconnect()
+                        return
+                    except Exception as e:
+                        logger.error("Reconnection attempt %s failed: %s", i, e)
+                        pass
 
     def disconnect(
         self, reasoncode=None, properties=None  # pylint: disable=unused-argument

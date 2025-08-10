@@ -63,10 +63,7 @@ function get_activity_logs(mower_id) {
 }
 
 $('body').off('worxLandroidS::activity_logs').on('worxLandroidS::activity_logs', function (_event, _data) {
-    $('#table_activityworxLandroidS tbody').empty()
-    _data.forEach(element => {
-        addActivityLog(element)
-    });
+    addActivityLog(_data)
 });
 
 $('#sel_mower').on('change', function () {
