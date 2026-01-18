@@ -182,7 +182,9 @@ class worxLandroidS extends eqLogic {
             $eqLogic->setConfiguration('product_cutting_width', $device['product']['cutting_width'] . ' mm');
             $eqLogic->setConfiguration('lawn_perimeter', $device['lawn']['perimeter'] . ' m');
             $eqLogic->setConfiguration('lawn_size', $device['lawn']['size'] . ' m²');
-            $eqLogic->setConfiguration('accessories', $device['accessories']);
+            if (array_key_exists('accessories', $device)) {
+                $eqLogic->setConfiguration('accessories', $device['accessories']);
+            }
             $eqLogic->save();
             $eqLogic->on_message($device);
         }
