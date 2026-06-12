@@ -3,7 +3,7 @@
 	"name": "worxLandroidS",
 	"licence": "AGPL",
 	"author": "Mips",
-	"require": "4.4",
+	"require": "4.5",
 	"os": {
 		"min": 11
 	},
@@ -21,8 +21,8 @@
 	"maxDependancyInstallTime": 60,
 	"changelog": "https://mips2648.github.io/jeedom-plugins-docs/worxLandroidS/#language#/changelog",
 	"documentation": "https://mips2648.github.io/jeedom-plugins-docs/worxLandroidS/#language#/",
-	"changelog_beta": "https://mips2648.github.io/jeedom-plugins-docs/worxLandroidS/#language#/changelog",
-	"documentation_beta": "https://mips2648.github.io/jeedom-plugins-docs/worxLandroidS/#language#/",
+	"changelog_beta": "https://mips2648.github.io/jeedom-plugins-docs/worxLandroidS/beta/#language#/changelog",
+	"documentation_beta": "https://mips2648.github.io/jeedom-plugins-docs/worxLandroidS/beta/#language#/",
 	"link": {
 		"forum": "https://community.jeedom.com/tag/plugin-worxLandroidS"
 	},
