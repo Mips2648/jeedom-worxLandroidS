@@ -837,7 +837,7 @@ class worxLandroidS extends eqLogic {
 
 class worxLandroidSCmd extends cmd {
 
-    public function execute($_options = array()) {
+    public function execute($_options = array()): bool {
         $eqLogic = $this->getEqLogic();
 
         $params = [
@@ -929,5 +929,6 @@ class worxLandroidSCmd extends cmd {
         }
 
         worxLandroidS::sendToDaemon($params);
+        return true;
     }
 }
