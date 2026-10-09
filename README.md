@@ -1,5 +1,7 @@
 # worxLandroidS
 
+[![CI](https://github.com/mips2648/jeedom-worxLandroidS/actions/workflows/ci.yml/badge.svg)](https://github.com/mips2648/jeedom-worxLandroidS/actions/workflows/ci.yml)
+
 Plugin pour la solution domotique Jeedom (<https://www.jeedom.com>) pour y connecter les Robots tondeuses Worx Landroid.
 
 Documentation: <https://mips2648.github.io/jeedom-plugins-docs/worxLandroidS>
